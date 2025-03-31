@@ -32,7 +32,7 @@ public class DbMysql extends DbConnectionMarcacao
         connectionPool.setUsername(LonoDatabaseConfigs.DBMARCACOES_USERNAME);
         connectionPool.setPassword(LonoDatabaseConfigs.DBMARCACOES_PASSWORD);
         connectionPool.setMaxTotal(10);
-        connectionPool.setUrl(String.format("jdbc:mysql://localhost/%s?useTimezone=true&serverTimezone=UTC&useSSL=false&createDatabaseIfNotExist=true",LonoDatabaseConfigs.DBMARCACOES_DATABASE));
+        connectionPool.setUrl(String.format("jdbc:mysql://%s:%d/%s?useTimezone=true&serverTimezone=UTC&useSSL=false&createDatabaseIfNotExist=true", LonoDatabaseConfigs.DBMARCACOES_HOSTNAME, LonoDatabaseConfigs.DBMARCACOES_PORT, LonoDatabaseConfigs.DBMARCACOES_DATABASE));
         connectionPool.setDriverClassName("com.mysql.cj.jdbc.Driver");
         connectionPool.setInitialSize(1);
     }
@@ -45,7 +45,7 @@ public class DbMysql extends DbConnectionMarcacao
                 connectionPool.setUsername(LonoDatabaseConfigs.DBMARCACOES_USERNAME);
                 connectionPool.setPassword(LonoDatabaseConfigs.DBMARCACOES_PASSWORD);
                 connectionPool.setMaxTotal(10);
-                connectionPool.setUrl(String.format("jdbc:mysql://localhost:%d/%s?useTimezone=true&serverTimezone=UTC&useSSL=false&createDatabaseIfNotExist=true", LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBMARCACOES_DATABASE));
+                connectionPool.setUrl(String.format("jdbc:mysql://%s:%d/%s?useTimezone=true&serverTimezone=UTC&useSSL=false&createDatabaseIfNotExist=true", LonoDatabaseConfigs.DBMARCACOES_HOSTNAME, LonoDatabaseConfigs.DBMARCACOES_PORT, LonoDatabaseConfigs.DBMARCACOES_DATABASE));
                 connectionPool.setDriverClassName("com.mysql.cj.jdbc.Driver");
                 connectionPool.setInitialSize(1);
             }

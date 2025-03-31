@@ -12,6 +12,7 @@ public class LonoDatabaseConfigs {
     final public static Integer LONODB_VERSIONCODE = 1803;
     
     // Referentes ao banco de marcacoes
+    public static String DBMARCACOES_HOSTNAME = "localhost";
     public static String DBMARCACOES_USERNAME = "root";
     public static String DBMARCACOES_PASSWORD = "mysqlroot";
     public static String DBMARCACOES_DATABASE = "lonomarcacoes";
