@@ -710,6 +710,11 @@ public class LonoTextSearcher {
      */
     public static Object[] tratarOcorrenciaLucene(Object[] ocorrenciaLucene, DirectoryReader readerMarcacao, Matcher matcher, Colisao colisaoMateria, NomePesquisaCliente nomePesquisaCliente, PublicacaoJornal publicacaoJornal, DbConnectionMarcacao sqlite, DbConnection dbconn) throws IOException, SQLException, ParseException
     {
+        return tratarOcorrenciaLucene(ocorrenciaLucene, readerMarcacao, matcher, colisaoMateria, nomePesquisaCliente, publicacaoJornal, sqlite, dbconn, false);
+    }
+
+    public static Object[] tratarOcorrenciaLucene(Object[] ocorrenciaLucene, DirectoryReader readerMarcacao, Matcher matcher, Colisao colisaoMateria, NomePesquisaCliente nomePesquisaCliente, PublicacaoJornal publicacaoJornal, DbConnectionMarcacao sqlite, DbConnection dbconn, boolean isHistorico) throws IOException, SQLException, ParseException
+    {
         final Fachada fachada = new Fachada();
         final int idPublicacao = publicacaoJornal.getIdPublicacao();
         final int limiteLinhaMateria = publicacaoJornal.getJornalPublicacao().getLimiteLinhaMateria();
@@ -741,6 +746,7 @@ public class LonoTextSearcher {
         materiaPub.setTermoPesquisaProximidade(termo_pesquisa_proximidade );
         materiaPub.setIdCliente( nomePesquisaCliente.getIdCliente() );
         materiaPub.setIdPublicacao(idPublicacao);
+        materiaPub.setHistorico(isHistorico);
 
 //        logger.debug("Iniciando sessão com varias consultas ao banco de dados da marcação...");
 //        logger.debug("Dados das linhas de inicio/fim da materia");

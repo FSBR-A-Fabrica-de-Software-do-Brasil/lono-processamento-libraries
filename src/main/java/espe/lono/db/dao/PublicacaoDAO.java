@@ -417,7 +417,8 @@ public class PublicacaoDAO
                     + " usu_cad,  "
                     + " corte_lono, "
                     + " corte_manual, "
-                    + " materia_hash "
+                    + " materia_hash, "
+                    + " historico "
                     + " ) VALUES ( "
                     + materiaPub.getIdPublicacao() + ", "
                     + "'" + materiaPub.getTituloMateria() + "', "
@@ -429,7 +430,8 @@ public class PublicacaoDAO
                     + "'" + materiaPub.getSitCad() + "', "
                     + materiaPub.getUsuCad() + ", "
                     + (materiaPub.getCorteLono() ? "'t'":"'f'") + ", 'f', "
-                    + "'" + materiaPub.getMateriaHash() + "'"
+                    + "'" + materiaPub.getMateriaHash() + "', "
+                    + " " + (materiaPub.isHistorico() ? "true":"false") + " "
                     + "  )";
 
 //            System.out.println("SQL -> " + sql);

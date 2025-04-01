@@ -36,6 +36,7 @@ public class MateriaPublicacao implements Serializable {
     private int idNomePesquisa;    
     private int paginaFimMateria;
     private boolean corte_lono;
+    private boolean historico;
 
     // Other
     private String termo;
@@ -289,5 +290,21 @@ public class MateriaPublicacao implements Serializable {
 
     public void setTermo(String termo) {
         this.termo = termo;
+    }
+
+    public boolean isCorte_lono() {
+        return corte_lono;
+    }
+
+    public void setCorte_lono(boolean corte_lono) {
+        this.corte_lono = corte_lono;
+    }
+
+    public boolean isHistorico() {
+        return historico;
+    }
+
+    public void setHistorico(boolean historico) {
+        this.historico = historico;
     }
 }
