@@ -28,11 +28,11 @@ public class LonoIndexerCore
     private DbConnection dbconn = null;
     final protected Object mutexObject;
 
-    public String CompactaPublicacao(String outputPathame, PublicacaoJornal publicacao, int idPublicacaoAux) {
+    public String CompactaPublicacao(String outputPathame, PublicacaoJornal publicacao, int idPublicacaoAux, boolean apagarArquivosPublicacao) {
         Fachada fachada = new Fachada();
         try {
             Logger.debug("Compactando as edições antigas do jornal '" + publicacao.getJornalPublicacao().getSiglaJornal() + "'.");
-            final String fullOutputFilename = this.RemoverArquivosEdicaoAnterior(fachada, publicacao.getIdJornal(), idPublicacaoAux, outputPathame, dbconn);
+            final String fullOutputFilename = this.CompactarArquivosPublicacao(fachada, publicacao.getIdJornal(), idPublicacaoAux, outputPathame, apagarArquivosPublicacao, dbconn);
             fachada.alterarSituacaoPublicacao(idPublicacaoAux, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
             return fullOutputFilename;
         } catch (Exception exception) {
@@ -419,7 +419,7 @@ public class LonoIndexerCore
      * @param dbconn Conexão com o banco principal do Lono
      * @throws SQLException Excessões relacionadas ao SQL
      */
-    private String RemoverArquivosEdicaoAnterior(Fachada facahada, int idJornal, int idPublicacaoToCompact, String outputFolderName, DbConnection dbconn) throws SQLException, LonoIndexerException {
+    private String CompactarArquivosPublicacao(Fachada facahada, int idJornal, int idPublicacaoToCompact, String outputFolderName, boolean deleteOldFiles, DbConnection dbconn) throws SQLException, LonoIndexerException {
         String outputCompressFName = null;
         final String sqlcmd = "SELECT id_publicacao, dt_publicacao, id_jornal, arq_publicacao, sit_cad " +
                 "FROM publicacao_jornal " +
@@ -480,10 +480,14 @@ public class LonoIndexerCore
             Util.compactarDiretorios(pastasProcEdicao, outputCompressFName);
             
             // Removendo dados desta ANTIGA edicao
-            Util.limparDiretorio(pastasProcEdicao[0]);
-            Util.limparDiretorio(pastasProcEdicao[1]);
-            Util.limparDiretorio(pastasProcEdicao[2]);
-            Util.limparDiretorio(diretorioBaseArquivo + "html");
+            if ( deleteOldFiles ) {
+                Util.limparDiretorio(pastasProcEdicao[0]);
+                Util.limparDiretorio(pastasProcEdicao[1]);
+                Util.limparDiretorio(pastasProcEdicao[2]);
+                Util.limparDiretorio(diretorioBaseArquivo + "html");
+
+                // Apagando por completo todas as pastas da publicação anterior
+            }
 
             // Modificando o status desta publicacao para 'Movida'
             facahada.alterarSituacaoPublicacao(idPublicacao, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
