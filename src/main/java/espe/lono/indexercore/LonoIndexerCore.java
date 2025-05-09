@@ -31,7 +31,7 @@ public class LonoIndexerCore
     public String CompactaPublicacao(String outputPathame, PublicacaoJornal publicacao, int idPublicacaoAux, boolean apagarArquivosPublicacao) {
         Fachada fachada = new Fachada();
         try {
-            Logger.debug("Compactando as edições antigas do jornal '" + publicacao.getJornalPublicacao().getSiglaJornal() + "'.");
+            Logger.debug("Compactando publicacação '" + publicacao.getIdPublicacao() + "'...");
             final String fullOutputFilename = this.CompactarArquivosPublicacao(fachada, publicacao.getIdJornal(), idPublicacaoAux, outputPathame, apagarArquivosPublicacao, dbconn);
             fachada.alterarSituacaoPublicacao(idPublicacaoAux, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
             return fullOutputFilename;
@@ -425,7 +425,7 @@ public class LonoIndexerCore
                 "FROM publicacao_jornal " +
                 "WHERE id_jornal = '" + idJornal + "' " +
                 "   AND id_publicacao = '" + idPublicacaoToCompact + "' " +
-                "   AND sit_cad IN ('F') ";
+                "   AND sit_cad NOT IN ('M') ";
 
         final Statement stm = dbconn.obterStatement();
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
@@ -487,10 +487,10 @@ public class LonoIndexerCore
                 Util.limparDiretorio(diretorioBaseArquivo + "html");
 
                 // Apagando por completo todas as pastas da publicação anterior
-            }
 
-            // Modificando o status desta publicacao para 'Movida'
-            facahada.alterarSituacaoPublicacao(idPublicacao, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
+                // Modificando o status desta publicacao para 'Movida e Limpa'
+                facahada.alterarSituacaoPublicacao(idPublicacao, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
+            }
             
             // Removendo dados de marcacoes antigos...
             // Nota: Apenas se nao estiver salvando os ZIP file
