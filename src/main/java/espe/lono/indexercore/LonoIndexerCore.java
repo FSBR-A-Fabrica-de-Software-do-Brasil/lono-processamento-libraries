@@ -1,7 +1,7 @@
 package espe.lono.indexercore;
 
 import espe.lono.db.connections.*;
-import espe.lono.db.connections.drivers.DbMysql;
+import espe.lono.db.exceptions.LonoIndexerException;
 import espe.lono.db.models.*;
 import espe.lono.db.utils.DBUtils;
 import espe.lono.indexercore.log.Logger;
@@ -28,6 +28,18 @@ public class LonoIndexerCore
     private DbConnection dbconn = null;
     final protected Object mutexObject;
 
+    public String CompactaPublicacao(String outputPathame, PublicacaoJornal publicacao, int idPublicacaoAux) {
+        Fachada fachada = new Fachada();
+        try {
+            Logger.debug("Compactando as edições antigas do jornal '" + publicacao.getJornalPublicacao().getSiglaJornal() + "'.");
+            final String fullOutputFilename = this.RemoverArquivosEdicaoAnterior(fachada, publicacao.getIdJornal(), idPublicacaoAux, outputPathame, dbconn);
+            fachada.alterarSituacaoPublicacao(idPublicacaoAux, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
+            return fullOutputFilename;
+        } catch (Exception exception) {
+            Logger.fatal("Erro compactando a edição -> " + exception.getMessage());
+            return null;
+        }
+    }
     /**
      * Construtor da classe,
      * @param lonoDbConn Conexao com o banco principal do LONO
@@ -83,15 +95,15 @@ public class LonoIndexerCore
             // certificado que os arquivos das edições anteriores deste
             // jornal já foram removidos...
             // Nota: Apenas se o parameto de compactacao estiver ATIVA
-            if ( LonoIndexerConfigs.INDEXER_COMPACTAR_ANTERIORES ) {
-                // Compactando as edições antigas
-                Logger.debug("Compactando as edições antigas do jornal '" + publicacao.getJornalPublicacao().getSiglaJornal() + "'.");
-                this.RemoverArquivosEdicaoAnteriores(fachada, publicacao.getIdJornal(), idPublicacaoAux, dbconn);
-            }
-            else {
-                // Apenas marcando-a como 'movida'
-                fachada.alterarSituacaoPublicacao(idPublicacaoAux, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
-            }
+//            if ( LonoIndexerConfigs.INDEXER_COMPACTAR_ANTERIORES ) {
+//                // Compactando as edições antigas
+//                Logger.debug("Compactando as edições antigas do jornal '" + publicacao.getJornalPublicacao().getSiglaJornal() + "'.");
+//                this.RemoverArquivosEdicaoAnteriores(fachada, publicacao.getIdJornal(), idPublicacaoAux, dbconn);
+//            }
+//            else {
+//                // Apenas marcando-a como 'movida'
+//                fachada.alterarSituacaoPublicacao(idPublicacaoAux, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
+//            }
 
             // Iniciando o processamento...
             Logger.info("Iniciando processamento da publicacao. " + idPublicacaoAux + " - " + pubName);
@@ -403,22 +415,21 @@ public class LonoIndexerCore
      * Remove arquivos de indexação dos processamentos anteriores
      * @param facahada Classe Fachada, contem todas as principais métodos referentes ao banco
      * @param idJornal ID do Jornal
-     * @param idPublicacaoAtual ID da Publicação Atual
+     * @param idPublicacaoToCompact ID da Publicação a ser compactada
      * @param dbconn Conexão com o banco principal do Lono
      * @throws SQLException Excessões relacionadas ao SQL
      */
-    private void RemoverArquivosEdicaoAnteriores(Fachada facahada, int idJornal, int idPublicacaoAtual, DbConnection dbconn) throws SQLException
-    {
+    private String RemoverArquivosEdicaoAnterior(Fachada facahada, int idJornal, int idPublicacaoToCompact, String outputFolderName, DbConnection dbconn) throws SQLException, LonoIndexerException {
+        String outputCompressFName = null;
         final String sqlcmd = "SELECT id_publicacao, dt_publicacao, id_jornal, arq_publicacao, sit_cad " +
                 "FROM publicacao_jornal " +
                 "WHERE id_jornal = '" + idJornal + "' " +
-                "   AND id_publicacao != '" + idPublicacaoAtual + "' " +
-                "   AND sit_cad IN ('F','X') ";
+                "   AND id_publicacao = '" + idPublicacaoToCompact + "' " +
+                "   AND sit_cad IN ('F') ";
 
         final Statement stm = dbconn.obterStatement();
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
         DbConnectionMarcacao marcacaoDb = null;
-
         while ( resultado.next() )
         {
             final int idPublicacao = resultado.getInt("id_publicacao");
@@ -458,18 +469,15 @@ public class LonoIndexerCore
             if ( marcacaoDb != null )
                 marcacaoDb.exportTable(pastasProcEdicao[2]);
 
-            // Checando se deve comprimir as pastas de processamento
-            if ( LonoIndexerConfigs.INDEXER_DIRETORIO_ZIPFILES.length() > 0 && resultado.getString("sit_cad") != "X") {
-                // Nome do arquivo sera o HASH do pdf
-                final String pdfHashValue = Util.GenerateHashFromFile(diretorioBaseArquivo + resultado.getString("arq_publicacao"));
-                final Jornal jornal = facahada.localizarJornalID(resultado.getInt("id_jornal"), dbconn);
+            // Nome do arquivo sera o HASH do pdf
+            final String pdfHashValue = Util.GenerateHashFromFile(diretorioBaseArquivo + resultado.getString("arq_publicacao"));
+            final Jornal jornal = facahada.localizarJornalID(resultado.getInt("id_jornal"), dbconn);
 
-                // Comprimindo os dados de pesquisa (lucene) desta edicao
-                String outputCompressFName = LonoIndexerConfigs.INDEXER_DIRETORIO_ZIPFILES + "/";
-                outputCompressFName += jornal.getSiglaJornal().toLowerCase() + "_" + resultado.getString("id_publicacao") + "_";
-                outputCompressFName += pdfHashValue + ".zip";
-                Util.compactarDiretorios(pastasProcEdicao, outputCompressFName);
-            }
+            // Comprimindo os dados de pesquisa (lucene) desta edicao
+            outputCompressFName = outputFolderName + File.pathSeparator;
+            outputCompressFName += jornal.getSiglaJornal().toLowerCase() + "_" + resultado.getString("id_publicacao") + "_";
+            outputCompressFName += pdfHashValue + ".zip";
+            Util.compactarDiretorios(pastasProcEdicao, outputCompressFName);
             
             // Removendo dados desta ANTIGA edicao
             Util.limparDiretorio(pastasProcEdicao[0]);
@@ -482,7 +490,7 @@ public class LonoIndexerCore
             
             // Removendo dados de marcacoes antigos...
             // Nota: Apenas se nao estiver salvando os ZIP file
-            if ( LonoIndexerConfigs.INDEXER_DIRETORIO_ZIPFILES.length() > 0 &&  marcacaoDb != null )
+            if ( marcacaoDb != null )
             {
                 marcacaoDb.destruirTabela();
                 marcacaoDb.fecharConexao();
@@ -501,5 +509,7 @@ public class LonoIndexerCore
         
         resultado.close();
         stm.close();
+
+        return outputCompressFName;
     }
 }

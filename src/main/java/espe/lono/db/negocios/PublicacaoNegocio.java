@@ -20,6 +20,10 @@ public class PublicacaoNegocio
         this.publicacaoDAO = new PublicacaoDAO();
     }
 
+    public Integer[] listarPublicacoesAntigas(int idPublicacaoToIgnore,  DbConnection dbconn) throws SQLException {
+        return publicacaoDAO.dadosListarPublicacoesAntigas(idPublicacaoToIgnore, dbconn);
+    }
+
     public boolean ignorarNumeroProcesso(int idCliente, String processo, DbConnection dbconn) throws SQLException {
         return publicacaoDAO.ignorarNumeroProcesso(idCliente, processo, dbconn);
     }

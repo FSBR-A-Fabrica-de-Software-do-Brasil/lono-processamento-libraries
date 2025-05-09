@@ -8,15 +8,13 @@ import com.sun.jna.Platform;
  */
 public class LonoIndexerConfigs {
     // Referente a versao do LonoIndexer
-    public static String INDEXER_VERSION = "1.3.2";
-    public static Integer INDEXER_VERSIONCODE = 132;
+    public static String INDEXER_VERSION = "1.3.3";
+    public static Integer INDEXER_VERSIONCODE = 133;
     
     // Configuracoes relacionados as pastas de publicacao/processamento
     public static String INDEXER_DIRETORIO_PUBLICACAO = "C:/Lono/publico/";
     public static String INDEXER_DIRETORIO_DOCUMENTOS = "C:/Lono/documentos/";
-    public static String INDEXER_DIRETORIO_ZIPFILES = "";
-    public static boolean INDEXER_COMPACTAR_ANTERIORES = true;
-    
+
     // LOG4J utilizado no Indexador
     public static org.apache.log4j.Logger INDEXER_LOG4_LOGGER = null;
     

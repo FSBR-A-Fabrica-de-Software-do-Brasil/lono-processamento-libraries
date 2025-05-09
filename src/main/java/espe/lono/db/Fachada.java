@@ -27,6 +27,10 @@ public class Fachada {
 
     final public BlogNegocio blog = new BlogNegocio();
 
+    public Integer[] listarPublicacoesAntigas(int idPublicacaoToIgnore,  DbConnection dbconn) throws SQLException {
+        return negPublicacao.listarPublicacoesAntigas(idPublicacaoToIgnore, dbconn);
+    }
+
     /**************************************************************************
      * Metodos  ligados ao 'Reprocessamento'
      **************************************************************************/
