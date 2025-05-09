@@ -16,9 +16,9 @@ import espe.lono.db.models.*;
  */
 public class PublicacaoDAO
 {
-    public Integer[] dadosListarPublicacoesAntigas(int idPublicacaoToIgnore,  DbConnection dbconn) throws SQLException {
+    public Integer[] dadosListarPublicacoesAntigas(int idJornal, int idPublicacaoToIgnore,  DbConnection dbconn) throws SQLException {
         List<Integer> idsPubList = new ArrayList<>();
-        String sql = "SELECT id_publicacao FROM publicacao_jornal WHERE id_publicacao != " + idPublicacaoToIgnore + " AND sit_cad IN ('F','X')  ORDER BY id_publicacao ASC";
+        String sql = "SELECT id_publicacao FROM publicacao_jornal WHERE id_jornal = " + idJornal + " AND id_publicacao != " + idPublicacaoToIgnore + " AND sit_cad IN ('F','X')  ORDER BY id_publicacao ASC";
         ResultSet resultado = dbconn.abrirConsultaSql(sql);
         while (resultado.next()) {
             idsPubList.add(resultado.getInt("id_publicacao"));
