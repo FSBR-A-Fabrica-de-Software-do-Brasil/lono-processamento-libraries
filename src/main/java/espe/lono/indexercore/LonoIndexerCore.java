@@ -479,6 +479,7 @@ public class LonoIndexerCore
             outputCompressFName = outputFolderName + "/";
             outputCompressFName += jornal.getSiglaJornal().toLowerCase() + "_" + resultado.getString("id_publicacao") + "_";
             outputCompressFName += pdfHashValue + ".zip";
+            System.out.println("Output Zip Folder -> " + outputFolderName);
             Util.compactarDiretorios(pastasProcEdicao, outputCompressFName);
             
             // Removendo dados desta ANTIGA edicao
