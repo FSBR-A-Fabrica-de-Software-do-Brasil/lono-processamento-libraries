@@ -476,10 +476,10 @@ public class LonoIndexerCore
             final Jornal jornal = facahada.localizarJornalID(resultado.getInt("id_jornal"), dbconn);
 
             // Comprimindo os dados de pesquisa (lucene) desta edicao
-            outputCompressFName = outputFolderName + "/";
+            outputCompressFName = outputFolderName + (outputFolderName.endsWith("/") ? "" : "/");
             outputCompressFName += jornal.getSiglaJornal().toLowerCase() + "_" + resultado.getString("id_publicacao") + "_";
             outputCompressFName += pdfHashValue + ".zip";
-            System.out.println("Output Zip Folder -> " + outputFolderName);
+            System.out.println("Output Zip Folder -> " + outputCompressFName);
             Util.compactarDiretorios(pastasProcEdicao, outputCompressFName);
             
             // Removendo dados desta ANTIGA edicao
