@@ -488,25 +488,29 @@ public class LonoIndexerCore
                 Util.limparDiretorio(pastasProcEdicao[2]);
                 Util.limparDiretorio(diretorioBaseArquivo + "html");
 
-                // Apagando por completo todas as pastas da publicação anterior
+                // Apagado arquivo PDF (sse existir)
+                final File pdfFile = new File(pdfFilename.getAbsolutePath());
+                if ( pdfFile.exists() && pdfFile.isFile() ) {
+                    Util.removerArquivo(pdfFilename.getAbsolutePath());
+                }
 
                 // Modificando o status desta publicacao para 'Movida e Limpa'
                 facahada.alterarSituacaoPublicacao(idPublicacao, PublicacaoJornal.Status.SIT_ARQ_ARMAZENADO, dbconn);
             }
             
-            // Removendo dados de marcacoes antigos...
-            // Nota: Apenas se nao estiver salvando os ZIP file
-            if ( marcacaoDb != null )
-            {
-                marcacaoDb.destruirTabela();
-                marcacaoDb.fecharConexao();
-            }
-            else
-            {
-                // Removendo o arquivo PDF, pois, nessa configuração, 
-                // nao tem precisa dele para reprocessar
-                Util.removerArquivo(pdfFilename.getAbsolutePath());
-            }
+//            // Removendo dados de marcacoes antigos...
+//            // Nota: Apenas se nao estiver salvando os ZIP file
+//            if ( marcacaoDb != null )
+//            {
+//                marcacaoDb.destruirTabela();
+//                marcacaoDb.fecharConexao();
+//            }
+//            else
+//            {
+//                // Removendo o arquivo PDF, pois, nessa configuração,
+//                // nao tem precisa dele para reprocessar
+//                Util.removerArquivo(pdfFilename.getAbsolutePath());
+//            }
 
             // Fechando o banco de marcação
             if ( marcacaoDb != null)
