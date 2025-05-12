@@ -36,6 +36,6 @@ abstract public class DbConnectionMarcacao
     
     abstract public String getNowSQLCommand();
 
-    abstract public boolean exportTable(String outputCSVFName);
+    abstract public boolean exportTable(String outputCSVFName, boolean deleteAfterExport);
     abstract public boolean importTable(String inputCSVFName);
 }

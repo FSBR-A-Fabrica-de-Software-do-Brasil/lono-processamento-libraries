@@ -286,7 +286,7 @@ public class DbPostgresMarcacao  extends DbConnectionMarcacao  {
     }
 
     @Override
-    public boolean exportTable(String outputCSVFName) {
+    public boolean exportTable(String outputCSVFName, boolean deleteAfterExport) {
         final String table_name = this.obterNomeTabela();
         String sqlcmd = "SELECT id_tipo_padrao, num_doc_lucene, marcacao, marcacao_original, pagina, linha_pagina, linha_publicacao, dat_cad, sit_cad, usu_cad, id_tipo_padrao_jornal, complex ";
         sqlcmd += "FROM " + table_name;
@@ -316,6 +316,11 @@ public class DbPostgresMarcacao  extends DbConnectionMarcacao  {
 
             // Fechando o resultset
             resultados.close();
+
+            if ( deleteAfterExport ) {
+                // Deletando a tabela
+                this.executarSql("DROP TABLE IF EXISTS " + table_name);
+            }
 
             // Checando se o arquivo Existe
             return new File(outputCSVFName).exists();

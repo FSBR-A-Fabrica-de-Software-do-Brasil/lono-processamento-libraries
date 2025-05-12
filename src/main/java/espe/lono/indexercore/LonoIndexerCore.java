@@ -466,8 +466,10 @@ public class LonoIndexerCore
             };
 
             // Gerando (Exportando) banco de marcações
-            if ( marcacaoDb != null )
-                marcacaoDb.exportTable(pastasProcEdicao[2]);
+            if ( marcacaoDb != null ) {
+                try { marcacaoDb.exportTable(pastasProcEdicao[2]); }
+                catch (Exception ignore ) {}
+            }
 
             // Nome do arquivo sera o HASH do pdf
             final String pdfHashValue = Util.GenerateHashFromFile(diretorioBaseArquivo + resultado.getString("arq_publicacao"));

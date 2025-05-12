@@ -205,7 +205,7 @@ public class DbSQLite extends DbConnectionMarcacao
     }
 
     @Override
-    public boolean exportTable(String ouputCSVFName) {
+    public boolean exportTable(String ouputCSVFName, boolean deleteAfterExport) {
         return false;
     }
 
