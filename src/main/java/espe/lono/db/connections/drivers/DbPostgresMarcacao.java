@@ -25,7 +25,7 @@ public class DbPostgresMarcacao  extends DbConnectionMarcacao  {
         connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
         connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
         connectionPool.setMaxTotal(12);
-        connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s?currentSchema=marcacoes", LonoDatabaseConfigs.DBMARCACOES_HOSTNAME, LonoDatabaseConfigs.DBMARCACOES_PORT, LonoDatabaseConfigs.DBMARCACOES_DATABASE));
+        connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s?currentSchema=marcacoes", LonoDatabaseConfigs.DBLONO_HOSTNAME, LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBLONO_DBNAME));
         connectionPool.setDriverClassName("org.postgresql.Driver");
         connectionPool.setInitialSize(1);
     }
@@ -38,7 +38,7 @@ public class DbPostgresMarcacao  extends DbConnectionMarcacao  {
                 connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
                 connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
                 connectionPool.setMaxTotal(12);
-                connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s?currentSchema=marcacoes", LonoDatabaseConfigs.DBMARCACOES_HOSTNAME, LonoDatabaseConfigs.DBMARCACOES_PORT, LonoDatabaseConfigs.DBMARCACOES_DATABASE));
+                connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s?currentSchema=marcacoes", LonoDatabaseConfigs.DBLONO_HOSTNAME, LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBLONO_DBNAME));
                 connectionPool.setDriverClassName("org.postgresql.Driver");
                 connectionPool.setInitialSize(1);
             }

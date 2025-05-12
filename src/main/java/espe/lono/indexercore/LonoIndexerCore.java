@@ -467,7 +467,7 @@ public class LonoIndexerCore
 
             // Gerando (Exportando) banco de marcações
             if ( marcacaoDb != null ) {
-                try { marcacaoDb.exportTable(pastasProcEdicao[2], true); }
+                try { marcacaoDb.exportTable(pastasProcEdicao[2], deleteOldFiles); }
                 catch (Exception ignore ) {}
             }
 
