@@ -334,6 +334,43 @@ public class ClienteDAO
         return cliente;
     }
 
+    public List<Cliente> buscarClientesPorVeiculo(long veiculoId, DbConnection dbconn) throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
+
+
+        final Statement stm = dbconn.obterStatement();
+        String sqlcmd = "SELECT c.* " +
+                "FROM cliente c " +
+                "INNER JOIN perfil_pesquisa_cliente_web ppcw ON c.id_cliente = ppcw.cliente_id " +
+                "WHERE ppcw.veiculo_id = " + veiculoId +
+                " AND c.sit_cad = 'A'";
+        ResultSet resultSet = dbconn.abrirConsultaSql(stm, sqlcmd);
+
+        while (resultSet.next()) {
+            Cliente cliente = new Cliente();
+            cliente.setIdCliente(resultSet.getInt("id_cliente"));
+            cliente.setIdConta(resultSet.getInt("id_conta"));
+            cliente.setNome(resultSet.getString("nome"));
+            cliente.setSexo(resultSet.getString("sexo"));
+            cliente.setNumOab(resultSet.getString("num_oab"));
+            cliente.setTpPessoa(resultSet.getString("tipo_pessoa"));
+            cliente.setReceberEmail(resultSet.getString("receber_email"));
+            cliente.setFone1(resultSet.getString("fone1"));
+            cliente.setNomeContato(resultSet.getString("nome_contato"));
+            cliente.setEndereco(resultSet.getString("endereco"));
+            cliente.setBairro(resultSet.getString("bairro"));
+            cliente.setCidade(resultSet.getString("cidade"));
+            cliente.setDatCad(resultSet.getTimestamp("dat_cad"));
+            cliente.setSitCad(resultSet.getString("sit_cad"));
+            cliente.setUsuCad(resultSet.getInt("usu_cad"));
+            cliente.setEmail(resultSet.getString("email"));
+
+            clientes.add(cliente);
+        }
+
+        return clientes;
+    }
+
     public List<Cliente> buscarClientesPorVeiculo_Historico(long veiculoId, DbConnection dbconn) throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
 
