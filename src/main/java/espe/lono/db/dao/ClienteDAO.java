@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -25,6 +26,38 @@ public class ClienteDAO
         String sql = "INSERT INTO analytic_cliente_pesquisa (id_cliente, id_nome_pesquisa, id_jornal, id_publicacao, qtd_ocorrencia, qtd_ocorrencia_pje, dat_cad) VALUES (" +
                 "" + idCliente + ", " + idNomePesquisa + ", " + idJornal + ", " + idPublicacao + ", " + qtdLocatedTerms + ", " + qtdPjeProcs + ", NOW())";
         return dbconn.executarSql(sql);
+    }
+
+    public List<Cliente> buscarTodosClientesAtivos(DbConnection dbconn) throws SQLException{
+        List<Cliente> clientesAtivos = new ArrayList<>();
+
+        String sql = "SELECT * FROM cliente WHERE sit_cad = 'A'";
+        try (Statement statement = dbconn.obterStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            while (resultSet.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setIdCliente(resultSet.getInt("id_cliente"));
+                cliente.setIdConta(resultSet.getInt("id_conta"));
+                cliente.setNome(resultSet.getString("nome"));
+                cliente.setSexo(resultSet.getString("sexo"));
+                cliente.setNumOab(resultSet.getString("num_oab"));
+                cliente.setTpPessoa(resultSet.getString("tipo_pessoa"));
+                cliente.setReceberEmail(resultSet.getString("receber_email"));
+                cliente.setFone1(resultSet.getString("fone1"));
+                cliente.setNomeContato(resultSet.getString("nome_contato"));
+                cliente.setEndereco(resultSet.getString("endereco"));
+                cliente.setBairro(resultSet.getString("bairro"));
+                cliente.setCidade(resultSet.getString("cidade"));
+                cliente.setDatCad(resultSet.getTimestamp("dat_cad"));
+                cliente.setSitCad(resultSet.getString("sit_cad"));
+                cliente.setUsuCad(resultSet.getInt("usu_cad"));
+                cliente.setEmail(resultSet.getString("email"));
+
+                clientesAtivos.add(cliente);
+            }
+            return clientesAtivos;
+        }
     }
 
     public boolean atualizarStatusNomePesquisa(int idNomePesquisa, DbConnection dbconn) throws SQLException
@@ -299,5 +332,141 @@ public class ClienteDAO
         cliente.setNome(resultado.getString("nome"));
 
         return cliente;
+    }
+
+    public List<Cliente> buscarClientesPorVeiculo_Historico(long veiculoId, DbConnection dbconn) throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
+
+
+        final Statement stm = dbconn.obterStatement();
+        String sqlcmd = "SELECT c.* " +
+                "FROM cliente c " +
+                "INNER JOIN perfil_pesquisa_cliente_web ppcw ON c.id_cliente = ppcw.cliente_id " +
+                "WHERE ppcw.veiculo_id = " + veiculoId +
+                " AND c.sit_cad = 'A' AND ppcw.novo_interesse = TRUE";
+        ResultSet resultSet = dbconn.abrirConsultaSql(stm, sqlcmd);
+
+        while (resultSet.next()) {
+            Cliente cliente = new Cliente();
+            cliente.setIdCliente(resultSet.getInt("id_cliente"));
+            cliente.setIdConta(resultSet.getInt("id_conta"));
+            cliente.setNome(resultSet.getString("nome"));
+            cliente.setSexo(resultSet.getString("sexo"));
+            cliente.setNumOab(resultSet.getString("num_oab"));
+            cliente.setTpPessoa(resultSet.getString("tipo_pessoa"));
+            cliente.setReceberEmail(resultSet.getString("receber_email"));
+            cliente.setFone1(resultSet.getString("fone1"));
+            cliente.setNomeContato(resultSet.getString("nome_contato"));
+            cliente.setEndereco(resultSet.getString("endereco"));
+            cliente.setBairro(resultSet.getString("bairro"));
+            cliente.setCidade(resultSet.getString("cidade"));
+            cliente.setDatCad(resultSet.getTimestamp("dat_cad"));
+            cliente.setSitCad(resultSet.getString("sit_cad"));
+            cliente.setUsuCad(resultSet.getInt("usu_cad"));
+            cliente.setEmail(resultSet.getString("email"));
+
+            clientes.add(cliente);
+        }
+
+        return clientes;
+    }
+
+    public NomePesquisaCliente[] dadosListarNomesPesquisaVeiculo(long idCliente, long idVeiculo, DbConnection dbconn) throws SQLException
+    {
+        final Statement stm = dbconn.obterStatement();
+        ArrayList<NomePesquisaCliente> listaNomesPesq = new ArrayList();
+
+        // Comando 1, obtendo lista de termos referenciados um-a-um
+        String sqlcmd = "select tb.id_termo_recusado, np.blacklist_notify_dat, np.id_cliente, cl.id_conta, np.nome_pesquisa, v.id as id_jornal, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais, np.processo\n" +
+                "from nome_pesquisa np \n" +
+                "join nome_pesquisa_veiculos npv on npv.id_nome_pesquisa = np.id_nome_pesquisa\n" +
+                "join cliente cl on cl.id_cliente = np.id_cliente \n" +
+                "JOIN conta c ON c.id_conta = cl.id_conta\n" +
+                "join veiculos v on v.id = npv.id_veiculo \n" +
+                "LEFT JOIN termos_bloqueados as tb on tb.termo = np.nome_pesquisa\n" +
+                "WHERE c.sit_cad='A' \n" +
+                "       AND npv.id_veiculo = " + idVeiculo + " \n" +
+                "       AND np.id_cliente = cl.id_cliente  \n" +
+                "       AND cl.sit_cad='A' \n" +
+                "       AND np.sit_cad='A' \n" +
+                "       AND v.sit_cad='A' \n" +
+                "       AND cl.mail_ready = TRUE\n" +
+                "       AND np.oab = FALSE\n";
+
+        // Adicionando o ID do cliente (se tiver/for_necessario)
+        if ( idCliente != 0 )
+            sqlcmd += " AND cl.id_cliente = " + idCliente + " ";
+
+        // Completando comando SQL
+        sqlcmd += " GROUP BY tb.id_termo_recusado, np.blacklist_notify_dat, cl.id_cliente, cl.id_conta, np.nome_pesquisa, v.id, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais ";
+        sqlcmd += " ORDER BY cl.id_cliente asc";
+        ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
+        NomePesquisaCliente nomePesqCliente = null;
+
+        while(resultado.next())
+        {
+            final String idTermoRecusado = resultado.getString("id_termo_recusado");
+
+            nomePesqCliente = new NomePesquisaCliente();
+            nomePesqCliente.setBlacklistNotifyDat(resultado.getDate("blacklist_notify_dat"));
+            nomePesqCliente.setBlacklist((idTermoRecusado == null || idTermoRecusado.length() <= 0) ? false : true);
+            nomePesqCliente.setLiteral( resultado.getBoolean("literal") );
+            nomePesqCliente.setIdCliente( resultado.getInt("id_cliente") );
+            nomePesqCliente.setIdNomePesquisa( resultado.getInt("id_nome_pesquisa") );
+            nomePesqCliente.setNomePesquisa( resultado.getString("nome_pesquisa").trim() );
+            nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
+            System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
+            nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
+            nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
+            listaNomesPesq.add(nomePesqCliente);
+        }
+
+        resultado.close();
+        stm.close();
+
+        return listaNomesPesq.toArray(new NomePesquisaCliente[0]);
+    }
+
+    public NomePesquisaCliente[] dadosListarNomesPesquisaVeiculo_Historico(long idCliente, DbConnection dbconn) throws SQLException
+    {
+        final Statement stm = dbconn.obterStatement();
+        ArrayList<NomePesquisaCliente> listaNomesPesq = new ArrayList();
+
+        // Comando 1, obtendo lista de termos referenciados um-a-um
+        String sqlcmd = "select np.*, npv.id_veiculo " +
+                "from nome_pesquisa np " +
+                "join nome_pesquisa_veiculos npv on np.id_nome_pesquisa = npv.id_nome_pesquisa " +
+                "where np.sit_cad = 'A' and npv.novo_termo = true";
+        // Adicionando o ID do cliente (se tiver/for_necessario)
+        if ( idCliente != 0 )
+            sqlcmd += " AND np.id_cliente = " + idCliente + " ";
+
+        // Completando comando SQL
+        ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
+        NomePesquisaCliente nomePesqCliente = null;
+
+        while(resultado.next())
+        {
+            final String idTermoRecusado = resultado.getString("id_termo_recusado");
+
+            nomePesqCliente = new NomePesquisaCliente();
+            nomePesqCliente.setBlacklistNotifyDat(resultado.getDate("blacklist_notify_dat"));
+            nomePesqCliente.setBlacklist((idTermoRecusado == null || idTermoRecusado.length() <= 0) ? false : true);
+            nomePesqCliente.setLiteral( resultado.getBoolean("literal") );
+            nomePesqCliente.setIdCliente( resultado.getInt("id_cliente") );
+            nomePesqCliente.setIdNomePesquisa( resultado.getInt("id_nome_pesquisa") );
+            nomePesqCliente.setNomePesquisa( resultado.getString("nome_pesquisa").trim() );
+            nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
+            System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
+            nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
+            nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
+            nomePesqCliente.setIdVeiculo( resultado.getLong("id_veiculo") );
+            listaNomesPesq.add(nomePesqCliente);
+        }
+
+        resultado.close();
+        stm.close();
+
+        return listaNomesPesq.toArray(new NomePesquisaCliente[0]);
     }
 }

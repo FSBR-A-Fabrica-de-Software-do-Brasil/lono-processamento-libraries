@@ -32,6 +32,8 @@ public class Cliente  {
     private Date datCad;
     private String sitCad;
     private int usuCad;
+    private String sexo;
+    private String email;
 
     public Cliente() {
     }
@@ -249,6 +251,22 @@ public class Cliente  {
             return false;
         }
         return true;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

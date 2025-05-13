@@ -25,10 +25,8 @@ public class NomePesquisaCliente {
     boolean processo;
     private String uf_oab;
     private boolean blacklist;
-
-
     private String nomePesquisaExt;
-
+    private Long idVeiculo = 0L;
     
     public String getUfOAB()
     {
@@ -188,5 +186,13 @@ public class NomePesquisaCliente {
 
     public void setNomePesquisaExt(String nomePesquisaExt) {
         this.nomePesquisaExt = nomePesquisaExt;
+    }
+
+    public Long getIdVeiculo() {
+        return idVeiculo;
+    }
+
+    public void setIdVeiculo(Long idVeiculo) {
+        this.idVeiculo = idVeiculo;
     }
 }
