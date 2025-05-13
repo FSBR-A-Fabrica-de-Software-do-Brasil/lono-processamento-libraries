@@ -112,7 +112,7 @@ public class Indexacao
      * @param DadosTopLeftLinha
      * @throws IOException 
      */
-    private static void indexDocs_AddPesquisa(IndexWriter writerPesquisa, String linha, String linhaLimpa, String content, int lineNum, int pageNum, String[] DadosTopLeftLinha, long docID) throws IOException
+    public static void indexDocs_AddPesquisa(IndexWriter writerPesquisa, String linha, String linhaLimpa, String content, int lineNum, int pageNum, String[] DadosTopLeftLinha, long docID) throws IOException
     {
         final Document doc = new Document();
         doc.add(new TextField("contents", content, Field.Store.YES));
@@ -131,7 +131,7 @@ public class Indexacao
      * @param classeLinha
      * @throws IOException 
      */
-    private static void indexDocs_AddMarcacao(IndexWriter writerMarcacao, String linha, String linhaLimpa, String searchString, int lineNum, int pageNum, String[] DadosTopLeftLinha, String classeLinha, long docID) throws IOException
+    public static void indexDocs_AddMarcacao(IndexWriter writerMarcacao, String linha, String linhaLimpa, String searchString, int lineNum, int pageNum, String[] DadosTopLeftLinha, String classeLinha, long docID) throws IOException
     {
         final Document doc = new Document();
         doc.add(new StringField("textoLinha", linha, Field.Store.YES));

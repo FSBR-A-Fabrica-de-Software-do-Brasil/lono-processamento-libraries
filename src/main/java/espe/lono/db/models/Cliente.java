@@ -9,28 +9,28 @@ import java.util.Date;
  */
 
 public class Cliente  {
-    private Integer idCliente;    
-    private Integer idConta;    
-    private String nome;    
-    private String numOab;    
-    private String ufOab;    
-    private String tpPessoa;    
-    private String login;    
-    private String senha;    
-    private String receberEmail;    
-    private String receberImpresso;    
-    private String fone1;    
-    private String fone2;    
-    private String nomeContato;    
-    private String endereco;    
-    private String numero;    
-    private String complemento;    
-    private String bairro;    
-    private String cidade;    
-    private String uf;    
-    private String cep;    
-    private Date datCad;    
-    private String sitCad;    
+    private Integer idCliente;
+    private Integer idConta;
+    private String nome;
+    private String numOab;
+    private String ufOab;
+    private String tpPessoa;
+    private String login;
+    private String senha;
+    private String receberEmail;
+    private String receberImpresso;
+    private String fone1;
+    private String fone2;
+    private String nomeContato;
+    private String endereco;
+    private String numero;
+    private String complemento;
+    private String bairro;
+    private String cidade;
+    private String uf;
+    private String cep;
+    private Date datCad;
+    private String sitCad;
     private int usuCad;
 
     public Cliente() {
@@ -255,5 +255,5 @@ public class Cliente  {
     public String toString() {
         return "testelucene.classes.Cliente[ idCliente=" + idCliente + " ]";
     }
-    
+
 }
