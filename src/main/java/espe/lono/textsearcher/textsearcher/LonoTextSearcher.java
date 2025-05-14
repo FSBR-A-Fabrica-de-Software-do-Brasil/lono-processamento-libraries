@@ -1252,11 +1252,11 @@ public class LonoTextSearcher {
      */
     static public Object[] GerarDadosInformandoTermoBlacklist(NomePesquisaCliente nomePesquisaCliente, Jornal jornal, PublicacaoJornal publicacaoJornal, DbConnection dbConnection) throws SQLException {
         // Obtendo o e-mail do comercial
-        final String comercialEmail = LonoConfigDB.GetConfig(LonoConfigDB_Codes.LONO_COMERCIAL_EMAIL, dbConnection);
+        final String comercialEmail = LonoConfigDB.GetConfig(LonoConfigDB_Codes.LONO_COMERCIAL_EMAIL, dbConnection).getValorPrimario();
         if ( comercialEmail == null ) return null;
 
         // Obtendo o texto base da materia
-        String textMateria = LonoConfigDB.GetConfig(LonoConfigDB_Codes.TEMPLATE_ALERT_3, dbConnection);
+        String textMateria = LonoConfigDB.GetConfig(LonoConfigDB_Codes.TEMPLATE_ALERT_3, dbConnection).getValorPrimario();
         if ( textMateria == null ) return null;
 
         // Modificando os dados o texto para informar os parâmetros necessários
