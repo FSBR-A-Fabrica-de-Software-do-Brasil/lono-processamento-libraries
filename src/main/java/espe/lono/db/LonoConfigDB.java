@@ -19,7 +19,7 @@ public class LonoConfigDB {
         try {
             return configNegocio.obterConfiguracao(config.getValue(), dbConnection);
         } catch (SQLException e) {
-            return null;
+            return new Configuracao(null, null, null);
         }
     }
 
@@ -28,7 +28,7 @@ public class LonoConfigDB {
         try {
             return configNegocio.obterConfiguracao(chave, dbConnection);
         } catch (SQLException e) {
-            return null;
+            return new Configuracao(null, null, null);
         }
     }
 }
