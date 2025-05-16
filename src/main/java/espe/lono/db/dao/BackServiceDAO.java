@@ -44,7 +44,7 @@ public class BackServiceDAO {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
-                "WHERE bs.sit_cad = 'A' AND bs.id_veiculo is not null and v.sit_cad =' A' " +
+                "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad =' A' " +
                 "LIMIT " + limit;
 
         // Realizando a consulta e obtendo os dados
@@ -75,7 +75,7 @@ public class BackServiceDAO {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
-                "WHERE bs.sit_cad = 'A' AND bs.id_veiculo is not null and v.sit_cad =' A' " +
+                "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad =' A' " +
                 "AND v.sigla_jornal like '" + siglaFilter + "%' " +
                 "LIMIT  " + limit;
 
