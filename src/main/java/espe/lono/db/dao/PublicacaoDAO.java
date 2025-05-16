@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.util.regex.*;
 import espe.lono.db.models.*;
 
@@ -925,5 +926,45 @@ public class PublicacaoDAO
         
         // Executando o comando
         return dbconn.executarSql(sql);
+    }
+
+    public static int ObterIdPublicacaoJornal(Date dtPublicacao, int idJornal, DbConnection dbConnection, boolean createIfNoExists) throws SQLException {
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        final String dtPublicacaoStr = sdf.format(dtPublicacao);
+        String sqlcmd = "SELECT id_publicacao " +
+                "FROM publicacao_jornal " +
+                "WHERE " +
+                "dt_publicacao = '" + dtPublicacaoStr + "'" +
+                " AND id_jornal = " + idJornal +
+                " AND sit_cad = 'A'";
+
+        // Obtendo o ID da publicacao
+        Statement stm = dbConnection.obterStatement();
+        ResultSet result = dbConnection.abrirConsultaSql(stm, sqlcmd);
+        if ( result.next() ) {
+            final int idPublicacao = result.getInt("id_publicacao");
+            result.close();
+            stm.close();
+            return idPublicacao;
+        } else if ( createIfNoExists ) {
+            result.close();
+            stm.close();
+            sqlcmd = "INSERT INTO publicacao_jornal (id_jornal, arq_publicacao, total_pagina, dt_publicacao, dt_divulgacao, edicao_publicacao, dat_cad, sit_cad, usu_cad, materia_liberada) " +
+                    "VALUES (" +
+                    "" + idJornal + ", " +
+                    "'nofile.pdf'," +
+                    "0, " +
+                    "'" + dtPublicacaoStr + "', " +
+                    "'" + dtPublicacaoStr + "', " +
+                    ((idJornal == 9999) ? "9999" : "0") + ", " +
+                    "NOW(), " +
+                    "'F', " +
+                    "99, " +
+                    "TRUE" +
+                    ")";
+            return dbConnection.executeSqlLID(sqlcmd);
+        } else {
+            return 0;
+        }
     }
 }
