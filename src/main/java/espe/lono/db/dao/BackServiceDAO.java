@@ -7,9 +7,11 @@ import espe.lono.db.models.BackserviceActions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BackServiceDAO {
-    public static synchronized BackserviceActions ObterRequisicaoProcessamento_Veiculos(DbConnection dbConnection, int limit) throws SQLException {
+    public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Veiculos(DbConnection dbConnection, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join veiculos v on v.id = bs.id_veiculo " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
@@ -17,10 +19,11 @@ public class BackServiceDAO {
                 "LIMIT " + limit;
 
         // Realizando a consulta e obtendo os dados
+        List<BackserviceActions> backserviceActionsList = new ArrayList<>();
         final Statement stm = dbConnection.obterStatement();
         Fachada fachada = new Fachada();
         ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
-        if ( resultado.next() ) {
+        while ( resultado.next() ) {
             BackserviceActions backserviceActions = new BackserviceActions();
             backserviceActions.setAcao(resultado.getString("acao"));
             backserviceActions.setDatCad(resultado.getDate("dat_cad"));
@@ -31,16 +34,18 @@ public class BackServiceDAO {
             backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
             backserviceActions.setTermo(resultado.getString("termo"));
 
-            resultado.close();
-            stm.close();
-            return backserviceActions;
-        } else {
-            stm.close();
-            return null;
+            backserviceActionsList.add(backserviceActions);
+//            resultado.close();
+//            stm.close();
+//            return backserviceActions;
         }
+
+        resultado.close();
+        stm.close();
+        return backserviceActionsList;
     }
 
-    public static synchronized BackserviceActions ObterRequisicaoProcessamento_Jornal(DbConnection dbConnection, int limit) throws SQLException {
+    public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Jornal(DbConnection dbConnection, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
@@ -48,10 +53,11 @@ public class BackServiceDAO {
                 "LIMIT " + limit;
 
         // Realizando a consulta e obtendo os dados
+        final List<BackserviceActions> backserviceActionsList = new ArrayList<>();
         final Statement stm = dbConnection.obterStatement();
         Fachada fachada = new Fachada();
         ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
-        if ( resultado.next() ) {
+        while ( resultado.next() ) {
             BackserviceActions backserviceActions = new BackserviceActions();
             backserviceActions.setAcao(resultado.getString("acao"));
             backserviceActions.setDatCad(resultado.getDate("dat_cad"));
@@ -62,16 +68,15 @@ public class BackServiceDAO {
             backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
             backserviceActions.setTermo(resultado.getString("termo"));
 
-            resultado.close();
-            stm.close();
-            return backserviceActions;
-        } else {
-            stm.close();
-            return null;
+            backserviceActionsList.add(backserviceActions);
         }
+
+        resultado.close();
+        stm.close();
+        return backserviceActionsList;
     }
 
-    public static synchronized BackserviceActions ObterRequisicaoProcessamento_Jornal(DbConnection dbConnection, String siglaFilter, int limit) throws SQLException {
+    public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Jornal(DbConnection dbConnection, String siglaFilter, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
@@ -80,10 +85,11 @@ public class BackServiceDAO {
                 "LIMIT  " + limit;
 
         // Realizando a consulta e obtendo os dados
+        final List<BackserviceActions> backserviceActionsList = new ArrayList<>();
         final Statement stm = dbConnection.obterStatement();
         Fachada fachada = new Fachada();
         ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
-        if ( resultado.next() ) {
+        while ( resultado.next() ) {
             BackserviceActions backserviceActions = new BackserviceActions();
             backserviceActions.setAcao(resultado.getString("acao"));
             backserviceActions.setDatCad(resultado.getDate("dat_cad"));
@@ -94,13 +100,12 @@ public class BackServiceDAO {
             backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
             backserviceActions.setTermo(resultado.getString("termo"));
 
-            resultado.close();
-            stm.close();
-            return backserviceActions;
-        } else {
-            stm.close();
-            return null;
+            backserviceActionsList.add(backserviceActions);
         }
+
+        resultado.close();
+        stm.close();
+        return backserviceActionsList;
     }
 
 
