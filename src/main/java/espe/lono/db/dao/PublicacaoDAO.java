@@ -1,6 +1,4 @@
 package espe.lono.db.dao;
-
-import espe.lono.db.backend.BackendDBActions;
 import espe.lono.db.negocios.JornalNegocio;
 import espe.lono.db.connections.*;
 import java.io.IOException;
