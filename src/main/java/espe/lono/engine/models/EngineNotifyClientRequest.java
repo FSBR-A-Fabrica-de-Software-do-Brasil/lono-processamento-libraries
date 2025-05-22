@@ -1,6 +1,7 @@
 package espe.lono.engine.models;
 
 import espe.lono.engine.enums.EngineActionEnum;
+import kong.unirest.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -38,7 +39,7 @@ public class EngineNotifyClientRequest {
     }
 
 
-    // Metodo publicos statis para adiantar a criação de payload
+    // Metodo publicos statis para adiantar a criacao de payload
     public static HashMap<String, Object> generateMateriaPayload(String clienteNome, long idCliente, long qtdMateria)
     {
         return EngineNotifyClientRequest.generateMateriaPayload(clienteNome, idCliente, qtdMateria, false, null);
@@ -54,9 +55,16 @@ public class EngineNotifyClientRequest {
             for (Long id : idsMaterias) {
                 sb.append(id).append(",");
             }
-            sb.deleteCharAt(sb.length() - 1); // Remove o último caractere ","
+            sb.deleteCharAt(sb.length() - 1); // Remove o ultimo caractere ","
             payload.put("ids", sb.toString());
         }
         return payload;
+    }
+
+    public JSONObject toJson() {
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("action", this.action);
+        response.put("payload", this.payyload);
+        return new JSONObject(response);
     }
 }

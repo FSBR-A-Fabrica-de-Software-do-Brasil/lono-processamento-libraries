@@ -10,12 +10,19 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Nota: A definicao dessa classe sao estaticas pois a ideia e que a execucao dela seja atomica,
+ *       isso e, que no projeto que a chamar, so posso ser executado/chamado uma unica vez
+ *
+ * Nota2: Ao termino da listagem, antes de retornar os dados, ele percorre e define todos os status para 'W' (Working)
+ *        deixando os dados retornados exclusivos de quem o chamou
+ */
 public class BackServiceDAO {
     public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Veiculos(DbConnection dbConnection, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join veiculos v on v.id = bs.id_veiculo " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
-                "WHERE bs.sit_cad = 'A' AND bs.id_veiculo is not null and v.sit_cad =' A' " +
+                "WHERE bs.sit_cad = 'A' AND bs.id_veiculo is not null and v.sit_cad = 'A' " +
                 "LIMIT " + limit;
 
         // Realizando a consulta e obtendo os dados
@@ -24,16 +31,7 @@ public class BackServiceDAO {
         Fachada fachada = new Fachada();
         ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
         while ( resultado.next() ) {
-            BackserviceActions backserviceActions = new BackserviceActions();
-            backserviceActions.setAcao(resultado.getString("acao"));
-            backserviceActions.setDatCad(resultado.getDate("dat_cad"));
-            backserviceActions.setIdCliente(resultado.getInt("id_cliente"));
-            backserviceActions.setIdVeiculo(resultado.getInt("id_veiculo"));
-            backserviceActions.setIdNomePesquisa(resultado.getInt("id_nome_pesquisa"));
-            backserviceActions.setUsuCad(resultado.getInt("usu_cad"));
-            backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
-            backserviceActions.setTermo(resultado.getString("termo"));
-
+            BackserviceActions backserviceActions = populateResultsetResponse(resultado, dbConnection);
             backserviceActionsList.add(backserviceActions);
 //            resultado.close();
 //            stm.close();
@@ -49,7 +47,7 @@ public class BackServiceDAO {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
-                "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad =' A' " +
+                "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad = 'A' " +
                 "LIMIT " + limit;
 
         // Realizando a consulta e obtendo os dados
@@ -58,16 +56,7 @@ public class BackServiceDAO {
         Fachada fachada = new Fachada();
         ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
         while ( resultado.next() ) {
-            BackserviceActions backserviceActions = new BackserviceActions();
-            backserviceActions.setAcao(resultado.getString("acao"));
-            backserviceActions.setDatCad(resultado.getDate("dat_cad"));
-            backserviceActions.setIdCliente(resultado.getInt("id_cliente"));
-            backserviceActions.setIdJornal(resultado.getInt("id_jornal"));
-            backserviceActions.setIdNomePesquisa(resultado.getInt("id_nome_pesquisa"));
-            backserviceActions.setUsuCad(resultado.getInt("usu_cad"));
-            backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
-            backserviceActions.setTermo(resultado.getString("termo"));
-
+            BackserviceActions backserviceActions = populateResultsetResponse(resultado, dbConnection);
             backserviceActionsList.add(backserviceActions);
         }
 
@@ -80,7 +69,7 @@ public class BackServiceDAO {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
                 "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
-                "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad =' A' " +
+                "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad = 'A' " +
                 "AND v.sigla_jornal like '" + siglaFilter + "%' " +
                 "LIMIT  " + limit;
 
@@ -90,16 +79,7 @@ public class BackServiceDAO {
         Fachada fachada = new Fachada();
         ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
         while ( resultado.next() ) {
-            BackserviceActions backserviceActions = new BackserviceActions();
-            backserviceActions.setAcao(resultado.getString("acao"));
-            backserviceActions.setDatCad(resultado.getDate("dat_cad"));
-            backserviceActions.setIdCliente(resultado.getInt("id_cliente"));
-            backserviceActions.setIdJornal(resultado.getInt("id_jornal"));
-            backserviceActions.setIdNomePesquisa(resultado.getInt("id_nome_pesquisa"));
-            backserviceActions.setUsuCad(resultado.getInt("usu_cad"));
-            backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
-            backserviceActions.setTermo(resultado.getString("termo"));
-
+            BackserviceActions backserviceActions = populateResultsetResponse(resultado, dbConnection);
             backserviceActionsList.add(backserviceActions);
         }
 
@@ -122,5 +102,32 @@ public class BackServiceDAO {
         sqlcmd.append("WHERE id_backservice_req = " + backserviceActions.getIdBackserviceReq());
 
         return dbConnection.executarSql(sqlcmd.toString());
+    }
+
+    public static void LiberarBackServiceActionsList(List<BackserviceActions> backserviceActionsList, DbConnection dbConnection)
+    {
+        for ( BackserviceActions backserviceActions: backserviceActionsList ) {
+            try { AtualizarRequisicaoProcessamentoStatus(backserviceActions, "A", dbConnection); }
+            catch (Exception ignore ) {}
+        }
+    }
+
+    private static BackserviceActions populateResultsetResponse(ResultSet resultado, DbConnection dbConnection) throws SQLException {
+        BackserviceActions backserviceActions = new BackserviceActions();
+        backserviceActions.setAcao(resultado.getString("acao"));
+        backserviceActions.setDatCad(resultado.getDate("dat_cad"));
+        backserviceActions.setIdCliente(resultado.getInt("id_cliente"));
+        backserviceActions.setIdJornal(resultado.getInt("id_jornal"));
+        backserviceActions.setIdVeiculo(resultado.getInt("id_veiculo"));
+        backserviceActions.setIdNomePesquisa(resultado.getInt("id_nome_pesquisa"));
+        backserviceActions.setUsuCad(resultado.getInt("usu_cad"));
+        backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
+        backserviceActions.setTermo(resultado.getString("termo"));
+        backserviceActions.setSitCad(resultado.getString("sit_cad"));
+
+        // Atualizando o status para 'W' (Working)
+        AtualizarRequisicaoProcessamentoStatus(backserviceActions, "W", dbConnection);
+
+        return backserviceActions;
     }
 }

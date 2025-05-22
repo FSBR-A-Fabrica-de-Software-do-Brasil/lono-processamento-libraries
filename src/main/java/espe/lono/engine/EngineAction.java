@@ -16,9 +16,10 @@ public class EngineAction {
     }
 
     public boolean notifyClient(EngineNotifyClientRequest request) {
-        final String finalURL = generateFinalUrl("engine/notify-client");
-        HttpResponse<String> response = Unirest.post(EngineAction.LONO_BACKEND_URL)
-                .body(request)
+        final String finalURL = generateFinalUrl("/engine/notify-client");
+        HttpResponse<?> response = Unirest.post(finalURL)
+                .body(request.toJson())
+                .header("Content-Type", "application/json")
                 .header("X-Engine-Key", EngineAction.X_ENGINE_KEY)
                 .asString();
         return response.isSuccess();
@@ -26,8 +27,9 @@ public class EngineAction {
 
     public boolean notifyClient(JSONObject jsonObject) {
         final String finalURL = generateFinalUrl("engine/notify-client");
-        HttpResponse<String> response = Unirest.post(EngineAction.LONO_BACKEND_URL)
+        HttpResponse<String> response = Unirest.post(finalURL)
                 .body(jsonObject)
+                .header("Content-Type", "application/json")
                 .header("X-Engine-Key", EngineAction.X_ENGINE_KEY)
                 .asString();
         return response.isSuccess();
