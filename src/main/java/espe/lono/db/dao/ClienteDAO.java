@@ -203,6 +203,7 @@ public class ClienteDAO
             nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
+            nomePesqCliente.setSitCad( resultado.getString("sit_cad") );
         }
         
         resultado.close();
@@ -239,6 +240,7 @@ public class ClienteDAO
                 "    j.id_jornal,  " +
                 "    np.id_nome_pesquisa,  " +
                 "    np.literal,  " +
+                "    np.sit_cad,  " +
                 "    cl.taxa_proximidade,  " +
                 "    np.todos_jornais,  " +
                 "    np.processo " +
@@ -271,7 +273,7 @@ public class ClienteDAO
             sqlcmd += " AND cl.id_cliente = " + idCliente + " ";
 
         // Completando comando SQL
-        sqlcmd += " GROUP BY tb.id_termo_recusado, np.blacklist_notify_dat, cl.id_cliente, cl.id_conta, np.nome_pesquisa, j.id_jornal, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais ";
+        sqlcmd += " GROUP BY tb.id_termo_recusado, np.sit_cad, np.blacklist_notify_dat, cl.id_cliente, cl.id_conta, np.nome_pesquisa, j.id_jornal, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais ";
         sqlcmd += " ORDER BY cl.id_cliente ASC";
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
         NomePesquisaCliente nomePesqCliente = null;
@@ -290,6 +292,7 @@ public class ClienteDAO
             nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
+            nomePesqCliente.setSitCad(resultado.getString("sit_cad"));
 
             // Anexando o termo filho (se houver)
             nomePesqCliente.setNomePesquisaExt(this.dadosListarNomePesquisaConcatenado(nomePesqCliente.getIdNomePesquisa(), dbconn));
@@ -426,7 +429,7 @@ public class ClienteDAO
         ArrayList<NomePesquisaCliente> listaNomesPesq = new ArrayList();
 
         // Comando 1, obtendo lista de termos referenciados um-a-um
-        String sqlcmd = "select tb.id_termo_recusado, np.blacklist_notify_dat, np.id_cliente, cl.id_conta, np.nome_pesquisa, v.id as id_jornal, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais, np.processo\n" +
+        String sqlcmd = "select tb.id_termo_recusado, np.sit_cad, np.blacklist_notify_dat, np.id_cliente, cl.id_conta, np.nome_pesquisa, v.id as id_jornal, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais, np.processo\n" +
                 "from nome_pesquisa np \n" +
                 "join nome_pesquisa_veiculos npv on npv.id_nome_pesquisa = np.id_nome_pesquisa\n" +
                 "join cliente cl on cl.id_cliente = np.id_cliente \n" +
@@ -447,7 +450,7 @@ public class ClienteDAO
             sqlcmd += " AND cl.id_cliente = " + idCliente + " ";
 
         // Completando comando SQL
-        sqlcmd += " GROUP BY tb.id_termo_recusado, np.blacklist_notify_dat, cl.id_cliente, cl.id_conta, np.nome_pesquisa, v.id, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais ";
+        sqlcmd += " GROUP BY tb.id_termo_recusado, np.sit_cad, np.blacklist_notify_dat, cl.id_cliente, cl.id_conta, np.nome_pesquisa, v.id, np.id_nome_pesquisa, np.literal, cl.taxa_proximidade, np.todos_jornais ";
         sqlcmd += " ORDER BY cl.id_cliente asc";
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
         NomePesquisaCliente nomePesqCliente = null;
@@ -464,6 +467,7 @@ public class ClienteDAO
             nomePesqCliente.setIdNomePesquisa( resultado.getInt("id_nome_pesquisa") );
             nomePesqCliente.setNomePesquisa( resultado.getString("nome_pesquisa").trim() );
             nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
+            nomePesqCliente.setSitCad(resultado.getString("sit_cad"));
             System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
@@ -509,6 +513,7 @@ public class ClienteDAO
             System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
+            nomePesqCliente.setSitCad( resultado.getString("sit_cad") );
             nomePesqCliente.setIdVeiculo( resultado.getLong("id_veiculo") );
             listaNomesPesq.add(nomePesqCliente);
         }
