@@ -8,6 +8,19 @@ public class EngineNotifyClientRequest {
     private String action;
     private HashMap<String, Object> payyload;
 
+    public EngineNotifyClientRequest(String action, HashMap<String, Object> payyload) {
+        this.action = action;
+        this.payyload = payyload;
+    }
+
+    public EngineNotifyClientRequest(EngineActionEnum action, HashMap<String, Object> payyload) {
+        this.action = action.getValue();
+        this.payyload = payyload;
+    }
+
+    public EngineNotifyClientRequest() {
+    }
+
     public String getAction() {
         return action;
     }
