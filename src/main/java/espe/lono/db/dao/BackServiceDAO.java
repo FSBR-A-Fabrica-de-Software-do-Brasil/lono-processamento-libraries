@@ -21,7 +21,6 @@ public class BackServiceDAO {
     public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Veiculos(DbConnection dbConnection, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join veiculos v on v.id = bs.id_veiculo " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
-                "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
                 "WHERE bs.sit_cad = 'A' AND bs.id_veiculo is not null and v.sit_cad = 'A' " +
                 "LIMIT " + limit;
 
@@ -46,7 +45,6 @@ public class BackServiceDAO {
     public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Jornal(DbConnection dbConnection, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
-                "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
                 "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad = 'A' " +
                 "LIMIT " + limit;
 
@@ -68,7 +66,6 @@ public class BackServiceDAO {
     public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Jornal(DbConnection dbConnection, String siglaFilter, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
-                "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
                 "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad = 'A' " +
                 "AND v.sigla_jornal like '" + siglaFilter + "%' " +
                 "LIMIT  " + limit;
@@ -76,7 +73,6 @@ public class BackServiceDAO {
         // Realizando a consulta e obtendo os dados
         final List<BackserviceActions> backserviceActionsList = new ArrayList<>();
         final Statement stm = dbConnection.obterStatement();
-        Fachada fachada = new Fachada();
         ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
         while ( resultado.next() ) {
             BackserviceActions backserviceActions = populateResultsetResponse(resultado, dbConnection);

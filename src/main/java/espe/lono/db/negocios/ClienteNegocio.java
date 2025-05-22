@@ -37,9 +37,9 @@ public class ClienteNegocio {
         return clienteDAO.dadosListarNomesPesquisaJornal(0, idJornal, dbconn);
     }
     
-    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisaCliente, int idJornal, DbConnection dbconn) throws SQLException
+    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisaCliente, DbConnection dbconn) throws SQLException
     {
-        return clienteDAO.listarNomePesquisaPorID(idNomePesquisaCliente, idJornal, dbconn);
+        return clienteDAO.listarNomePesquisaPorID(idNomePesquisaCliente, dbconn);
     }
 
     public boolean atualizarStatusNomePesquisa(int idNomePesquisa, DbConnection dbconn) throws SQLException

@@ -441,26 +441,13 @@ public class Fachada {
     /**
      * Obtém o termo de pesquisa pelo o ID do mesmo
      * @param idNomePesquisa -> ID do termo de pesquisa
-     * @param idJornal -> ID do Jornal
-     * @param dbconn -> Conexão com o banco principal do Lono
-     * @return -> NomePesquisaCliente
-     * @throws SQLException -> Excessões relacionados ao SQL
-     */
-    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, int idJornal, DbConnection dbconn) throws SQLException
-    {
-        return negCliente.listarNomePesquisaPorID(idNomePesquisa, idJornal, dbconn);
-    }
-
-    /**
-     * Obtém o termo de pesquisa pelo o ID do mesmo
-     * @param idNomePesquisa -> ID do termo de pesquisa
      * @param dbconn -> Conexão com o banco principal do Lono
      * @return -> NomePesquisaCliente
      * @throws SQLException -> Excessões relacionados ao SQL
      */
     public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, DbConnection dbconn) throws SQLException
     {
-        return negCliente.listarNomePesquisaPorID(idNomePesquisa, 0, dbconn);
+        return negCliente.listarNomePesquisaPorID(idNomePesquisa, dbconn);
     }
 
     /**

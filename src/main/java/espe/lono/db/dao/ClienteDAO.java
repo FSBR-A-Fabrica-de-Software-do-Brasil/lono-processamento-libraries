@@ -153,27 +153,37 @@ public class ClienteDAO
         return listaNomesPesq.toArray(new NomePesquisaCliente[0]);
     }
     
-    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, int idJornal, DbConnection dbconn) throws SQLException
+    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, DbConnection dbconn) throws SQLException
     {
         NomePesquisaCliente nomePesqCliente = new NomePesquisaCliente();
-        final String sqlcmd = "SELECT tb.id_termo_recusado, np.blacklist_notify_dat, np.literal, np.id_cliente, np.id_nome_pesquisa, np.nome_pesquisa, c.taxa_proximidade, c.taxa_proximidade, cp.id_cliente_plano, np.processo " +
-                "FROM nome_pesquisa np  " +
-                "INNER JOIN cliente c ON c.id_cliente = np.id_cliente " +
-                "INNER JOIN cliente_jornal AS cj ON cj.id_cliente = c.id_cliente " +
-                "LEFT JOIN termos_bloqueados as tb on tb.termo = np.nome_pesquisa " +
-                "FULL OUTER JOIN nome_pesquisa_jornal npj ON npj.id_nome_pesquisa = np.id_nome_pesquisa " +
-                "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = c.id_cliente " +
-                "FULL OUTER JOIN pagamento_plano pp on pp.id_cliente_plano = cp.id_cliente_plano " +
-                "WHERE np.id_nome_pesquisa = " + idNomePesquisa + 
-                    " AND np.sit_cad='A' " +
-                    ((idJornal != 0) ? (" AND cj.sit_cad = 'A' AND cj.id_jornal = " + idJornal + " ") : "") +
-                "   AND ( " +
-                "       (cp.status_plano IS NOT NULL AND cp.status_plano = 'A' AND pp.id_pagamento = (SELECT MAX(pp2.id_pagamento) FROM pagamento_plano as pp2 WHERE pp2.id_cliente_plano = pp.id_cliente_plano) AND (pp.codigo_pagamento='FREE' OR pp.status = 'A')) " +
-                "       OR (cp.status_plano IS NULL)" +
-                "   )" +
-                "AND ((npj.id_jornal = cj.id_jornal) or (np.todos_jornais = true)) " +
-                "AND c.mail_ready = TRUE " + // Apenas cliente com o email confirmado
-                "GROUP BY tb.id_termo_recusado, np.blacklist_notify_dat, np.literal, np.id_cliente, np.id_nome_pesquisa, np.nome_pesquisa, c.taxa_proximidade, c.taxa_proximidade, cp.id_cliente_plano";
+        final String sqlcmd =
+                "SELECT " +
+                        "    tb.id_termo_recusado, " +
+                        "    np.blacklist_notify_dat, " +
+                        "    np.literal, " +
+                        "    np.id_cliente, " +
+                        "    np.id_nome_pesquisa, " +
+                        "    np.nome_pesquisa, " +
+                        "    c.taxa_proximidade, " +
+                        "    cp.id_cliente_plano, " +
+                        "    np.processo " +
+                        "FROM nome_pesquisa np " +
+                        "INNER JOIN cliente c ON c.id_cliente = np.id_cliente " +
+                        "LEFT JOIN termos_bloqueados tb ON tb.termo = np.nome_pesquisa " +
+                        "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = c.id_cliente " +
+                        "WHERE " +
+                        "    np.id_nome_pesquisa = " + idNomePesquisa +
+                        "    AND c.sit_cad = 'A' " +
+                        "GROUP BY " +
+                        "    tb.id_termo_recusado, " +
+                        "    np.blacklist_notify_dat, " +
+                        "    np.literal, " +
+                        "    np.id_cliente, " +
+                        "    np.id_nome_pesquisa, " +
+                        "    np.nome_pesquisa, " +
+                        "    c.taxa_proximidade, " +
+                        "    cp.id_cliente_plano, " +
+                        "    np.processo;";
 
         final Statement stm = dbconn.obterStatement();
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
