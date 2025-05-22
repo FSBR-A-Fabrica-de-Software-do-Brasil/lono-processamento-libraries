@@ -163,6 +163,7 @@ public class ClienteDAO
                         "    np.literal, " +
                         "    np.id_cliente, " +
                         "    np.id_nome_pesquisa, " +
+                        "    np.sit_cad, " +
                         "    np.nome_pesquisa, " +
                         "    c.taxa_proximidade, " +
                         "    cp.id_cliente_plano, " +
@@ -179,6 +180,7 @@ public class ClienteDAO
                         "    np.blacklist_notify_dat, " +
                         "    np.literal, " +
                         "    np.id_cliente, " +
+                        "    np.sit_cad, " +
                         "    np.id_nome_pesquisa, " +
                         "    np.nome_pesquisa, " +
                         "    c.taxa_proximidade, " +
