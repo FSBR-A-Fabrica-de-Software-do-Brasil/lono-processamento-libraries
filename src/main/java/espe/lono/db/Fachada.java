@@ -450,6 +450,11 @@ public class Fachada {
         return negCliente.listarNomePesquisaPorID(idNomePesquisa, dbconn);
     }
 
+    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, int idJornal, DbConnection dbconn) throws SQLException
+    {
+        return negCliente.listarNomePesquisaPorID(idNomePesquisa, idJornal, dbconn);
+    }
+
     /**
      * Obtém a lista de Numeros OAB a serem pesquisados no Jornal
      * @param idJornal -> ID do Jornal

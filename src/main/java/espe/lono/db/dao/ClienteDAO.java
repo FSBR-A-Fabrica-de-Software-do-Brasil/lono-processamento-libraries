@@ -212,6 +212,67 @@ public class ClienteDAO
         return (nomePesqCliente.getIdNomePesquisa() == null) ? null : nomePesqCliente;
     }
 
+    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, int idJornal, DbConnection dbconn) throws SQLException
+    {
+        NomePesquisaCliente nomePesqCliente = new NomePesquisaCliente();
+        final String sqlcmd =
+                "SELECT " +
+                        "    tb.id_termo_recusado, " +
+                        "    np.blacklist_notify_dat, " +
+                        "    np.literal, " +
+                        "    np.id_cliente, " +
+                        "    np.id_nome_pesquisa, " +
+                        "    np.sit_cad, " +
+                        "    np.nome_pesquisa, " +
+                        "    c.taxa_proximidade, " +
+                        "    cp.id_cliente_plano, " +
+                        "    np.processo " +
+                        "FROM nome_pesquisa np " +
+                        "INNER JOIN cliente c ON c.id_cliente = np.id_cliente " +
+                        "INNER JOIN nome_pesquisa_jornal npj ON npj.id_nome_pesquisa = np.id_nome_pesquisa " +
+                        "LEFT JOIN termos_bloqueados tb ON tb.termo = np.nome_pesquisa " +
+                        "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = c.id_cliente " +
+                        "WHERE " +
+                        "    np.id_nome_pesquisa = " + idNomePesquisa +
+                        "    AND c.sit_cad = 'A' " +
+                        "    AND npj.id_jornal = " + idJornal + " " +
+                        "GROUP BY " +
+                        "    tb.id_termo_recusado, " +
+                        "    np.blacklist_notify_dat, " +
+                        "    np.literal, " +
+                        "    np.id_cliente, " +
+                        "    np.sit_cad, " +
+                        "    np.id_nome_pesquisa, " +
+                        "    np.nome_pesquisa, " +
+                        "    c.taxa_proximidade, " +
+                        "    cp.id_cliente_plano, " +
+                        "    np.processo;";
+
+        final Statement stm = dbconn.obterStatement();
+        ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
+        while ( resultado.next() )
+        {
+            final String idTermoRecusado = resultado.getString("id_termo_recusado");
+
+            // Definindo o restulado
+            nomePesqCliente.setBlacklist((idTermoRecusado == null || idTermoRecusado.length() <= 0) ? false : true);
+            nomePesqCliente.setBlacklistNotifyDat(resultado.getDate("blacklist_notify_dat"));
+            nomePesqCliente.setLiteral( resultado.getBoolean("literal") );
+            nomePesqCliente.setIdCliente( resultado.getInt("id_cliente") );
+            nomePesqCliente.setIdNomePesquisa( resultado.getInt("id_nome_pesquisa") );
+            nomePesqCliente.setNomePesquisa( resultado.getString("nome_pesquisa").trim() );
+            nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
+            nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
+            nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
+            nomePesqCliente.setSitCad( resultado.getString("sit_cad") );
+        }
+
+        resultado.close();
+        stm.close();
+
+        return (nomePesqCliente.getIdNomePesquisa() == null) ? null : nomePesqCliente;
+    }
+
     public String dadosListarNomePesquisaConcatenado(int idTermoPai, DbConnection dbconn) throws SQLException {
         String termoAuxiliar = null;
         final Statement stm = dbconn.obterStatement();
