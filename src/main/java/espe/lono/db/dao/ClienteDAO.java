@@ -212,7 +212,7 @@ public class ClienteDAO
         return (nomePesqCliente.getIdNomePesquisa() == null) ? null : nomePesqCliente;
     }
 
-    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, int idJornal, DbConnection dbconn) throws SQLException
+    public NomePesquisaCliente listarNomePesquisaPorIdJornalSituacao(int idNomePesquisa, int idJornal, String sitcad, DbConnection dbconn) throws SQLException
     {
         NomePesquisaCliente nomePesqCliente = new NomePesquisaCliente();
         final String sqlcmd =
@@ -234,6 +234,7 @@ public class ClienteDAO
                         "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = c.id_cliente " +
                         "WHERE " +
                         "    np.id_nome_pesquisa = " + idNomePesquisa +
+                        "    AND np.sit_cad = '" + sitcad + "' " +
                         "    AND c.sit_cad = 'A' " +
                         "    AND npj.id_jornal = " + idJornal + " " +
                         "GROUP BY " +

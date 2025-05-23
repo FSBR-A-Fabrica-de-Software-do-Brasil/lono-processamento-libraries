@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="" />
+    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/Fachada.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/Fachada.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/dao/ClienteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/dao/ClienteDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/negocios/ClienteNegocio.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/negocios/ClienteNegocio.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

@@ -450,9 +450,9 @@ public class Fachada {
         return negCliente.listarNomePesquisaPorID(idNomePesquisa, dbconn);
     }
 
-    public NomePesquisaCliente listarNomePesquisaPorID(int idNomePesquisa, int idJornal, DbConnection dbconn) throws SQLException
+    public NomePesquisaCliente listarNomePesquisaPorIdJornalSituacao(int idNomePesquisa, int idJornal, String sitcad, DbConnection dbconn) throws SQLException
     {
-        return negCliente.listarNomePesquisaPorID(idNomePesquisa, idJornal, dbconn);
+        return negCliente.listarNomePesquisaPorIdJornalSituacao(idNomePesquisa, idJornal, sitcad, dbconn);
     }
 
     /**
