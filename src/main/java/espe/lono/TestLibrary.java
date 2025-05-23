@@ -30,7 +30,7 @@ public class TestLibrary {
         DbConnection dbConnection = new DbPostgres();
 
         // Listando nomes-pesquisa
-        NomePesquisaCliente nomePesquisaCliente = new ClienteDAO().listarNomePesquisaPorID(361, 63, dbConnection);
+        NomePesquisaCliente nomePesquisaCliente = new ClienteDAO().listarNomePesquisaPorIdJornalSituacao(361, 63, "A", dbConnection);
 
 
         List<BackserviceActions> response = BackServiceDAO.ObterRequisicaoProcessamento_Veiculos(dbConnection, 2);
