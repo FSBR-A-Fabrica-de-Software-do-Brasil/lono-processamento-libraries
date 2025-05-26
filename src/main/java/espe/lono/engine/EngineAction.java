@@ -15,6 +15,13 @@ public class EngineAction {
         return this.notifyClient(request);
     }
 
+    public boolean notifyWebRelevantesUpdate(int delayInSeconds, String jobName) {
+        EngineNotifyClientRequest request = new EngineNotifyClientRequest(EngineActionEnum.WEB_RELEVANTES, null);
+        request.setDalayInSeconds(delayInSeconds);
+        request.setJobName(jobName);
+        return this.notifyClient(request);
+    }
+
     public boolean notifyClient(EngineNotifyClientRequest request) {
         final String finalURL = generateFinalUrl("/engine/notify-client");
         HttpResponse<?> response = Unirest.post(finalURL)

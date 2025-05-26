@@ -16,9 +16,9 @@ import java.util.List;
 public class TestLibrary {
     public static void main(String[] args) throws Exception {
         // Testando envio de notificacao p/ o backend
-        EngineAction.LONO_BACKEND_URL = "https://applications.fsbr.com.br/homolog/lono--backend";
+        EngineAction.LONO_BACKEND_URL = "http://localhost:8080";
         EngineAction engineAction = new EngineAction();
-//        engineAction.notifyWebRelevantesUpdate();
+        engineAction.notifyWebRelevantesUpdate(60, "job-teste");
 
         // Definindo conexao com o banco de dados de homo
         LonoDatabaseConfigs.DBLONO_DBNAME = "lono_homo";

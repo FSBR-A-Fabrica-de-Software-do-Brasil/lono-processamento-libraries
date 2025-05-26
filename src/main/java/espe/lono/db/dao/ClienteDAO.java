@@ -530,7 +530,7 @@ public class ClienteDAO
             nomePesqCliente.setNomePesquisa( resultado.getString("nome_pesquisa").trim() );
             nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
             nomePesqCliente.setSitCad(resultado.getString("sit_cad"));
-            System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
+//            System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
             listaNomesPesq.add(nomePesqCliente);
@@ -572,7 +572,7 @@ public class ClienteDAO
             nomePesqCliente.setIdNomePesquisa( resultado.getInt("id_nome_pesquisa") );
             nomePesqCliente.setNomePesquisa( resultado.getString("nome_pesquisa").trim() );
             nomePesqCliente.setNomePesquisaLimpo( resultado.getString("nome_pesquisa").trim() );
-            System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
+//            System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
             nomePesqCliente.setSitCad( resultado.getString("sit_cad") );

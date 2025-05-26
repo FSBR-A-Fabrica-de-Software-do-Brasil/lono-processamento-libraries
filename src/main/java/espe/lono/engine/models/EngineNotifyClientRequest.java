@@ -8,6 +8,8 @@ import java.util.HashMap;
 public class EngineNotifyClientRequest {
     private String action;
     private HashMap<String, Object> payyload;
+    private int dalayInSeconds = 0; // Tempo de espera para executar a acao, em segundos
+    private String jobName = null; // Nome do job, se for o caso de ser um job agendado
 
     public EngineNotifyClientRequest(String action, HashMap<String, Object> payyload) {
         this.action = action;
@@ -38,6 +40,21 @@ public class EngineNotifyClientRequest {
         this.payyload = payyload;
     }
 
+    public int getDalayInSeconds() {
+        return dalayInSeconds;
+    }
+
+    public void setDalayInSeconds(int dalayInSeconds) {
+        this.dalayInSeconds = dalayInSeconds;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
 
     // Metodo publicos statis para adiantar a criacao de payload
     public static HashMap<String, Object> generateMateriaPayload(String clienteNome, long idCliente, long qtdMateria)
@@ -65,6 +82,8 @@ public class EngineNotifyClientRequest {
         HashMap<String, Object> response = new HashMap<>();
         response.put("action", this.action);
         response.put("payload", this.payyload);
+        response.put("dalayInSeconds", this.dalayInSeconds);
+        response.put("jobName", this.jobName);
         return new JSONObject(response);
     }
 }
