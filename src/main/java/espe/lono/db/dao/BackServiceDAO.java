@@ -18,6 +18,31 @@ import java.util.List;
  *        deixando os dados retornados exclusivos de quem o chamou
  */
 public class BackServiceDAO {
+    public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Veiculos_GroupByCliente(DbConnection dbConnection) throws SQLException {
+        final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join veiculos v on v.id = bs.id_veiculo " +
+                "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
+                "WHERE bs.sit_cad = 'A' AND bs.id_veiculo is not null and v.sit_cad = 'A' " +
+                " ORDER BY id_backservice_req ASC, id_cliente DESC ";
+
+        // Realizando a consulta e obtendo os dados
+        List<BackserviceActions> backserviceActionsList = new ArrayList<>();
+        final Statement stm = dbConnection.obterStatement();
+        ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
+        int idClienteToGroup = -1;
+        while ( resultado.next() ) {
+            int currentIdCliente = resultado.getInt("id_cliente");
+            if ( idClienteToGroup <= 0 ) idClienteToGroup = currentIdCliente;
+            else if ( currentIdCliente != idClienteToGroup ) break;
+
+            BackserviceActions backserviceActions = populateResultsetResponse(resultado, dbConnection);
+            backserviceActionsList.add(backserviceActions);
+        }
+
+        resultado.close();
+        stm.close();
+        return backserviceActionsList;
+    }
+
     public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Veiculos(DbConnection dbConnection, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join veiculos v on v.id = bs.id_veiculo " +
                 "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
@@ -35,6 +60,31 @@ public class BackServiceDAO {
 //            resultado.close();
 //            stm.close();
 //            return backserviceActions;
+        }
+
+        resultado.close();
+        stm.close();
+        return backserviceActionsList;
+    }
+
+    public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Jornal_GroupByCliente(DbConnection dbConnection) throws SQLException {
+        final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
+                "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
+                "WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad = 'A' " +
+                " ORDER BY id_backservice_req ASC, id_cliente DESC ";
+
+        // Realizando a consulta e obtendo os dados
+        List<BackserviceActions> backserviceActionsList = new ArrayList<>();
+        final Statement stm = dbConnection.obterStatement();
+        ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
+        int idClienteToGroup = -1;
+        while ( resultado.next() ) {
+            int currentIdCliente = resultado.getInt("id_cliente");
+            if ( idClienteToGroup <= 0 ) idClienteToGroup = currentIdCliente;
+            else if ( currentIdCliente != idClienteToGroup ) break;
+
+            BackserviceActions backserviceActions = populateResultsetResponse(resultado, dbConnection);
+            backserviceActionsList.add(backserviceActions);
         }
 
         resultado.close();
@@ -62,6 +112,34 @@ public class BackServiceDAO {
         stm.close();
         return backserviceActionsList;
     }
+
+    public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Jornal_GroupByCliente(DbConnection dbConnection, String siglaFilter) throws SQLException {
+        final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +
+                "FULL OUTER JOIN cliente_plano cp ON cp.id_cliente = bs.id_cliente " +
+                " WHERE bs.sit_cad = 'A' AND bs.id_jornal is not null and v.sit_cad = 'A' " +
+                " AND v.sigla_jornal like '" + siglaFilter + "%' " +
+                " ORDER BY id_backservice_req ASC, id_cliente DESC ";
+
+        // Realizando a consulta e obtendo os dados
+        List<BackserviceActions> backserviceActionsList = new ArrayList<>();
+        final Statement stm = dbConnection.obterStatement();
+        ResultSet resultado = dbConnection.abrirConsultaSql(stm, sqlcmd);
+        int idClienteToGroup = -1;
+        while ( resultado.next() ) {
+            int currentIdCliente = resultado.getInt("id_cliente");
+            if ( idClienteToGroup <= 0 ) idClienteToGroup = currentIdCliente;
+            else if ( currentIdCliente != idClienteToGroup ) break;
+
+            BackserviceActions backserviceActions = populateResultsetResponse(resultado, dbConnection);
+            backserviceActionsList.add(backserviceActions);
+        }
+
+        resultado.close();
+        stm.close();
+        return backserviceActionsList;
+    }
+
+
 
     public static synchronized List<BackserviceActions> ObterRequisicaoProcessamento_Jornal(DbConnection dbConnection, String siglaFilter, int limit) throws SQLException {
         final String sqlcmd = "SELECT bs.* FROM backservice_actions AS bs inner join jornal  v on v.id_jornal = bs.id_jornal " +

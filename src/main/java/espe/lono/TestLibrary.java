@@ -16,9 +16,9 @@ import java.util.List;
 public class TestLibrary {
     public static void main(String[] args) throws Exception {
         // Testando envio de notificacao p/ o backend
-        EngineAction.LONO_BACKEND_URL = "http://localhost:8080";
-        EngineAction engineAction = new EngineAction();
-        engineAction.notifyWebRelevantesUpdate(60, "job-teste");
+//        EngineAction.LONO_BACKEND_URL = "http://localhost:8080";
+//        EngineAction engineAction = new EngineAction();
+//        engineAction.notifyWebRelevantesUpdate(60, "job-teste");
 
         // Definindo conexao com o banco de dados de homo
         LonoDatabaseConfigs.DBLONO_DBNAME = "lono_homo";
@@ -33,7 +33,7 @@ public class TestLibrary {
         NomePesquisaCliente nomePesquisaCliente = new ClienteDAO().listarNomePesquisaPorIdJornalSituacao(361, 63, "A", dbConnection);
 
 
-        List<BackserviceActions> response = BackServiceDAO.ObterRequisicaoProcessamento_Veiculos(dbConnection, 2);
+        List<BackserviceActions> response = BackServiceDAO.ObterRequisicaoProcessamento_Veiculos_GroupByCliente(dbConnection);
         BackServiceDAO.LiberarBackServiceActionsList(response, dbConnection);
 
         response = BackServiceDAO.ObterRequisicaoProcessamento_Jornal(dbConnection, 2);
