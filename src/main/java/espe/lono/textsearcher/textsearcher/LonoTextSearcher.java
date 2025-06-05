@@ -1040,7 +1040,8 @@ public class LonoTextSearcher {
         Query query = LonoTextSearcher.montarQueryPesquisa(text, fieldName, (literal || isNumProcesso)); // Query de pesquisa
 
         ArrayList<Object[]> locatedValues = new ArrayList();
-        final TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS);
+        final Sort sort = new Sort(new SortField(null, SortField.Type.DOC, true));
+        final TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
         final Bits liveDocs = MultiFields.getLiveDocs(readerMarcacao);
         for ( final ScoreDoc ldoc: results.scoreDocs )
         {
@@ -1115,7 +1116,8 @@ public class LonoTextSearcher {
 
         // Reaizado pesquisas e retornando os resultados
         ArrayList<Object[]> locatedValues = new ArrayList();
-        final TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS);
+        final Sort sort = new Sort(new SortField(null, SortField.Type.DOC, true));
+        final TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
         final Bits liveDocs = MultiFields.getLiveDocs(readerMarcacao);
         for ( final ScoreDoc ldoc: results.scoreDocs )
         {
