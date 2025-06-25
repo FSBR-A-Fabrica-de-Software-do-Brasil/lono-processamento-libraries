@@ -3,6 +3,7 @@ package espe.lono.db.connections.drivers;
 import espe.lono.db.LonoDatabaseConfigs;
 import espe.lono.db.connections.DbConnection;
 import java.sql.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.postgresql.util.PSQLException;
@@ -16,24 +17,33 @@ import org.postgresql.util.PSQLException;
 public class DbPostgres extends DbConnection
 {
     // Static: Inicializando e entrega conexoes do Pool do Postgres
-    private static final Object connectionPoolMutext = new Object();
+    private static AtomicBoolean atomicBoolean = new AtomicBoolean(false);
     private static BasicDataSource connectionPool = null;
     private boolean autoCommit = true;
 
     private static synchronized Connection GetConnectionFromPooling() throws SQLException {
-        synchronized (connectionPoolMutext) {
-            if ( connectionPool == null ) {
-                connectionPool = new BasicDataSource();
-                connectionPool.setValidationQuery("SELECT id FROM usuario WHERE id=1");
-                connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
-                connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
-                connectionPool.setMaxTotal(12);
-                connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s", LonoDatabaseConfigs.DBLONO_HOSTNAME, LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBLONO_DBNAME));
-                connectionPool.setDriverClassName("org.postgresql.Driver");
-                connectionPool.setInitialSize(1);
-            }
+        try {
+            while ( true ) {
+                if (atomicBoolean.compareAndSet(false, true)) {
+                    if (connectionPool == null || connectionPool.isClosed()) {
+                        connectionPool = new BasicDataSource();
+                        connectionPool.setValidationQuery("SELECT id FROM usuario WHERE id=1");
+                        connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
+                        connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
+                        connectionPool.setMaxTotal(12);
+                        connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s", LonoDatabaseConfigs.DBLONO_HOSTNAME, LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBLONO_DBNAME));
+                        connectionPool.setDriverClassName("org.postgresql.Driver");
+                        connectionPool.setInitialSize(1);
+                    }
 
-            return connectionPool.getConnection();
+                    return connectionPool.getConnection();
+                } else {
+                    try { Thread.sleep(1000); }
+                    catch (InterruptedException ignore) {}
+                }
+            }
+        } finally {
+            atomicBoolean.set(false);
         }
     }
 
@@ -427,13 +437,25 @@ public class DbPostgres extends DbConnection
         for ( int nTry = 0; nTry < LonoDatabaseConfigs.DBLONO_MAXRETRYCONN; nTry++ ) {
             try {
                 // Aguardando o tempo p/ o banco se estabilizar
-                System.err.println("Aguardando " + (sleepTime / 1000) + " segundos antes de iniciar a conxão com o banco");
+                System.err.println("Aguardando " + (sleepTime / 1000) + " segundos antes de iniciar a conexão com o banco");
                 Thread.sleep(sleepTime);
 
-                // Finalizando TODA a conexão pool para restabelecer uma nova pool de conexões!
-                synchronized (connectionPoolMutext) {
-                    connectionPool.close();
-                    connectionPool = null;
+                // Tentando dar lock e entrando ni trecho
+                while ( connectionPool != null ) {
+                    try {
+                        if (atomicBoolean.compareAndSet(false, true)) {
+                            if (connectionPool != null && !connectionPool.isClosed())
+                                connectionPool.close();
+
+                            connectionPool = null;
+                            break;
+                        } else {
+                            try { Thread.sleep(1000); }
+                            catch (InterruptedException ignore) {}
+                        }
+                    } finally {
+                        atomicBoolean.set(false);
+                    }
                 }
 
                 // Tentando se conectar ao banco
