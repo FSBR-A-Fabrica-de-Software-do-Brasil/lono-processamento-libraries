@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.postgresql.util.PSQLException;
+import org.postgresql.util.PSQLState;
 
 /**
  * @version 1.1
@@ -22,9 +23,10 @@ public class DbPostgres extends DbConnection
     private boolean autoCommit = true;
 
     private static synchronized Connection GetConnectionFromPooling() throws SQLException {
-        try {
-            while ( true ) {
-                if (atomicBoolean.compareAndSet(false, true)) {
+        int loopCount = 0;
+        while ( (loopCount++) <= 10 ) {
+            if (atomicBoolean.compareAndSet(false, true)) {
+                try {
                     if (connectionPool == null || connectionPool.isClosed()) {
                         connectionPool = new BasicDataSource();
                         connectionPool.setValidationQuery("SELECT id FROM usuario WHERE id=1");
@@ -37,14 +39,16 @@ public class DbPostgres extends DbConnection
                     }
 
                     return connectionPool.getConnection();
-                } else {
-                    try { Thread.sleep(1000); }
-                    catch (InterruptedException ignore) {}
+                } finally {
+                    atomicBoolean.set(false);
                 }
+            } else {
+                try { Thread.sleep(1000); }
+                catch (InterruptedException ignore) {}
             }
-        } finally {
-            atomicBoolean.set(false);
         }
+
+        throw new PSQLException("Can not obtain a connection from the pool after 10 attempts.", PSQLState.CONNECTION_UNABLE_TO_CONNECT);
     }
 
     static {
@@ -441,28 +445,27 @@ public class DbPostgres extends DbConnection
                 Thread.sleep(sleepTime);
 
                 // Tentando dar lock e entrando ni trecho
-                while ( connectionPool != null ) {
-                    try {
-                        if (atomicBoolean.compareAndSet(false, true)) {
-                            if (connectionPool != null && !connectionPool.isClosed())
+                int loopCount = 0;
+                while ( (connectionPool != null) && (loopCount++ <= 10) ) {
+                    if (atomicBoolean.compareAndSet(false, true)) {
+                        try {
+                            if (connectionPool != null && !connectionPool.isClosed()) {
                                 connectionPool.close();
+                            }
 
                             connectionPool = null;
                             break;
-                        } else {
-                            try { Thread.sleep(1000); }
-                            catch (InterruptedException ignore) {}
+                        } finally {
+                            atomicBoolean.set(false);
                         }
-                    } finally {
-                        atomicBoolean.set(false);
+                    } else {
+                        try { Thread.sleep(1000); }
+                        catch (InterruptedException ignore) {}
                     }
                 }
 
                 // Tentando se conectar ao banco
                 System.err.println("Reiniciando a conexão com o banco de dados");
-                try { this.conn.close(); }
-                catch ( Exception ex ) {}
-
                 this.conn = null;
                 this.conectar();
 
