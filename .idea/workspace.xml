@@ -90,7 +90,7 @@
       <recent name="espe.lono.db.dao" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.TestLibrary">
+  <component name="RunManager" selected="Gradle.lono-processamento-libraries [build]">
     <configuration name="TestLibrary" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="espe.lono.TestLibrary" />
       <module name="lono-proessamento-libraries.main" />
@@ -132,8 +132,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.TestLibrary" />
         <item itemvalue="Gradle.lono-processamento-libraries [build]" />
+        <item itemvalue="Application.TestLibrary" />
       </list>
     </recent_temporary>
   </component>
