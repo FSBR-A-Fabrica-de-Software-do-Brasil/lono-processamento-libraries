@@ -13,6 +13,7 @@ import espe.lono.textsearcher.LonoTextSearcherConfigs;
 import espe.lono.textsearcher.core.Colisao;
 import espe.lono.textsearcher.core.SendEmailInterface;
 import espe.lono.textsearcher.database.Fachada;
+import espe.lono.textsearcher.query.DocIdFilterQuery;
 import espe.lono.textsearcher.utils.LuceneUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -137,7 +138,7 @@ public class LonoTextSearcher {
             try
             {
                 // Pesquisa padrao (com recurso 'Literal' ou não)
-                results = LonoTextSearcher.pesquisarTermo_Normal(name2srch, readerPesquisa, readerMarcacao, "contents", false, false);
+                results = LonoTextSearcher.pesquisarTermo_Normal(name2srch, nome2srchExt, readerPesquisa, readerMarcacao, "contents", false, false);
             }
             catch ( Exception ex )
             {
@@ -186,9 +187,6 @@ public class LonoTextSearcher {
                 // Checando se o termo encontrado está ignotado
                 if ( fachada.numProcessoIgnorado(materiaPub, dbconn) )
                     continue; // Ignorando a matéria, o num do processo está ignorado.
-
-                if ( nome2srchExt != null && !LonoTextSearcher.locatedTextInsideMateria(materiaPub, nome2srchExt, dbconn) )
-                    continue; // Ignorando a materia,, não foi encontrado a segunda ocrrência necessária
 
                 // Adicionando dados (materia e pauta) no banco de dados
                 // Nota: se o ID da materia/pauta for diferente de zero, é pq já
@@ -309,6 +307,7 @@ public class LonoTextSearcher {
                 final String nomePesquisaLimpo = cliente.getNomePesquisaLimpo().trim();
                 final boolean pesqLiteral = (nomePesquisaLimpo.length() <= 4) ? true:cliente.isLiteral();
                 final boolean proximity_search = (cliente.getPorcetualColisao() > 0);
+
                 final String name2srch = LonoTextSearcher.NormalizarTextoPesquisa(nomePesquisaLimpo, dbconn);
                 final String nome2srchExt = LonoTextSearcher.NormalizarTextoPesquisa(cliente.getNomePesquisaExt(), dbconn);
 
@@ -322,43 +321,18 @@ public class LonoTextSearcher {
                 //       outros jornais
                 Object[][] results;
                 try {
-                    // Pq essa condição? Não lembro do motivo.
-                    if ( publicacaoJornal.getIdJornal() == 8888 && name2srch.equalsIgnoreCase("$%TDM$%MAT") ) {
-                        logger.debug("Get All -> TRT02 7089");
-                        // Obtendo todos os documentos de inicio de materias
-                        long[] docsMaterias = fachada.listarMarcacaoPorTipoPadrao(3, sqlite, dbconn);
-                        ArrayList<Object[]> locatedValues = new ArrayList();
-                        for ( long docid : docsMaterias ) {
-                            final TopDocs marcacaoResults = LuceneUtils.GetTopDocByRealDocIdValue(docid, readerMarcacao);
-                            if ( marcacaoResults == null ) {
-                                continue;
-                            }
+                    // Pesquisa padrao (com recurso 'Literal' ou não)
+                    Object[][] results_normal = LonoTextSearcher.pesquisarTermo_Normal(name2srch, nome2srchExt, readerPesquisa, readerMarcacao, "contents", pesqLiteral, cliente.isNumProcesso());
 
-                            // Obtendo o elemento e armazenando na array
-                            final ScoreDoc located_doc = marcacaoResults.scoreDocs[0];
-                            Object[] addArray = new Object[5];
-                            addArray[0] = located_doc.doc; // ID do Documento-Lucene
-                            addArray[1] = false; // Indica se deve checar a sentenca do texto
-                            addArray[2] = false;
-                            addArray[3] = null;
-                            locatedValues.add( addArray );
-                        }
-
-                        results = locatedValues.toArray( new Object[0][0] );
-                    } else {
-                        // Pesquisa padrao (com recurso 'Literal' ou não)
-                        Object[][] results_normal = LonoTextSearcher.pesquisarTermo_Normal(name2srch, readerPesquisa, readerMarcacao, "contents", pesqLiteral, cliente.isNumProcesso());
-
-                        // Pesquisa por 'Aproximação'
-                        Object[][] results_proximity = null;
-                        if (proximity_search) {
-                            // Realizando pesquisa porcentual
-                            results_proximity = LonoTextSearcher.pesquisarTermo_Porcentual(name2srch, readerPesquisa, readerMarcacao, "contents", cliente.getPorcetualColisao(), results_normal);
-                        }
-
-                        // Anexando dados/resposta
-                        results = Util.mergeArraysPesquisa(results_normal, results_proximity);
+                    // Pesquisa por 'Aproximação'
+                    Object[][] results_proximity = null;
+                    if (proximity_search) {
+                        // Realizando pesquisa porcentual
+                        results_proximity = LonoTextSearcher.pesquisarTermo_Porcentual(name2srch, nome2srchExt, readerPesquisa, readerMarcacao, "contents", cliente.getPorcetualColisao(), results_normal);
                     }
+
+                    // Anexando dados/resposta
+                    results = Util.mergeArraysPesquisa(results_normal, results_proximity);
                 }
                 catch ( Exception ex ) {
                     String message = "Não foi possivel pesquisar o termo: " + name2srch.toUpperCase();
@@ -404,10 +378,6 @@ public class LonoTextSearcher {
                     // Checando se o termo encontrado está ignotado
                     if ( fachada.numProcessoIgnorado(materiaPub, dbconn) )
                         continue; // Ignorando a matéria, o num do processo está ignorado.
-
-                    // Checando se deve aplicar a pesquisa 'AND' na materia localizada
-                    if ( nome2srchExt != null && !LonoTextSearcher.locatedTextInsideMateria(materiaPub, nome2srchExt, dbconn) )
-                        continue; // Ignorando a materia,, não foi encontrado a segunda ocrrência necessária
 
                     // Adicionando dados (materia e pauta) no banco de dados
                     // Nota: se o ID da materia/pauta for diferente de zero, é pq já
@@ -1024,9 +994,15 @@ public class LonoTextSearcher {
         return query;
     }
 
+    static public Object[][] pesquisarTermo_Normal(final String text, IndexReader readerPesquisa, IndexReader readerMarcacao, String fieldName, boolean literal, boolean isNumProcesso) throws Exception
+    {
+        return pesquisarTermo_Normal(text, null, readerPesquisa, readerMarcacao, fieldName, literal, isNumProcesso);
+    }
+
     /**
      * Pesquisa Normal (100%)
      * @param text
+     * @param textExtra
      * @param readerPesquisa
      * @param readerMarcacao
      * @param fieldName
@@ -1034,14 +1010,25 @@ public class LonoTextSearcher {
      * @return
      * @throws Exception
      */
-    static public Object[][] pesquisarTermo_Normal(final String text, IndexReader readerPesquisa, IndexReader readerMarcacao, String fieldName, boolean literal, boolean isNumProcesso) throws Exception
+    static public Object[][] pesquisarTermo_Normal(final String text, final String textExtra, IndexReader readerPesquisa, IndexReader readerMarcacao, String fieldName, boolean literal, boolean isNumProcesso) throws Exception
     {
         final IndexSearcher searcher = new IndexSearcher(readerPesquisa);
         Query query = LonoTextSearcher.montarQueryPesquisa(text, fieldName, (literal || isNumProcesso)); // Query de pesquisa
 
         ArrayList<Object[]> locatedValues = new ArrayList();
         final Sort sort = new Sort(new SortField(null, SortField.Type.DOC, true));
-        final TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
+        TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
+
+        // Pesquisando o termo extra
+        if ( textExtra != null && !textExtra.isEmpty()) {
+            // Tratando o texto-entra (AND)
+            Query extraQuery = new DocIdFilterQuery(
+                    LonoTextSearcher.montarQueryPesquisa(textExtra, fieldName, (literal || isNumProcesso))
+                ,results.scoreDocs);
+            TopDocs results2 = searcher.search(extraQuery, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
+            results = results2;
+        }
+
         final Bits liveDocs = MultiFields.getLiveDocs(readerMarcacao);
         for ( final ScoreDoc ldoc: results.scoreDocs )
         {
@@ -1069,6 +1056,11 @@ public class LonoTextSearcher {
         return locatedValues.toArray( new Object[0][0] );
     }
 
+
+    static public Object[][] pesquisarTermo_Porcentual(final String text, IndexReader readerPesquisa, IndexReader readerMarcacao, String fieldName, float porcentual, Object[][] normalArrayResults) throws IOException
+    {
+        return pesquisarTermo_Porcentual(text, null, readerPesquisa, readerMarcacao, fieldName, porcentual, normalArrayResults);
+    }
     /**
      * Pesquisa Porcentual
      * @param text
@@ -1080,7 +1072,7 @@ public class LonoTextSearcher {
      * @return
      * @throws IOException
      */
-    static public Object[][] pesquisarTermo_Porcentual(final String text, IndexReader readerPesquisa, IndexReader readerMarcacao, String fieldName, float porcentual, Object[][] normalArrayResults) throws IOException
+    static public Object[][] pesquisarTermo_Porcentual(final String text, String textExtra, IndexReader readerPesquisa, IndexReader readerMarcacao, String fieldName, float porcentual, Object[][] normalArrayResults) throws IOException
     {
         // Checando o tipo de algoritimo indexador no momento
         if ( Indexacao.obterTipoIndexacaoAtual() == Indexacao.TipoIndexacao.PESQUISA_101 )
@@ -1092,32 +1084,21 @@ public class LonoTextSearcher {
 
         final IndexSearcher searcher = new IndexSearcher(readerPesquisa);
         final IndexSearcher searcherMarcacao = new IndexSearcher(readerMarcacao);
-        Query query;
-
-        // Separando as palavras para adicionar no SpanQuery(Lucene)
-        final String[] splitted_string = text.replaceAll("\\s+", " ").trim().split(" ");
-        if ( splitted_string.length == 1 ) {
-            // Montando o FuzzyQuery
-            int maxFuzzyEdit = Math.round( ((splitted_string[0].length() / 100) * porcentual) );
-            if ( maxFuzzyEdit == 0 ) maxFuzzyEdit = 1;
-            query = new FuzzyQuery(new Term(fieldName, splitted_string[0]), maxFuzzyEdit);
-        } else {
-            // Montando o SpanNearQuery
-            final SpanQuery[] clauses = new SpanQuery[ splitted_string.length ];
-            for ( int idx = 0; idx < splitted_string.length; idx++ )
-            {
-                int maxFuzzyEdit = Math.round( ((splitted_string[idx].length() / 100) * porcentual) );
-                if ( maxFuzzyEdit == 0 ) maxFuzzyEdit = 1;
-                FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(fieldName, splitted_string[idx]), maxFuzzyEdit);
-                clauses[idx] = new SpanMultiTermQueryWrapper( fuzzyQuery );
-            }
-            query = new SpanNearQuery(clauses, 0, true);
-        }
+        Query query = createSpanNearQuery(text, fieldName, porcentual);
 
         // Reaizado pesquisas e retornando os resultados
         ArrayList<Object[]> locatedValues = new ArrayList();
         final Sort sort = new Sort(new SortField(null, SortField.Type.DOC, true));
-        final TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
+        TopDocs results = searcher.search(query, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
+
+        // Pesquisando o termo extra
+        if ( textExtra != null && !textExtra.isEmpty()) {
+            // Tratando o texto-entra (AND)
+            Query extraQuery = new DocIdFilterQuery(createSpanNearQuery(textExtra, fieldName, porcentual), results.scoreDocs);
+            TopDocs results2 = searcher.search(extraQuery, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
+            results = results2;
+        }
+
         final Bits liveDocs = MultiFields.getLiveDocs(readerMarcacao);
         for ( final ScoreDoc ldoc: results.scoreDocs )
         {
@@ -1176,7 +1157,7 @@ public class LonoTextSearcher {
      */
     static public String NormalizarTextoPesquisa(String text, DbConnection dbConnection)
     {
-        if ( text == null ) return null;
+        if ( text == null || text.trim().length() <= 0 ) return null;
         try {
             return Util.normalizeText(text, dbConnection);
         } catch (SQLException e) {
@@ -1535,5 +1516,29 @@ public class LonoTextSearcher {
         } catch (InputMismatchException erro) {
             return(false);
         }
+    }
+
+    private static Query createSpanNearQuery(String text, String fieldName, float porcentual) {
+        final String[] splitted_string = text.replaceAll("\\s+", " ").trim().split(" ");
+        Query query;
+        if ( splitted_string.length == 1 ) {
+            // Montando o FuzzyQuery
+            int maxFuzzyEdit = Math.round( ((splitted_string[0].length() / 100) * porcentual) );
+            if ( maxFuzzyEdit == 0 ) maxFuzzyEdit = 1;
+            query = new FuzzyQuery(new Term(fieldName, splitted_string[0]), maxFuzzyEdit);
+        } else {
+            // Montando o SpanNearQuery
+            final SpanQuery[] clauses = new SpanQuery[ splitted_string.length ];
+            for ( int idx = 0; idx < splitted_string.length; idx++ )
+            {
+                int maxFuzzyEdit = Math.round( ((splitted_string[idx].length() / 100) * porcentual) );
+                if ( maxFuzzyEdit == 0 ) maxFuzzyEdit = 1;
+                FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(fieldName, splitted_string[idx]), maxFuzzyEdit);
+                clauses[idx] = new SpanMultiTermQueryWrapper( fuzzyQuery );
+            }
+            query = new SpanNearQuery(clauses, 0, true);
+        }
+
+        return query;
     }
 }

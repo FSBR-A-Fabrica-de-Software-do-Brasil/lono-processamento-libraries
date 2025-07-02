@@ -25,6 +25,7 @@ public class NomePesquisaCliente {
     boolean processo;
     private String uf_oab;
     private boolean blacklist;
+    
     private String nomePesquisaExt;
     private Long idVeiculo = 0L;
     
