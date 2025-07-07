@@ -277,7 +277,7 @@ public class ClienteDAO
     public String dadosListarNomePesquisaConcatenado(int idTermoPai, DbConnection dbconn) throws SQLException {
         String termoAuxiliar = null;
         final Statement stm = dbconn.obterStatement();
-        final String sqlcmd = "SELECT np.nome_pesquisa FROM nome_pesquisa np WHERE np.id_termo_pai = " + idTermoPai + " AND np.tipo_termo_id = 4 ";
+        final String sqlcmd = "SELECT np.nome_pesquisa FROM nome_pesquisa np WHERE np.id_termo_pai = " + idTermoPai;
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
         if ( resultado.next() ) {
             termoAuxiliar = resultado.getString("nome_pesquisa");
