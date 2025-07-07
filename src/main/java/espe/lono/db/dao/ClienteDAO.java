@@ -309,20 +309,15 @@ public class ClienteDAO
                 "FROM  " +
                 "    cliente cl " +
                 "INNER JOIN  " +
-                "    conta c ON c.id_conta = cl.id_conta " +
-                "INNER JOIN  " +
                 "    nome_pesquisa np ON np.id_cliente = cl.id_cliente " +
                 "INNER JOIN  " +
                 "    nome_pesquisa_jornal npj ON npj.id_nome_pesquisa = np.id_nome_pesquisa " +
                 "INNER JOIN  " +
                 "    jornal j ON j.id_jornal = npj.id_jornal " +
-                "INNER JOIN  " +
-                "    jornal_conta jc ON jc.id_conta = c.id_conta " +
                 "LEFT JOIN  " +
                 "    termos_bloqueados as tb ON tb.termo = np.nome_pesquisa " +
                 "WHERE  " +
-                "    c.sit_cad = 'A' " +
-                "    AND j.id_jornal = " + idJornal + " " +
+                "    j.id_jornal = " + idJornal + " " +
                 "    AND np.id_cliente = cl.id_cliente " +
                 "    AND cl.sit_cad = 'A' " +
                 "    AND np.sit_cad = 'A' " +
