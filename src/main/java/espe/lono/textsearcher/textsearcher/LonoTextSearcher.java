@@ -973,7 +973,12 @@ public class LonoTextSearcher {
         //final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 
         // Montando query (com base no tamanho da string)
-        final String[] splitted_string = text.replaceAll("\\s+", " ").trim().split(" ");
+        final String[] splitted_string = text
+            .replaceAll("-", " ") // Substituindo o traço por espaço para buscas por CPF
+            .replaceAll("/", " ") // Substituindo a barra por espaço para buscas por CNPJ
+            .replaceAll("\\s+", " ")
+            .trim().split(" ");
+
         if ( splitted_string.length == 1 ) {
             // Montando o WildCardQuery
             String termText = ( literal == false ) ? "*" : "";
