@@ -3,6 +3,7 @@ package espe.lono.textsearcher.query;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.join.ScoreMode;
+import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.util.BitSetIterator;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
@@ -17,23 +18,34 @@ import java.util.stream.Collectors;
 public class DocIdFilterQuery extends Query {
     private final Query query;
     private final Set<Integer> allowedDocIds;
+    private boolean isMultipleTerms;
 
-    public DocIdFilterQuery(Query query, Set<Integer> allowedDocIds) {
+    public DocIdFilterQuery(Query query, Set<Integer> allowedDocIds, boolean isMultipleTerms) {
         this.query = query;
         this.allowedDocIds = allowedDocIds;
+        this.isMultipleTerms = isMultipleTerms;
     }
 
-    public DocIdFilterQuery(Query query, ScoreDoc[] scoreDocs) {
+    public DocIdFilterQuery(Query query, ScoreDoc[] scoreDocs, boolean isMultipleTerms) {
         this.allowedDocIds = Arrays.stream(scoreDocs)
                 .map(scoreDoc -> scoreDoc.doc)
                 .collect(Collectors.toSet());
         this.query = query;
+        this.isMultipleTerms = isMultipleTerms;
+    }
+
+    @Override
+    public Query rewrite(IndexReader reader) throws IOException {
+        Query rewritten = query.rewrite(reader);
+        if (rewritten != query) {
+            return new DocIdFilterQuery(rewritten, allowedDocIds, isMultipleTerms);
+        }
+        return this;
     }
 
     @Override
     public Weight createWeight(IndexSearcher searcher, boolean needsScore, float boost) throws IOException {
-        final Weight innerWeight = query.createWeight(searcher, needsScore, boost);
-
+        final Weight innerWeight = searcher.createWeight(query, needsScore, boost);
         return new Weight(this) {
 
             @Override

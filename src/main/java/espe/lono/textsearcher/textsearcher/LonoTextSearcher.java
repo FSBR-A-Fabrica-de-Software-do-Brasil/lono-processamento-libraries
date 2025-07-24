@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 public class LonoTextSearcher {
     public static int SEARCH_MAX_RESULTS = Integer.MAX_VALUE; // Modifique este campo p/ limitar a qtd. de ocorrencias
     final static private Logger logger = LonoTextSearcherConfigs.SEARCHER_LOG4_LOGGER;
-    final static boolean cem_porcento = Boolean.valueOf(LonoConfigLoader.getConfig("lucene_method"));
     public static SendEmailInterface sendEmailInterface = null;
     /* ---------------------------------------------------------------------- */
     /**
@@ -983,7 +982,7 @@ public class LonoTextSearcher {
             // Montando o WildCardQuery
             String termText = ( literal == false ) ? "*" : "";
             termText += splitted_string[0] + (( literal == false ) ? "*" : "");
-            query = new WildcardQuery(new Term(fieldName, termText));
+            query = new WildcardQuery(new Term(fieldName, termText.toLowerCase()));
         } else {
             // Montando o SpanNearQuery
             final SpanQuery[] clauses = new SpanQuery[ splitted_string.length ];
@@ -995,7 +994,7 @@ public class LonoTextSearcher {
                 termText += splitted_string[idx];
                 if ( idx == lastIdx && literal == false ) termText += "*";
 
-                WildcardQuery clauseQuery = new WildcardQuery(new Term(fieldName, termText));
+                WildcardQuery clauseQuery = new WildcardQuery(new Term(fieldName, termText.toLowerCase()));
                 clauses[idx] = new SpanMultiTermQueryWrapper( clauseQuery );
             }
             query = new SpanNearQuery(clauses, 0, true);
@@ -1032,9 +1031,10 @@ public class LonoTextSearcher {
         // Pesquisando o termo extra
         if ( textExtra != null && !textExtra.isEmpty()) {
             // Tratando o texto-entra (AND)
-            Query extraQuery = new DocIdFilterQuery(
-                    LonoTextSearcher.montarQueryPesquisa(textExtra, fieldName, (literal || isNumProcesso))
-                ,results.scoreDocs);
+            boolean isMultiple = textExtra.replaceAll("\\s+", " ").trim().split(" ").length > 1;
+
+            Query wildCardQuery = LonoTextSearcher.montarQueryPesquisa(textExtra, fieldName, (literal || isNumProcesso));
+            Query extraQuery = new DocIdFilterQuery(wildCardQuery, results.scoreDocs, isMultiple);
             TopDocs results2 = searcher.search(extraQuery, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
             results = results2;
         }
@@ -1104,7 +1104,8 @@ public class LonoTextSearcher {
         // Pesquisando o termo extra
         if ( textExtra != null && !textExtra.isEmpty()) {
             // Tratando o texto-entra (AND)
-            Query extraQuery = new DocIdFilterQuery(createSpanNearQuery(textExtra, fieldName, porcentual), results.scoreDocs);
+            boolean isMultiple = textExtra.replaceAll("\\s+", " ").trim().split(" ").length > 1;
+            Query extraQuery = new DocIdFilterQuery(createSpanNearQuery(textExtra, fieldName, porcentual), results.scoreDocs, isMultiple);
             TopDocs results2 = searcher.search(extraQuery, LonoTextSearcher.SEARCH_MAX_RESULTS, sort);
             results = results2;
         }
