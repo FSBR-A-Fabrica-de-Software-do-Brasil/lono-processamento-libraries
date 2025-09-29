@@ -1563,7 +1563,7 @@ public class LonoTextSearcher {
     private static String obterVariaJuridicaJornal(Jornal jornal) {
         if ( jornal.getSiglaJornal().startsWith("TRF") )
             return "Criminal";
-        if ( jornal.getSiglaJornal().startsWith("TRT") )
+        else if ( jornal.getSiglaJornal().startsWith("TRT") )
             return "Trabalhista";
         else
             return "Outros";
