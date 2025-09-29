@@ -428,6 +428,7 @@ public class PublicacaoDAO
                     + " corte_lono, "
                     + " corte_manual, "
                     + " materia_hash, "
+                    + " nome_vara_juridica, "
                     + " historico "
                     + " ) VALUES ( "
                     + materiaPub.getIdPublicacao() + ", "
@@ -441,6 +442,7 @@ public class PublicacaoDAO
                     + materiaPub.getUsuCad() + ", "
                     + (materiaPub.getCorteLono() ? "'t'":"'f'") + ", 'f', "
                     + "'" + materiaPub.getMateriaHash() + "', "
+                    + "'" + materiaPub.getVaraJurdica() + "', "
                     + " " + (materiaPub.isHistorico() ? "true":"false") + " "
                     + "  )";
 

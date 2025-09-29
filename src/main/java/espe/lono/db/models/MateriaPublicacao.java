@@ -38,6 +38,8 @@ public class MateriaPublicacao implements Serializable {
     private boolean corte_lono;
     private boolean historico;
 
+    private String varaJurdica;
+
     // Other
     private String termo;
 
@@ -306,5 +308,13 @@ public class MateriaPublicacao implements Serializable {
 
     public void setHistorico(boolean historico) {
         this.historico = historico;
+    }
+
+    public String getVaraJurdica() {
+        return (varaJurdica == null) ? "" : varaJurdica;
+    }
+
+    public void setVaraJurdica(String varaJurdica) {
+        this.varaJurdica = varaJurdica;
     }
 }

@@ -183,6 +183,9 @@ public class LonoTextSearcher {
                 MateriaPublicacao materiaPub = (MateriaPublicacao) ocorrenciaTratadaObjs[0];
                 PautaPublicacao pautaPub = (PautaPublicacao) ocorrenciaTratadaObjs[1];
 
+                // Alimentando vara juridica
+                materiaPub.setVaraJurdica(obterVariaJuridicaJornal(publicacaoJornal.getJornalPublicacao()));
+
                 // Checando se o termo encontrado está ignotado
                 if ( fachada.numProcessoIgnorado(materiaPub, dbconn) )
                     continue; // Ignorando a matéria, o num do processo está ignorado.
@@ -411,6 +414,10 @@ public class LonoTextSearcher {
                     // Checando se já existe colisão
                     int id_materia_existente = colisaoMateria.obterMateriaID(materiaPublicacao, 0, 0, dbconn);
                     if ( id_materia_existente > 0 )  materiaPublicacao.setIdMateria(id_materia_existente);
+
+                    // Gravando a vara juridica
+                    materiaPublicacao.setVaraJurdica(obterVariaJuridicaJornal(publicacaoJornal.getJornalPublicacao()));
+
 
                     // Adicionando a materia na lista p/ a notificação
                     clientesMaterias.get(materiaPublicacao.getIdCliente()).add(materiaPublicacao.getIdMateria());
@@ -1551,5 +1558,14 @@ public class LonoTextSearcher {
         }
 
         return query;
+    }
+
+    private static String obterVariaJuridicaJornal(Jornal jornal) {
+        if ( jornal.getSiglaJornal().startsWith("TRF") )
+            return "Criminal";
+        if ( jornal.getSiglaJornal().startsWith("TRT") )
+            return "Trabalhista";
+        else
+            return "Outros";
     }
 }
