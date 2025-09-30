@@ -3,14 +3,14 @@ plugins {
 }
 
 group = 'espe.lono'
-version = '1.1.21'
+version = '1.1.22'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // Lucene (versão original de desenvolvimento: 4.10.1, versão atual: 7.7.2)
+    // Lucene (versï¿½o original de desenvolvimento: 4.10.1, versï¿½o atual: 7.7.2)
     compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.7.2'
     compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '7.7.2'
     compile group: 'org.apache.lucene', name: 'lucene-queryparser', version: '7.7.2'
