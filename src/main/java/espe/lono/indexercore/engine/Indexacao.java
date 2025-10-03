@@ -270,6 +270,7 @@ public class Indexacao
                 
                 // Adicionando documento de Marcacao
                 final long finalDocID = Long.parseLong(String.format("%d%d", baseNumber, docId));
+
                 //final long finalDocID = docId;
                 Indexacao.indexDocs_AddMarcacao(
                         writerMarcacao, // Writer da marcacacao
