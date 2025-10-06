@@ -1,6 +1,5 @@
 package espe.lono.textsearcher.textsearcher;
 
-import espe.lono.config.LonoConfigLoader;
 import espe.lono.db.LonoConfigDB;
 import espe.lono.db.connections.DbConnection;
 import espe.lono.db.connections.DbConnectionMarcacao;
@@ -1258,9 +1257,11 @@ public class LonoTextSearcher {
         textMateria = textMateria.replaceAll("<jornal>", jornal.getSiglaJornal().toUpperCase().trim());
         textMateria = textMateria.replaceAll("<email_comercial>", comercialEmail);
 
-        // Obtendo o ID da publicacao a ser criada
-//        final int idPublicacao = LonoTextSearcher.ObterIdPublicacaoJornal(publicacaoJornal.getDtPublicacao(), 9999, dbConnection);
+        // Retornando os dados
+        return GerarMateriaNotificacaoLono(jornal, nomePesquisaCliente, "Alerta Lono: Termo na Blacklist", textMateria);
+    }
 
+    static public MateriaPublicacao GerarMateriaNotificacaoLono(Jornal jornal, NomePesquisaCliente nomePesquisaCliente, String titulo, String textMateria) {
         // Criando a MateriaPublicacao
         MateriaPublicacao materiaPublicacao = new MateriaPublicacao();
         materiaPublicacao.setIdMateria(0);
@@ -1269,7 +1270,7 @@ public class LonoTextSearcher {
         materiaPublicacao.setLinhaInicialMateria(1);
         materiaPublicacao.setLinhaFinalMateria(1);
         materiaPublicacao.setIdJornal(jornal.getIdJornal());
-        materiaPublicacao.setTituloMateria("Alerta Lono: Termo na Blacklist");
+        materiaPublicacao.setTituloMateria(titulo); //"Alerta Lono: Termo na Blacklist"
         materiaPublicacao.setPagina(1);
         materiaPublicacao.setLinhaCliente(1);
         materiaPublicacao.setCorteLono(true);
