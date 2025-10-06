@@ -429,6 +429,7 @@ public class PublicacaoDAO
                     + " corte_manual, "
                     + " materia_hash, "
                     + " nome_vara_juridica, "
+                    + " id_jornal, "
                     + " historico "
                     + " ) VALUES ( "
                     + materiaPub.getIdPublicacao() + ", "
@@ -443,6 +444,7 @@ public class PublicacaoDAO
                     + (materiaPub.getCorteLono() ? "'t'":"'f'") + ", 'f', "
                     + "'" + materiaPub.getMateriaHash() + "', "
                     + "'" + materiaPub.getVaraJurdica() + "', "
+                    + "'" + publicacaoJornal.getIdJornal() + "', "
                     + " " + (materiaPub.isHistorico() ? "true":"false") + " "
                     + "  )";
 
@@ -928,7 +930,7 @@ public class PublicacaoDAO
         return dbconn.executarSql(sql);
     }
 
-    public static int ObterIdPublicacaoJornal(Date dtPublicacao, int idJornal, DbConnection dbConnection, boolean createIfNoExists) throws SQLException {
+    public static int ObterIdPublicacaoJornal(Date dtPublicacao, int idJornal, DbConnection dbConnection) throws SQLException {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         final String dtPublicacaoStr = sdf.format(dtPublicacao);
         String sqlcmd = "SELECT id_publicacao " +
@@ -946,23 +948,6 @@ public class PublicacaoDAO
             result.close();
             stm.close();
             return idPublicacao;
-        } else if ( createIfNoExists ) {
-            result.close();
-            stm.close();
-            sqlcmd = "INSERT INTO publicacao_jornal (id_jornal, arq_publicacao, total_pagina, dt_publicacao, dt_divulgacao, edicao_publicacao, dat_cad, sit_cad, usu_cad, materia_liberada) " +
-                    "VALUES (" +
-                    "" + idJornal + ", " +
-                    "'nofile.pdf'," +
-                    "0, " +
-                    "'" + dtPublicacaoStr + "', " +
-                    "'" + dtPublicacaoStr + "', " +
-                    ((idJornal == 9999) ? "9999" : "0") + ", " +
-                    "NOW(), " +
-                    "'F', " +
-                    "99, " +
-                    "TRUE" +
-                    ")";
-            return dbConnection.executeSqlLID(sqlcmd);
         } else {
             return 0;
         }

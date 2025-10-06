@@ -407,28 +407,21 @@ public class LonoTextSearcher {
                 // Deve criar/adicionar a materia informando o limite do termo?
                 if ( cliente.isBlacklist() && num_efetivas > 0 && cliente.needNotifyBlacklist() ){
                     // Criando materia fake informando sobre o blacklist
-                    final Object[] fakeMaterias = LonoTextSearcher.GerarDadosInformandoTermoBlacklist(cliente, publicacaoJornal.getJornalPublicacao(), publicacaoJornal, dbconn);
-                    final MateriaPublicacao materiaPublicacao = (MateriaPublicacao) fakeMaterias[0];
-                    final PautaPublicacao pautaPublicacao = (PautaPublicacao) fakeMaterias[1];
+                    final MateriaPublicacao materiaPublicacao = LonoTextSearcher.GerarDadosInformandoTermoBlacklist(cliente, publicacaoJornal.getJornalPublicacao(), publicacaoJornal, dbconn);
+//                    final PautaPublicacao pautaPublicacao = (PautaPublicacao) fakeMaterias[1];
 
                     // Checando se já existe colisão
-                    int id_materia_existente = colisaoMateria.obterMateriaID(materiaPublicacao, 0, 0, dbconn);
-                    if ( id_materia_existente > 0 )  materiaPublicacao.setIdMateria(id_materia_existente);
+                    if ( materiaPublicacao != null ) {
+                        int id_materia_existente = colisaoMateria.obterMateriaID(materiaPublicacao, 0, 0, dbconn);
+                        if (id_materia_existente > 0) materiaPublicacao.setIdMateria(id_materia_existente);
 
-                    // Gravando a vara juridica
-                    materiaPublicacao.setVaraJurdica(obterVariaJuridicaJornal(publicacaoJornal.getJornalPublicacao()));
+                        // Gravando a vara juridica
+                        materiaPublicacao.setVaraJurdica(obterVariaJuridicaJornal(publicacaoJornal.getJornalPublicacao()));
 
-
-                    // Adicionando a materia na lista p/ a notificação
-                    clientesMaterias.get(materiaPublicacao.getIdCliente()).add(materiaPublicacao.getIdMateria());
-
-                    // Escrevendo materia
-                    int pubAddStatusCode = fachada.incluirCorteMateriaPublicacao(pautaPublicacao, materiaPublicacao, dbconn);
-                    if ( pubAddStatusCode == 0 ) {
-                        fachada.incluirCortePautaPublicacao(pautaPublicacao, materiaPublicacao.getIdMateria(), dbconn);
+                        // Adicionando a materia na lista p/ a notificação
+                        clientesMaterias.get(materiaPublicacao.getIdCliente()).add(materiaPublicacao.getIdMateria());
                     }
 
-                    // Atualizando dados
                     fachada.atualizarBlacklistNotifyDat(cliente.getIdNomePesquisa(), dbconn);
                 }
 
@@ -1251,7 +1244,7 @@ public class LonoTextSearcher {
      * @param dbConnection
      * @return
      */
-    static public Object[] GerarDadosInformandoTermoBlacklist(NomePesquisaCliente nomePesquisaCliente, Jornal jornal, PublicacaoJornal publicacaoJornal, DbConnection dbConnection) throws SQLException {
+    static public MateriaPublicacao GerarDadosInformandoTermoBlacklist(NomePesquisaCliente nomePesquisaCliente, Jornal jornal, PublicacaoJornal publicacaoJornal, DbConnection dbConnection) {
         // Obtendo o e-mail do comercial
         final String comercialEmail = LonoConfigDB.GetConfig(LonoConfigDB_Codes.LONO_COMERCIAL_EMAIL, dbConnection).getValorPrimario();
         if ( comercialEmail == null ) return null;
@@ -1266,17 +1259,17 @@ public class LonoTextSearcher {
         textMateria = textMateria.replaceAll("<email_comercial>", comercialEmail);
 
         // Obtendo o ID da publicacao a ser criada
-        final int idPublicacao = LonoTextSearcher.ObterIdPublicacaoJornal(publicacaoJornal.getDtPublicacao(), 9999, dbConnection);
+//        final int idPublicacao = LonoTextSearcher.ObterIdPublicacaoJornal(publicacaoJornal.getDtPublicacao(), 9999, dbConnection);
 
         // Criando a MateriaPublicacao
         MateriaPublicacao materiaPublicacao = new MateriaPublicacao();
         materiaPublicacao.setIdMateria(0);
         materiaPublicacao.setIdNomePesquisa(nomePesquisaCliente.getIdNomePesquisa());
-        materiaPublicacao.setIdPublicacao(idPublicacao);
+        materiaPublicacao.setIdPublicacao(null);
         materiaPublicacao.setLinhaInicialMateria(1);
         materiaPublicacao.setLinhaFinalMateria(1);
-        materiaPublicacao.setIdJornal(9999);
-        materiaPublicacao.setTituloMateria("Alerta Matérias");
+        materiaPublicacao.setIdJornal(jornal.getIdJornal());
+        materiaPublicacao.setTituloMateria("Alerta Lono: Termo na Blacklist");
         materiaPublicacao.setPagina(1);
         materiaPublicacao.setLinhaCliente(1);
         materiaPublicacao.setCorteLono(true);
@@ -1288,20 +1281,10 @@ public class LonoTextSearcher {
         materiaPublicacao.setMateriaHash("");
         materiaPublicacao.setMateria(textMateria);
         materiaPublicacao.setSitCad("A");
-        materiaPublicacao.setSiglaJornal("LONO");
-
-        // Gerando o texto da Pauta
-        PautaPublicacao pautaPublicacao = new PautaPublicacao();
-        pautaPublicacao.setIdPublicacao(idPublicacao);
-        pautaPublicacao.setIdPauta(0);
-        pautaPublicacao.setUsuCad(99);
-        pautaPublicacao.setDatCad(new Date());
-        pautaPublicacao.setPauta("Entre em Contato");
-        pautaPublicacao.setPagina(1);
-        pautaPublicacao.setSitCad("A");
+        materiaPublicacao.setSiglaJornal(jornal.getSiglaJornal());
 
         // Retornando os dados
-        return new Object[] { materiaPublicacao, pautaPublicacao};
+        return materiaPublicacao;
     }
 
     private static int ObterIdPublicacaoJornal(Date dtPublicacao, int idJornal, DbConnection dbconn) throws SQLException {
