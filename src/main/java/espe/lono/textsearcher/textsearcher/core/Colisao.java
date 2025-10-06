@@ -94,7 +94,7 @@ public class Colisao
         materiaPub.setMateriaHash(hash);
         
         // Montando SQL
-        final int idPub = materiaPub.getIdPublicacao();
+        final int idPub = (materiaPub.getIdPublicacao() != null) ? materiaPub.getIdPublicacao() : 0;
         final StringBuilder sqlSB = new StringBuilder();
         sqlSB.append("SELECT id_materia FROM materia_publicacao ");
         sqlSB.append("WHERE materia_hash='" + hash + "'");
