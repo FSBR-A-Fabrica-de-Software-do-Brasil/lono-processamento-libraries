@@ -7,9 +7,7 @@ import espe.lono.db.connections.DbConnection;
 import espe.lono.db.connections.drivers.DbPostgres;
 import espe.lono.db.dao.BackServiceDAO;
 import espe.lono.db.dao.ClienteDAO;
-import espe.lono.db.models.BackserviceActions;
-import espe.lono.db.models.NomePesquisaCliente;
-import espe.lono.db.models.PublicacaoJornal;
+import espe.lono.db.models.*;
 import espe.lono.engine.EngineAction;
 import espe.lono.indexercore.LonoIndexerConfigs;
 import espe.lono.indexercore.LonoIndexerCore;
@@ -35,8 +33,11 @@ public class TestLibrary {
         LonoDatabaseConfigs.DBLONO_PASSWORD = "fsbr@postgres";
         LonoDatabaseConfigs.DBLONO_PORT = 5431;
 
-        LonoIndexerConfigs.INDEXER_DIRETORIO_PUBLICACAO = "C:/Projetos/FSBR/lono/arquivos/publico/";
-        LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS = "C:/Projetos/FSBR/lono/arquivos/documentos/";
+        String currentDir = System.getProperty("user.dir");
+        System.out.println("Diretório atual: " + currentDir);
+
+        LonoIndexerConfigs.INDEXER_DIRETORIO_PUBLICACAO = currentDir + "/publico/";
+        LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS = currentDir + "/documentos/";
 
 //        final String caminhoDirPublicacao = "C:/Projetos/FSBR/Lono/lono-processamento/lono-processamento-libraries/teste-indices";
 //        TestarPesquisa("Nome", "Nome exttra", caminhoDirPublicacao);
@@ -44,12 +45,30 @@ public class TestLibrary {
         DbConnection dbConnection = new DbPostgres();
         final Fachada fachada = new Fachada();
 
-        TestarPesquisa("Maria Jose",    "", "C:/Projetos/FSBR/lono/arquivos/documentos/2025");
+        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1030, dbConnection);
+        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
 
-//        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1030, dbConnection);
 //        TestarIndexacao(dbConnection, publicacaoJornal);
+//        TestarPesquisa("Maria Jose",    "", "C:/Projetos/FSBR/lono/arquivos/documentos/2025");
     }
 
+    public static void FluxoCompletoIndexacaoPesquisa(DbConnection dbConnection, PublicacaoJornal publicacao, String textoPesquisa) throws Exception {
+        // Indexacao
+        try {
+            TestarIndexacao(dbConnection, publicacao);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        // Pesquisa
+        try {
+            TestarPesquisa(textoPesquisa, "", publicacao.getCaminhoDirPublicacao(LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
     public static void TestarIndexacao(DbConnection dbconn, PublicacaoJornal publicacao) throws Exception {
         //....
