@@ -108,7 +108,15 @@ public class DbSQLite extends DbConnectionMarcacao
         if ( this.connectionIsAlive == false ) this.abrirConexao();
         return stm.executeQuery();
     }
-    
+
+    @Override
+    public int executarUpdate(PreparedStatement stm) throws SQLException {
+        if ( !this.connectionIsAlive )
+            this.abrirConexao();
+
+        return stm.executeUpdate();
+    }
+
     @Override
     public boolean executarSql(PreparedStatement stm) throws SQLException
     {

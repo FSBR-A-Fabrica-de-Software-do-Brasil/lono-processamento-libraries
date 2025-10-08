@@ -339,9 +339,9 @@ public class PublicacaoDAO
         pm.setInt(10, marcacaoPub.getIdTipoPadraoJornal());
         pm.setBoolean(11, marcacaoPub.isComplex());
         
-        boolean resultado = sqlite.executarSql(pm);
+        int resultado = sqlite.executarUpdate(pm);
         pm.close();
-        return resultado;
+        return (resultado > 0);
         //}
     }
 
@@ -444,7 +444,7 @@ public class PublicacaoDAO
                     + (materiaPub.getCorteLono() ? "'t'":"'f'") + ", 'f', "
                     + "'" + materiaPub.getMateriaHash() + "', "
                     + "'" + materiaPub.getVaraJurdica() + "', "
-                    + "'" + publicacaoJornal.getIdJornal() + "', "
+                    + "'" + materiaPub.getIdJornal() + "', "
                     + " " + (materiaPub.isHistorico() ? "true":"false") + " "
                     + "  )";
 

@@ -147,6 +147,14 @@ public class DbMysql extends DbConnectionMarcacao
     }
 
     @Override
+    public int executarUpdate(PreparedStatement stm) throws SQLException {
+        if ( !this.connectionIsAlive )
+            this.abrirConexao();
+
+        return stm.executeUpdate();
+    }
+
+    @Override
     public boolean executarSql(PreparedStatement stm) throws SQLException
     {
         if ( !this.connectionIsAlive )

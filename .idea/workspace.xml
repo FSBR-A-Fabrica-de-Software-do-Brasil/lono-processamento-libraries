@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="" />
+    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extra/html_normalize/normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/extra/html_normalize/normalize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/DbConnectionMarcacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/DbConnectionMarcacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbMysql.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbMysql.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbPostgresMarcacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbPostgresMarcacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbSQLite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbSQLite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/dao/PublicacaoDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/dao/PublicacaoDAO.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -89,7 +98,7 @@
       <recent name="espe.lono.db.dao" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.TestLibrary">
+  <component name="RunManager" selected="Gradle.lono-processamento-libraries [build]">
     <configuration name="TestLibrary" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="espe.lono.TestLibrary" />
       <module name="lono-proessamento-libraries.main" />
@@ -151,21 +160,6 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>27</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>31</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
           <line>121</line>
           <option name="timeStamp" value="13" />
@@ -207,18 +201,43 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>71</line>
+          <line>102</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
-          <line>1023</line>
-          <option name="timeStamp" value="23" />
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
+          <line>91</line>
+          <option name="timeStamp" value="28" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>83</line>
-          <option name="timeStamp" value="24" />
+          <line>103</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
+          <line>253</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
+          <line>318</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
+          <line>322</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
+          <line>114</line>
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

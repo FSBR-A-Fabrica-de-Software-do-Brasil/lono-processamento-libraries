@@ -393,7 +393,7 @@ public class Fachada {
      */
     public int incluirCorteMateriaPublicacao(PautaPublicacao pautaPublicacao, MateriaPublicacao materiaPub, DbConnection dbconn) throws SQLException
     {
-        final PublicacaoJornal publicacaoJornal = this.listarPublicacoesPorID(materiaPub.getIdPublicacao(),dbconn);
+        final PublicacaoJornal publicacaoJornal = (materiaPub.getIdPublicacao() == null) ? null : this.listarPublicacoesPorID(materiaPub.getIdPublicacao(),dbconn);
         final NomePesquisaCliente nomePesquisaCliente = this.listarNomePesquisaPorID(materiaPub.getIdNomePesquisa(), dbconn);
 
         return negPublicacao.incluirCorteMateriaPublicacao(publicacaoJornal, nomePesquisaCliente, materiaPub, pautaPublicacao, dbconn);

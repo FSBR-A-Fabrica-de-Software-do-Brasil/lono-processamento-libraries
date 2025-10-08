@@ -59,43 +59,7 @@ def workWithFile(filename):
 		# 	se sim, ira criar uma nova linha com os dados ja cortados mas
 		#	mantendo a definicao da tag original
         if '<br>' in new_line or '<br/>' in new_line or '</br>' in new_line:
-            # Garantindo que a tag e correta para o 'split'
-            new_text = new_line.replace("<br>", "<br/>")
-            new_text = new_text.replace("</br>", "<br/>")
-            splitted_text = new_text.split("<br/>")
-
-            # Obtendo a tag de abertura
-            try:
-                charPos = splitted_text[0].index(">")
-                tagOpenText = splitted_text[0][:(charPos + 1)]
-
-                # Obtendo a tag de fechamento
-                last_line = splitted_text[(len(splitted_text) - 1)]
-                charPos = last_line.rfind("<")
-            except:
-                # Ignorando esta linha...
-                continue
-            
-            tagCloseText = last_line[charPos:]
-
-            # Percorrendo a array do 'split' e definindo as novas linhas
-            lenArray = len(splitted_text)
-            for idx in range(lenArray):
-                newLineText = ""
-                # Checando se deve colocar a tag inicial
-                if (idx + 1) > 1:
-                    newLineText += tagOpenText
-
-                # Anexando o texto
-                newLineText += splitted_text[idx]
-
-                # Checando se deve colocar a tag final
-                if (idx + 1) < lenArray:
-                    newLineText += tagCloseText
-
-                # Escrevendo no arquivo
-                fd1.write(newLineText)
-            #/for
+            fd1.write(new_line)
         else:
             # Escrevendo no arquivo
             fd1.write(new_line)

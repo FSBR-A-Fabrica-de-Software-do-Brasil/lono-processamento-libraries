@@ -23,7 +23,8 @@ abstract public class DbConnectionMarcacao
     
     abstract public boolean executarPreparedStatement(PreparedStatement stm) throws SQLException;
     abstract public ResultSet executarQueryPreparedStatement(PreparedStatement stm) throws SQLException;
-    
+
+    abstract public int executarUpdate(PreparedStatement stm) throws SQLException;
     abstract public boolean executarSql(PreparedStatement stm) throws SQLException;
     abstract public boolean executarSql(final String sql) throws SQLException;
     
