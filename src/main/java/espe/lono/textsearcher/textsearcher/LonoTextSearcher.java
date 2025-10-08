@@ -1,6 +1,5 @@
 package espe.lono.textsearcher.textsearcher;
 
-import com.sun.xml.internal.ws.api.pipe.Engine;
 import espe.lono.db.LonoConfigDB;
 import espe.lono.db.connections.DbConnection;
 import espe.lono.db.connections.DbConnectionMarcacao;
