@@ -943,6 +943,7 @@ public class LonoTextSearcher {
         // Obtendo a materia do documento localizado...
         MateriaPublicacao materiaPub = new MateriaPublicacao();
         materiaPub.setLinhaCliente( documentNumber );
+        materiaPub.setIdJornal(idJornal);
         materiaPub = fachada.listarLinhasInicioFimMateria(materiaPub, sqlite);
 
         // Pesquisando regiao/posicao do texto p/ localizar o texto de despacho
@@ -1293,6 +1294,8 @@ public class LonoTextSearcher {
         materiaPublicacao.setIdJornal(jornal.getIdJornal());
         materiaPublicacao.setTituloMateria(titulo); //"Alerta Lono: Termo na Blacklist"
         materiaPublicacao.setPagina(1);
+        materiaPublicacao.setProcesso("");
+        materiaPublicacao.setSubtituloMateria("");
         materiaPublicacao.setLinhaCliente(1);
         materiaPublicacao.setCorteLono(true);
         materiaPublicacao.setDatCad(new Date());
