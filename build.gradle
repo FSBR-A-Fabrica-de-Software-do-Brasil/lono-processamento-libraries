@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    // Lucene (versão original de desenvolvimento: 4.10.1, versão atual: 7.7.2)
+    // Lucene (versï¿½o original de desenvolvimento: 4.10.1, versï¿½o atual: 7.7.2)
     compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.7.2'
     compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '7.7.2'
     compile group: 'org.apache.lucene', name: 'lucene-queryparser', version: '7.7.2'
@@ -39,4 +39,9 @@ dependencies {
     compile group: 'org.eclipse.persistence', name:'javax.persistence', version:'2.2.1'
     compile group: 'commons-beanutils', name:'commons-beanutils-core', version:'1.8.3'
     compile group: 'joda-time', name: 'joda-time', version: '2.10.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+}
+
+test {
+    useJUnitPlatform()
 }
