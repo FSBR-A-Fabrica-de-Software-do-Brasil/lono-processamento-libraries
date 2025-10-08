@@ -39,4 +39,9 @@ dependencies {
     compile group: 'org.eclipse.persistence', name:'javax.persistence', version:'2.2.1'
     compile group: 'commons-beanutils', name:'commons-beanutils-core', version:'1.8.3'
     compile group: 'joda-time', name: 'joda-time', version: '2.10.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+}
+
+test {
+    useJUnitPlatform()
 }
