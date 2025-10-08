@@ -1,10 +1,14 @@
 package espe.lono.textsearcher.textsearcher;
 
+import com.sun.xml.internal.ws.api.pipe.Engine;
 import espe.lono.db.LonoConfigDB;
 import espe.lono.db.connections.DbConnection;
 import espe.lono.db.connections.DbConnectionMarcacao;
 import espe.lono.db.enums.LonoConfigDB_Codes;
 import espe.lono.db.models.*;
+import espe.lono.engine.EngineAction;
+import espe.lono.engine.enums.EngineActionEnum;
+import espe.lono.engine.models.EngineNotifyClientRequest;
 import espe.lono.indexercore.engine.Indexacao;
 import espe.lono.indexercore.engine.UtilEngine;
 import espe.lono.indexercore.util.Util;
@@ -73,6 +77,7 @@ public class LonoTextSearcher {
     {
         final String pubPDFfname = publicacaoJornal.getArqPublicacao();
         final Fachada fachada = new Fachada();
+        final EngineAction engineAction = new EngineAction();
         NomePesquisaCliente[] listaNomes = null;
 
         // Obtendo a lista de nomes/termos a serem pesquisadas na publicacao
@@ -231,16 +236,24 @@ public class LonoTextSearcher {
         // Alimentando os dados do cliente
         logger.info("Foram reazalidos " + clientesMaterias.size() + " matchs para ese jornal.");
         for ( Integer idCliente : clientesMaterias.keySet() ) {
-            logger.debug("Escrevendo os dados de Notificacao para o cliente -> " + idCliente);
+            logger.debug("Eviando Notificacao para o Cliente -> " + idCliente);
             Integer num_efetivas = clientesMaterias.get(idCliente).size();
-            final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
-            Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
+//            final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
+//            Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
 
-            // Escrevendo os dados de notificação no banco de dados
-            fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
-
-            // Disparando o envio dos emails
-            LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]), "publicacao");
+//            // Escrevendo os dados de notificação no banco de dados
+//            fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
+//
+//            // Disparando o envio dos emails
+//            LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]), "publicacao");
+            try {
+                final EngineNotifyClientRequest request = new EngineNotifyClientRequest(EngineActionEnum.PESQUISA_JURIDICA, EngineNotifyClientRequest.generateMateriaPayload("", idCliente, num_efetivas, false, null));
+                request.setDalayInSeconds(60);
+                request.setJobName("dsearch-" + idCliente);
+                engineAction.notifyClient(request);
+            } catch (Exception ex ) {
+                logger.error("Erro notificando o cliente -> " + ex.getMessage());
+            }
         }
     }
 
@@ -258,6 +271,7 @@ public class LonoTextSearcher {
         final String pubPDFfname = publicacaoJornal.getArqPublicacao();
         NomePesquisaCliente[] listaNomes = null;
         final Fachada fachada = new Fachada();
+        final EngineAction engineAction = new EngineAction();
 
         // Obtendo a lista de nomes/termos a serem pesquisadas na publicacao
         // Nota: se necessario
@@ -448,14 +462,22 @@ public class LonoTextSearcher {
             // Alimentando os dados do cliente
             for ( Integer idCliente : clientesMaterias.keySet() ) {
                 Integer num_efetivas = clientesMaterias.get(idCliente).size();
-                final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
-                Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
+//                final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
+//                Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
 
-                // Escrevendo os dados de notificação no banco de dados
-                fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
-                
-                // Disparando o envio dos e-mails
-                LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]),"publicacao");
+//                // Escrevendo os dados de notificação no banco de dados
+//                fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
+//
+//                // Disparando o envio dos e-mails
+//                LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]),"publicacao");
+                try {
+                    final EngineNotifyClientRequest request = new EngineNotifyClientRequest(EngineActionEnum.PESQUISA_JURIDICA, EngineNotifyClientRequest.generateMateriaPayload("", idCliente, num_efetivas, false, null));
+                    request.setDalayInSeconds(60);
+                    request.setJobName("dsearch-" + idCliente);
+                    engineAction.notifyClient(request);
+                } catch (Exception ex ) {
+                    logger.error("Erro notificando o cliente -> " + ex.getMessage());
+                }
             }
         }
 
