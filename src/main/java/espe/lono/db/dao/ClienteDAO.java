@@ -204,6 +204,8 @@ public class ClienteDAO
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
             nomePesqCliente.setSitCad( resultado.getString("sit_cad") );
+
+            nomePesqCliente.setNomePesquisaExt(this.dadosListarNomePesquisaConcatenado(nomePesqCliente.getIdNomePesquisa(), dbconn));
         }
         
         resultado.close();
@@ -266,6 +268,8 @@ public class ClienteDAO
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
             nomePesqCliente.setSitCad( resultado.getString("sit_cad") );
+
+            nomePesqCliente.setNomePesquisaExt(this.dadosListarNomePesquisaConcatenado(nomePesqCliente.getIdNomePesquisa(), dbconn));
         }
 
         resultado.close();
@@ -277,7 +281,7 @@ public class ClienteDAO
     public String dadosListarNomePesquisaConcatenado(int idTermoPai, DbConnection dbconn) throws SQLException {
         String termoAuxiliar = null;
         final Statement stm = dbconn.obterStatement();
-        final String sqlcmd = "SELECT np.nome_pesquisa FROM nome_pesquisa np WHERE np.id_termo_pai = " + idTermoPai;
+        final String sqlcmd = "SELECT np.nome_pesquisa FROM nome_pesquisa np WHERE np.id_termo_pai = " + idTermoPai + " AND np.sit_cad = 'A'";
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
         if ( resultado.next() ) {
             termoAuxiliar = resultado.getString("nome_pesquisa");
@@ -528,6 +532,9 @@ public class ClienteDAO
 //            System.out.println("------------------------------- Resultado: " + resultado.getString("nome_pesquisa").trim());
             nomePesqCliente.setPorcetualColisao( (float) resultado.getInt("taxa_proximidade") );
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
+
+            nomePesqCliente.setNomePesquisaExt(this.dadosListarNomePesquisaConcatenado(nomePesqCliente.getIdNomePesquisa(), dbconn));
+
             listaNomesPesq.add(nomePesqCliente);
         }
 
@@ -572,6 +579,9 @@ public class ClienteDAO
             nomePesqCliente.setNumProcesso( resultado.getBoolean("processo") );
             nomePesqCliente.setSitCad( resultado.getString("sit_cad") );
             nomePesqCliente.setIdVeiculo( resultado.getLong("id_veiculo") );
+
+            nomePesqCliente.setNomePesquisaExt(this.dadosListarNomePesquisaConcatenado(nomePesqCliente.getIdNomePesquisa(), dbconn));
+
             listaNomesPesq.add(nomePesqCliente);
         }
 

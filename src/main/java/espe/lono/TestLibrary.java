@@ -52,13 +52,16 @@ public class TestLibrary {
 //        TestarPesquisa("Nome", "Nome exttra", caminhoDirPublicacao);
 
         DbConnection dbConnection = new DbPostgres();
+//        DbConnectionMarcacao dbConnectionMarcacao = new DbPostgresMarcacao(0);
         final Fachada fachada = new Fachada();
 
         PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1030, dbConnection);
-        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
+//        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
 
 //        TestarIndexacao(dbConnection, publicacaoJornal);
-//        TestarPesquisa("Maria Jose",    "", "C:/Projetos/FSBR/lono/arquivos/documentos/2025");
+        String searchDir = publicacaoJornal.getCaminhoDirPublicacao(LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS);
+        searchDir = "C:\\Projetos\\FSBR\\lono\\lono-processamento-libraries\\documentos\\djpe";
+        TestarPesquisa(dbConnection, null, publicacaoJornal, "bv finânceira",    "01.149.953/0001-89", searchDir);
     }
 
     public static void FluxoCompletoIndexacaoPesquisa(DbConnection dbConnection, PublicacaoJornal publicacao, String textoPesquisa) throws Exception {
@@ -108,12 +111,13 @@ public class TestLibrary {
         luceneDirMarcacao = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndiceMarcacao));
         luceneDirPesquisa = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndicePesquisa));
 
+        final String name2srch = LonoTextSearcher.NormalizarTextoPesquisa(pesquisaNome, dbconn);
+        final String nome2srchExt = LonoTextSearcher.NormalizarTextoPesquisa(pesquisaNomeExt, dbconn);
+
         final DirectoryReader readerMarcacao = DirectoryReader.open(luceneDirMarcacao);
         final DirectoryReader readerPesquisa = DirectoryReader.open(luceneDirPesquisa);
-        Object[][] results = LonoTextSearcher.pesquisarTermo_Normal(pesquisaNome, pesquisaNomeExt, readerPesquisa, readerMarcacao, "contents", true, false);
+        Object[][] results = LonoTextSearcher.pesquisarTermo_Normal(name2srch, nome2srchExt, readerPesquisa, readerMarcacao, "contents", true, false);
 
-        final String name2srch = LonoTextSearcher.NormalizarTextoPesquisa(pesquisaNome, dbconn);
-//        final String nome2srchExt = LonoTextSearcher.NormalizarTextoPesquisa(cliente.getNomePesquisaExt(), dbconn);
 
         final Pattern namePattern = Pattern.compile("(" + name2srch.replaceAll(" ", ".").toLowerCase().trim() + ")");
         final Matcher matcher = namePattern.matcher("");

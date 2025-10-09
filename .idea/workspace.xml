@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/extra/html_normalize/normalize.py" beforeDir="false" afterPath="$PROJECT_DIR$/extra/html_normalize/normalize.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/DbConnectionMarcacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/DbConnectionMarcacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbMysql.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbMysql.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbPostgresMarcacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbPostgresMarcacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbSQLite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/connections/drivers/DbSQLite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/db/dao/PublicacaoDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/db/dao/PublicacaoDAO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,20 +69,20 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.lono-processamento-libraries [:espe.lono.TestLibrary.main()].executor&quot;: &quot;Debug&quot;,
-    &quot;Gradle.lono-processamento-libraries [build].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Projetos/FSBR/lono/lono-processamento-libraries&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.lono-processamento-libraries [:espe.lono.TestLibrary.main()].executor": "Debug",
+    "Gradle.lono-processamento-libraries [build].executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Projetos/FSBR/lono/lono-processamento-libraries",
+    "settings.editor.selected.configurable": "preferences.keymap"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Projetos\FSBR\Lono\lono-processamento\lono-processamento-libraries\src\main\java\espe\lono\db\models" />
@@ -98,7 +92,7 @@
       <recent name="espe.lono.db.dao" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.lono-processamento-libraries [build]">
+  <component name="RunManager" selected="Application.TestLibrary">
     <configuration name="TestLibrary" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="espe.lono.TestLibrary" />
       <module name="lono-proessamento-libraries.main" />
@@ -201,23 +195,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>102</line>
+          <line>105</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>56</line>
+          <line>57</line>
           <option name="timeStamp" value="25" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
           <line>91</line>
           <option name="timeStamp" value="28" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>103</line>
-          <option name="timeStamp" value="29" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
@@ -236,8 +225,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>114</line>
-          <option name="timeStamp" value="33" />
+          <line>113</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
+          <line>1054</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
+          <line>121</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
+          <line>1049</line>
+          <option name="timeStamp" value="37" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
