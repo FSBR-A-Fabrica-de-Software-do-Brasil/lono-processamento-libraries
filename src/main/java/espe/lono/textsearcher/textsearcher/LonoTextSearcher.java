@@ -76,6 +76,7 @@ public class LonoTextSearcher {
     {
         final String pubPDFfname = publicacaoJornal.getArqPublicacao();
         final Fachada fachada = new Fachada();
+        final EngineAction engineAction = new EngineAction();
         NomePesquisaCliente[] listaNomes = null;
 
         // Obtendo a lista de nomes/termos a serem pesquisadas na publicacao
@@ -289,6 +290,7 @@ public class LonoTextSearcher {
         final String pubPDFfname = publicacaoJornal.getArqPublicacao();
         NomePesquisaCliente[] listaNomes = null;
         final Fachada fachada = new Fachada();
+        final EngineAction engineAction = new EngineAction();
 
         // Obtendo a lista de nomes/termos a serem pesquisadas na publicacao
         // Nota: se necessario
@@ -479,14 +481,22 @@ public class LonoTextSearcher {
             // Alimentando os dados do cliente
             for ( Integer idCliente : clientesMaterias.keySet() ) {
                 Integer num_efetivas = clientesMaterias.get(idCliente).size();
-                final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
-                Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
+//                final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
+//                Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
 
-                // Escrevendo os dados de notificação no banco de dados
-                fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
-                
-                // Disparando o envio dos e-mails
-                LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]),"publicacao");
+//                // Escrevendo os dados de notificação no banco de dados
+//                fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
+//
+//                // Disparando o envio dos e-mails
+//                LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]),"publicacao");
+                try {
+                    final EngineNotifyClientRequest request = new EngineNotifyClientRequest(EngineActionEnum.PESQUISA_JURIDICA, EngineNotifyClientRequest.generateMateriaPayload("", idCliente, num_efetivas, false, null));
+                    request.setDalayInSeconds(60);
+                    request.setJobName("dsearch-" + idCliente);
+                    engineAction.notifyClient(request);
+                } catch (Exception ex ) {
+                    logger.error("Erro notificando o cliente -> " + ex.getMessage());
+                }
             }
         }
 
@@ -953,6 +963,7 @@ public class LonoTextSearcher {
         // Obtendo a materia do documento localizado...
         MateriaPublicacao materiaPub = new MateriaPublicacao();
         materiaPub.setLinhaCliente( documentNumber );
+        materiaPub.setIdJornal(idJornal);
         materiaPub = fachada.listarLinhasInicioFimMateria(materiaPub, sqlite);
 
         // Pesquisando regiao/posicao do texto p/ localizar o texto de despacho
@@ -1303,6 +1314,8 @@ public class LonoTextSearcher {
         materiaPublicacao.setIdJornal(jornal.getIdJornal());
         materiaPublicacao.setTituloMateria(titulo); //"Alerta Lono: Termo na Blacklist"
         materiaPublicacao.setPagina(1);
+        materiaPublicacao.setProcesso("");
+        materiaPublicacao.setSubtituloMateria("");
         materiaPublicacao.setLinhaCliente(1);
         materiaPublicacao.setCorteLono(true);
         materiaPublicacao.setDatCad(new Date());
