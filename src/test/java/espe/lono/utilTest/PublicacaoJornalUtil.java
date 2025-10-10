@@ -1,4 +1,4 @@
-package espe.lono.util;
+package espe.lono.utilTest;
 
 import espe.lono.db.Fachada;
 import espe.lono.db.connections.DbConnection;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-import static espe.lono.util.DatabaseUtilTest.getTestDbConnection;
+import static espe.lono.utilTest.DatabaseUtilTest.getTestDbConnection;
 
 public class PublicacaoJornalUtil {
 

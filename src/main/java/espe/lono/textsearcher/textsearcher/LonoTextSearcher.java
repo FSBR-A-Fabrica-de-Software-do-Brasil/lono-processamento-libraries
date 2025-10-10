@@ -235,24 +235,44 @@ public class LonoTextSearcher {
         // Alimentando os dados do cliente
         logger.info("Foram reazalidos " + clientesMaterias.size() + " matchs para ese jornal.");
         for ( Integer idCliente : clientesMaterias.keySet() ) {
-            logger.debug("Eviando Notificacao para o Cliente -> " + idCliente);
-            Integer num_efetivas = clientesMaterias.get(idCliente).size();
+            logger.debug("Escrevendo os dados de Notificacao para o cliente -> " + idCliente);
+//            Integer num_efetivas = clientesMaterias.get(idCliente).size();
 //            final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
 //            Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
-
+//
 //            // Escrevendo os dados de notificação no banco de dados
 //            fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
 //
 //            // Disparando o envio dos emails
 //            LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]), "publicacao");
-            try {
-                final EngineNotifyClientRequest request = new EngineNotifyClientRequest(EngineActionEnum.PESQUISA_JURIDICA, EngineNotifyClientRequest.generateMateriaPayload("", idCliente, num_efetivas, false, null));
-                request.setDalayInSeconds(60);
-                request.setJobName("dsearch-" + idCliente);
-                engineAction.notifyClient(request);
-            } catch (Exception ex ) {
-                logger.error("Erro notificando o cliente -> " + ex.getMessage());
-            }
+
+            preEnvioEmail(Long.valueOf(idCliente), clientesMaterias.get(idCliente));
+
+        }
+    }
+
+    private static void preEnvioEmail(Long idCliente, List<Integer> clientesMaterias) {
+
+        try {
+            boolean isHistoricoFalse = false;
+
+            HashMap<String, Object> payload = EngineNotifyClientRequest.generateMateriaPayload(
+                    "",
+                    idCliente,
+                    clientesMaterias.size(),
+                    isHistoricoFalse,
+                    clientesMaterias.stream().map(Integer::longValue).toArray(Long[]::new)
+            );
+
+            final EngineNotifyClientRequest request = new EngineNotifyClientRequest( EngineActionEnum.PESQUISA_JURIDICA, payload );
+            request.setDalayInSeconds(60);
+            request.setJobName("dsearch-"+idCliente);
+
+            EngineAction engineAction = new EngineAction();
+            engineAction.notifyClient(request);
+
+        }  catch (Exception ex) {
+            logger.error("Erro notificando o cliente -> " + ex.getMessage());
         }
     }
 
