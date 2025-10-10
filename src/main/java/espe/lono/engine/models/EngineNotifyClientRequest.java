@@ -67,6 +67,8 @@ public class EngineNotifyClientRequest {
         payload.put("cliente", idCliente);
         payload.put("qtd-materias", qtdMateria);
         payload.put("historico", isHistorico);
+        payload.put("title", "title");
+        payload.put("message", "message");
         if ( idsMaterias != null && idsMaterias.length > 0 ) {
             StringBuilder sb = new StringBuilder();
             for (Long id : idsMaterias) {
