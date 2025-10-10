@@ -5,6 +5,9 @@ import espe.lono.db.connections.DbConnection;
 import espe.lono.db.connections.DbConnectionMarcacao;
 import espe.lono.db.enums.LonoConfigDB_Codes;
 import espe.lono.db.models.*;
+import espe.lono.engine.EngineAction;
+import espe.lono.engine.enums.EngineActionEnum;
+import espe.lono.engine.models.EngineNotifyClientRequest;
 import espe.lono.indexercore.engine.Indexacao;
 import espe.lono.indexercore.engine.UtilEngine;
 import espe.lono.indexercore.util.Util;
@@ -232,15 +235,43 @@ public class LonoTextSearcher {
         logger.info("Foram reazalidos " + clientesMaterias.size() + " matchs para ese jornal.");
         for ( Integer idCliente : clientesMaterias.keySet() ) {
             logger.debug("Escrevendo os dados de Notificacao para o cliente -> " + idCliente);
-            Integer num_efetivas = clientesMaterias.get(idCliente).size();
-            final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
-            Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
+//            Integer num_efetivas = clientesMaterias.get(idCliente).size();
+//            final String[] messageContents = LonoTextSearcher.GerarTextosNotificacao(publicacaoJornal, num_efetivas);
+//            Usuario[] listUsuariosCliente = fachada.listarUsuariosCliente(idCliente, dbconn);
+//
+//            // Escrevendo os dados de notificação no banco de dados
+//            fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
+//
+//            // Disparando o envio dos emails
+//            LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]), "publicacao");
 
-            // Escrevendo os dados de notificação no banco de dados
-            fachada.escreverNotificacaoUsuarios(listUsuariosCliente, messageContents[0], messageContents[1], messageContents[2], false, dbconn);
+            preEnvioEmail(Long.valueOf(idCliente), clientesMaterias.get(idCliente));
 
-            // Disparando o envio dos emails
-            LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]), "publicacao");
+        }
+    }
+
+    private static void preEnvioEmail(Long idCliente, List<Integer> clientesMaterias) {
+
+        try {
+            boolean isHistoricoFalse = false;
+
+            HashMap<String, Object> payload = EngineNotifyClientRequest.generateMateriaPayload(
+                    "",
+                    idCliente,
+                    clientesMaterias.size(),
+                    isHistoricoFalse,
+                    clientesMaterias.stream().map(Integer::longValue).toArray(Long[]::new)
+            );
+
+            final EngineNotifyClientRequest request = new EngineNotifyClientRequest( EngineActionEnum.PESQUISA_JURIDICA, payload );
+            request.setDalayInSeconds(60);
+            request.setJobName("dsearch-"+idCliente);
+
+            EngineAction engineAction = new EngineAction();
+            engineAction.notifyClient(request);
+
+        }  catch (Exception ex) {
+            logger.error("Erro notificando o cliente -> " + ex.getMessage());
         }
     }
 
