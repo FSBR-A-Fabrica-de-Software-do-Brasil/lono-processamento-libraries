@@ -489,14 +489,7 @@ public class LonoTextSearcher {
 //
 //                // Disparando o envio dos e-mails
 //                LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]),"publicacao");
-                try {
-                    final EngineNotifyClientRequest request = new EngineNotifyClientRequest(EngineActionEnum.PESQUISA_JURIDICA, EngineNotifyClientRequest.generateMateriaPayload("", idCliente, num_efetivas, false, null));
-                    request.setDalayInSeconds(60);
-                    request.setJobName("dsearch-" + idCliente);
-                    engineAction.notifyClient(request);
-                } catch (Exception ex ) {
-                    logger.error("Erro notificando o cliente -> " + ex.getMessage());
-                }
+                preEnvioEmail(Long.valueOf(idCliente), clientesMaterias.get(idCliente));
             }
         }
 

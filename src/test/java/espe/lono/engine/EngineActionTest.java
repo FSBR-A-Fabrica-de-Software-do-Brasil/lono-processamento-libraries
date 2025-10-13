@@ -17,7 +17,7 @@ class EngineActionTest {
         EngineNotifyClientRequest request = new EngineNotifyClientRequest();
         HashMap<String, Object> payload = createPayload(request);
         request.setPayyload(payload);
-        request.setAction(EngineActionEnum.NOTIFICACAO_CLIENTE);
+        request.setAction(EngineActionEnum.PESQUISA_JURIDICA);
 
         EngineAction engineAction = new EngineAction();
         Assertions.assertTrue(engineAction.notifyClient(request));
@@ -27,12 +27,14 @@ class EngineActionTest {
     private HashMap<String, Object> createPayload(EngineNotifyClientRequest request){
         String clienteNome = "Ruben";
 
+        // ATENCAO
         // Manualmente -> verificar tabela cliente
-        long idCliente = 15L;
+        long idCliente = 293L;
 
-        long qtdMateria = 2L;
-        // ATENCAO - Manualmente setar em materia_publicaco
-        Long[] idsMaterias = new Long[] { 1L, 142L, 1003L };
+        // ATENCAO
+        // Manualmente setar em materia_publicaco e materia_cleinte
+        Long[] idsMaterias = new Long[] { 118533L };
+        long qtdMateria = idsMaterias.length;
         boolean isHistorico = false;
 
         return request.generateMateriaPayload(clienteNome, idCliente, qtdMateria, isHistorico, idsMaterias);
