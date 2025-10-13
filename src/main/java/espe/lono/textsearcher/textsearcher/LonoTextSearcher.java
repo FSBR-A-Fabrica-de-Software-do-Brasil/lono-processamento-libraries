@@ -265,7 +265,7 @@ public class LonoTextSearcher {
             );
 
             final EngineNotifyClientRequest request = new EngineNotifyClientRequest( EngineActionEnum.PESQUISA_JURIDICA, payload );
-            request.setDalayInSeconds(60);
+            request.setDalayInSeconds(0);
             request.setJobName("dsearch-"+idCliente);
 
             EngineAction engineAction = new EngineAction();
