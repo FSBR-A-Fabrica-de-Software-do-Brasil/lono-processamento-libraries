@@ -246,12 +246,12 @@ public class LonoTextSearcher {
 //            // Disparando o envio dos emails
 //            LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]), "publicacao");
 
-            preEnvioEmail(Long.valueOf(idCliente), clientesMaterias.get(idCliente));
+            preEnvioEmail(Long.valueOf(idCliente), clientesMaterias.get(idCliente), EngineActionEnum.PESQUISA_JURIDICA);
 
         }
     }
 
-    private static void preEnvioEmail(Long idCliente, List<Integer> clientesMaterias) {
+    private static void preEnvioEmail(Long idCliente, List<Integer> clientesMaterias, EngineActionEnum action) {
 
         try {
             boolean isHistoricoFalse = false;
@@ -264,7 +264,7 @@ public class LonoTextSearcher {
                     clientesMaterias.stream().map(Integer::longValue).toArray(Long[]::new)
             );
 
-            final EngineNotifyClientRequest request = new EngineNotifyClientRequest( EngineActionEnum.PESQUISA_JURIDICA, payload );
+            final EngineNotifyClientRequest request = new EngineNotifyClientRequest( action, payload );
             request.setDalayInSeconds(0);
             request.setJobName("dsearch-"+idCliente);
 
@@ -489,7 +489,7 @@ public class LonoTextSearcher {
 //
 //                // Disparando o envio dos e-mails
 //                LonoTextSearcher.sendEmailInterface.sendEmail(idCliente, clientesMaterias.get(idCliente).toArray(new Integer[0]),"publicacao");
-                preEnvioEmail(Long.valueOf(idCliente), clientesMaterias.get(idCliente));
+                preEnvioEmail(Long.valueOf(idCliente), clientesMaterias.get(idCliente), EngineActionEnum.PESQUISA_WEB);
             }
         }
 
