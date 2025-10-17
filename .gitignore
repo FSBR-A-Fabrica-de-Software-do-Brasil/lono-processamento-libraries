@@ -36,6 +36,8 @@ bin/
 /.nb-gradle/
 /documentos/**
 /publico/**
+public/
+documentos/
 
 ### VS Code ###
 .vscode/

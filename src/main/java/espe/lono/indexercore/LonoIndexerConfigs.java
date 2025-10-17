@@ -25,7 +25,7 @@ public class LonoIndexerConfigs {
     public static String GetPDFConversorAppName()
     {
         String app_name = "";
-        if ( Platform.isWindows()) app_name = "extra/pdftohtml/pdftohtml.exe";
+        if ( Platform.isWindows()) app_name = "extra/poppler/Library/bin/pdftohtml.exe";
         else if ( Platform.isLinux() ) app_name = "pdftohtml";
         
         return app_name;

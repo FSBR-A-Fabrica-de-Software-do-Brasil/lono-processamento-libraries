@@ -31,7 +31,7 @@ public class JornalDAO {
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sql);
         if ( !resultado.next() ) return null; // Not located
         
-        // Preenchando classe Jornal com os dados obtido, e retornando-a
+        // Preenchendo classe Jornal com os dados obtido, e retornando-a
         Jornal jornal = new Jornal();
         jornal.setIdJornal(resultado.getInt("j_id_jornal"));
         jornal.setOrgaoJornal(resultado.getString("j_orgao_jornal"));
@@ -65,7 +65,7 @@ public class JornalDAO {
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sql);
         if ( !resultado.next() ) return null; // Not located
 
-        // Preenchando classe Jornal com os dados obtido, e retornando-a
+        // Preenchendo classe Jornal com os dados obtido, e retornando-a
         Jornal jornal = new Jornal();
         jornal.setIdJornal(resultado.getInt("j_id_jornal"));
         jornal.setOrgaoJornal(resultado.getString("j_orgao_jornal"));
@@ -233,25 +233,41 @@ public class JornalDAO {
     
     public String dadosListarFontesTipoPadraoPublicacao(int idPublicacao, String mapFonte, DbConnectionMarcacao sqlite) throws SQLException
     {
-        StringBuilder fontes = new StringBuilder();
-        if ( mapFonte == null || mapFonte.equals("") )
-        {
+        if (mapFonte == null || mapFonte.equals("")) {
             return "";
         }
-        
-        final String table_name = sqlite.obterNomeTabela();
-        sql = " SELECT  marcacao " +
-              " FROM " + table_name + " " +
-              " WHERE id_tipo_padrao = 14 " + /*Fonte css*/
-              " AND marcacao like '%" + mapFonte + "%'" +
-              " ORDER BY num_doc_lucene";
 
-        ResultSet resultado = sqlite.abrirConsultaSql(sql);        
-        while( resultado.next() )
-        {
-            fontes.append( (resultado.getString("marcacao").split("\\{"))[0].substring(2) + " " );
+        // Suporte ao formato múltiplo: (estilo1 OR estilo2 OR ...)
+        if (mapFonte.startsWith("(") && mapFonte.endsWith(")") && mapFonte.contains(" OR ")) {
+            String fontesSemParenteses = mapFonte.substring(1, mapFonte.length() - 1);
+            String[] estilos = fontesSemParenteses.split(" OR ");
+            for (String estilo : estilos) {
+                String resultado = buscarFonte(idPublicacao, estilo.trim(), sqlite);
+                if (!resultado.isEmpty()) {
+                    return resultado;
+                }
+            }
+            return "";
+        } else {
+            // Formato simples
+            return buscarFonte(idPublicacao, mapFonte, sqlite);
         }
-        
+    }
+
+    // Novo método auxiliar para evitar duplicação de código
+    private String buscarFonte(int idPublicacao, String fonte, DbConnectionMarcacao sqlite) throws SQLException {
+        StringBuilder fontes = new StringBuilder();
+        final String table_name = sqlite.obterNomeTabela();
+        String sql = " SELECT  marcacao " +
+                " FROM " + table_name + " " +
+                " WHERE id_tipo_padrao = 14 " + /*Fonte css*/
+                " AND marcacao like '%" + fonte + "%'" +
+                " ORDER BY num_doc_lucene";
+
+        ResultSet resultado = sqlite.abrirConsultaSql(sql);
+        while (resultado.next()) {
+            fontes.append((resultado.getString("marcacao").split("\\{"))[0].substring(2) + " ");
+        }
         resultado.close();
         return fontes.toString();
     }
@@ -314,7 +330,7 @@ public class JornalDAO {
         ResultSet resultado = dbconn.abrirConsultaSql(stm, sql);
         
         while (resultado.next()) {
-            // Preenchando classe Jornal com os dados obtido, e retornando-a
+            // Preenchendo classe Jornal com os dados obtido, e retornando-a
             Jornal jornal = new Jornal();
             jornal.setIdJornal(resultado.getInt("j_id_jornal"));
             jornal.setOrgaoJornal(resultado.getString("j_orgao_jornal"));

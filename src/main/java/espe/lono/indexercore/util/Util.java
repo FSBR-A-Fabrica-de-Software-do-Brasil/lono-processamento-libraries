@@ -216,7 +216,7 @@ public class Util
         final String app_name = LonoIndexerConfigs.GetPDFConversorAppName();
         ProcessBuilder pb = new ProcessBuilder(
                 app_name, // Nome do aplicativo (logo abaixo, vem os argumntos)
-                "-c", "-i", "-noframes", "" + arquivoPDF + "", "" + arquivoPDF + ".html");
+                "-c", "-i", "-noframes", "-nomerge", "" + arquivoPDF + "", "" + arquivoPDF + ".html");
 
         pb.redirectErrorStream(true);
         Process p = pb.start();

@@ -5,7 +5,7 @@
 # Date: 06-07-2014
 # Corp: ESPE
 #--------------------------------------------
-import sys, os, codecs, glob
+import sys, os, codecs, glob, re
 
 major_version = sys.version_info.major
 if major_version == 2:
@@ -53,7 +53,14 @@ def workWithFile(filename):
         rdline = rdline.replace('&#160;', ' ')
         new_line = unescape(rdline)
         new_line = new_line.replace('&#160;', ' ')
-		
+
+        # Modificando a definicao de font-family, de 'Arial' para 'Times' (unificando tipo de fonte padrao)
+        pattern = r"font-family:[^;]+;"
+        replacement = "font-family:Times;"
+        new_line = re.sub(pattern, replacement, new_line)
+        new_line = new_line.replace('font-family:Arial;', 'font-family:Times;')
+        new_line = new_line.replace('font-family: Arial;', 'font-family:Times;')
+
 		# Petrus -> 09-11-2017
 		# 	Checando se contem as tags ('<br><br/></br>'),
 		# 	se sim, ira criar uma nova linha com os dados ja cortados mas

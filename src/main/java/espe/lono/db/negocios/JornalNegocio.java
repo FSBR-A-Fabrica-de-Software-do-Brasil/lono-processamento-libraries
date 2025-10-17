@@ -83,7 +83,13 @@ public class JornalNegocio {
                     String newFontText = jornalDAO.dadosListarFontesTipoPadraoPublicacao(idPublicacao, dadosMapFonte[1],sqlite);
                     if ( newFontText.length() > 0 ) {
                         anyFontChanged = true;
-                        tipoPadraoJornal.setQueryIni(tipoPadraoJornal.getQueryIni().replaceAll("ft" + dadosMapFonte[0] + "#", "(" + newFontText + ")"));
+                        // Se newFontText contiver espaços, transformar em formato (ft01|ft02)
+                        String fontTextToUse = newFontText;
+                        if (fontTextToUse.contains(" ")) {
+                            String[] parts = fontTextToUse.trim().split("\\s+");
+                            fontTextToUse = String.join("|", parts);
+                        }
+                        tipoPadraoJornal.setQueryIni(tipoPadraoJornal.getQueryIni().replaceAll("ft" + dadosMapFonte[0] + "#", "(" + fontTextToUse + ")"));
                     } else {
                         tipoPadraoJornal.setQueryIni(tipoPadraoJornal.getQueryIni().replaceAll("\\|ft" + dadosMapFonte[0] + "#", ""));
                         tipoPadraoJornal.setQueryIni(tipoPadraoJornal.getQueryIni().replaceAll("ft" + dadosMapFonte[0] + "#", ""));

@@ -251,7 +251,6 @@ public class LonoIndexerCore
                 // Inicializando Bando de Dados para as marcacoes
                 marcacaoDb = indexationInfo.getDbConnMarcacao();
                 if ( marcacaoDb  == null) marcacaoDb = DBUtils.startDbMarcacaoConnection(publicacao.getIdPublicacao());
-                marcacaoDb.iniciarTransaction();
 
                 // Abrindo diretoriosp para o uso no Lucene
                 luceneDirMarcacao = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndiceMarcacao));
@@ -280,10 +279,13 @@ public class LonoIndexerCore
                 {
                     // Processando marcacoes do Jornal
                     Logger.debug("Processando pre-marcacoes para a publicacao: " + pdfSingleName);
+                    marcacaoDb.iniciarTransaction();
                     Marcacoes.processarPreMarcacoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
+                    marcacaoDb.finalizarTransaction_COMMIT();
 
                     // Processando as marcacoes
                     Logger.debug("Processando marcacoes para a publicacao: " + pdfSingleName);
+                    marcacaoDb.iniciarTransaction();
                     Marcacoes.processarMarcacoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
                     marcacaoDb.finalizarTransaction_COMMIT();
 

@@ -18,6 +18,8 @@ import espe.lono.textsearcher.LonoTextSearcherConfigs;
 import espe.lono.textsearcher.core.Colisao;
 import espe.lono.textsearcher.textsearcher.LonoTextSearcher;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -35,6 +37,22 @@ import java.util.regex.Pattern;
 
 public class TestLibrary {
     public static void main(String[] args) throws Exception {
+        java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
+        java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+        System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "ERROR");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "ERROR");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "ERROR");
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+
+        final String log4jConfigFile = "log4j.properties";
+        PropertyConfigurator.configure(log4jConfigFile);
+
+        Logger logger = Logger.getLogger("engine");
+        LonoIndexerConfigs.INDEXER_LOG4_LOGGER = logger;
+        LonoTextSearcherConfigs.SEARCHER_LOG4_LOGGER = logger;
+
         // Definindo conexao com o banco de dados de homo
         LonoDatabaseConfigs.DBLONO_DBNAME = "lono";
         LonoDatabaseConfigs.DBLONO_HOSTNAME = "52.67.3.92";
@@ -55,24 +73,24 @@ public class TestLibrary {
 //        DbConnectionMarcacao dbConnectionMarcacao = new DbPostgresMarcacao(0);
         final Fachada fachada = new Fachada();
 
-        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1030, dbConnection);
+        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1033, dbConnection);
 //        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
 
-//        TestarIndexacao(dbConnection, publicacaoJornal);
-        String searchDir = publicacaoJornal.getCaminhoDirPublicacao(LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS);
-        searchDir = "C:\\Projetos\\FSBR\\lono\\lono-processamento-libraries\\documentos\\djpe";
-        TestarPesquisa(dbConnection, null, publicacaoJornal, "bv finânceira",    "01.149.953/0001-89", searchDir);
+        TestarIndexacao(dbConnection, publicacaoJornal);
+//        String searchDir = publicacaoJornal.getCaminhoDirPublicacao(LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS);
+//        searchDir = "C:\\Projetos\\FSBR\\lono\\lono-processamento-libraries\\documentos\\djpe";
+//        TestarPesquisa(dbConnection, null, publicacaoJornal, "038.499.054-11",    "Antonio de Moraes Dourado Neto", searchDir);
     }
 
     public static void FluxoCompletoIndexacaoPesquisa(DbConnection dbConnection, PublicacaoJornal publicacao, String textoPesquisa) throws Exception {
 //         Indexacao
-//        LonoIndexData indexData;
-//        try {
-//            indexData = TestarIndexacao(dbConnection, publicacao);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
+        LonoIndexData indexData;
+        try {
+            indexData = TestarIndexacao(dbConnection, publicacao);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
 
         // Pesquisa
         DbConnectionMarcacao marcacao = new DbPostgresMarcacao(publicacao.getIdPublicacao());

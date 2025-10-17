@@ -663,19 +663,19 @@ public class Fachada {
     {
         return negJornal.listarFontesTipoPadraoPublicacao(idPublicacao, mapFonte, sqlite);
     }
-
-    /**
-     * Obtem a MAPA da fonte
-     * @param idPublicacao ID da publicação
-     * @param mapFonte Valor da fotne (ft01, ft010, ft0xxx)
-     * @param sqlite Conexão com o banco de marcações
-     * @return String com as fontes enconradas
-     * @throws SQLException Excessões relacioados ao SQL
-     */
-    public String listarMapaFonteTipoPadraoPublicacao(int idPublicacao, String mapFonte, DbConnectionMarcacao sqlite) throws SQLException
-    {
-        return negJornal.listarMapaFonteTipoPadraoPublicacao(idPublicacao, mapFonte, sqlite).trim();
-    }
+//
+//    /**
+//     * Obtem a MAPA da fonte
+//     * @param idPublicacao ID da publicação
+//     * @param mapFonte Valor da fotne (ft01, ft010, ft0xxx)
+//     * @param sqlite Conexão com o banco de marcações
+//     * @return String com as fontes enconradas
+//     * @throws SQLException Excessões relacioados ao SQL
+//     */
+//    public String listarMapaFonteTipoPadraoPublicacao(int idPublicacao, String mapFonte, DbConnectionMarcacao sqlite) throws SQLException
+//    {
+//        return negJornal.listarMapaFonteTipoPadraoPublicacao(idPublicacao, mapFonte, sqlite).trim();
+//    }
 
     /**
      * Atualiza a Query utilizando os dados de fontes corretamente

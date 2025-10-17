@@ -141,10 +141,10 @@ public class Indexacao
         doc.add(new StringField("contents", searchString, Field.Store.YES));
         doc.add(new StringField("line",  new DecimalFormat("00000").format(lineNum), Field.Store.YES));
         doc.add(new StringField("linha",  new DecimalFormat("00000").format(lineNum), Field.Store.YES));
-        doc.add(new TextField("tamanho", new DecimalFormat("00000").format(linhaLimpa.length()), Field.Store.NO));
-        doc.add(new TextField("top",  DadosTopLeftLinha[0], Field.Store.NO));
-        doc.add(new TextField("left", DadosTopLeftLinha[1], Field.Store.NO));
-        doc.add(new TextField("classe", classeLinha, Field.Store.NO));
+        doc.add(new TextField("tamanho", new DecimalFormat("00000").format(linhaLimpa.length()), Field.Store.YES));
+        doc.add(new TextField("top",  DadosTopLeftLinha[0], Field.Store.YES));
+        doc.add(new TextField("left", DadosTopLeftLinha[1], Field.Store.YES));
+        doc.add(new TextField("classe", classeLinha, Field.Store.YES));
         doc.add(new StringField("pagina",  new DecimalFormat("00000").format(pageNum), Field.Store.YES));
         doc.add(new StringField("real_doc_id",  new DecimalFormat("00000000").format(docID), Field.Store.YES));
         
