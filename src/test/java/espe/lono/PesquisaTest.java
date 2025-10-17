@@ -1,28 +1,18 @@
 package espe.lono;
 
-import espe.lono.db.Fachada;
 import espe.lono.db.connections.DbConnection;
 import espe.lono.db.models.PublicacaoJornal;
-import espe.lono.indexercore.LonoIndexerConfigs;
-import espe.lono.indexercore.LonoIndexerCore;
-import espe.lono.indexercore.data.LonoIndexData;
 import espe.lono.textsearcher.textsearcher.LonoTextSearcher;
-import espe.lono.util.DiretorioUtil;
-import espe.lono.util.PublicacaoJornalUtil;
+import espe.lono.utilTest.DiretorioUtil;
+import espe.lono.utilTest.PublicacaoJornalUtil;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
-import static espe.lono.indexercore.util.Util.criarDiretorio;
-import static espe.lono.util.DatabaseUtilTest.getTestDbConnection;
+import static espe.lono.utilTest.DatabaseUtilTest.getTestDbConnection;
 
 public class PesquisaTest {
 

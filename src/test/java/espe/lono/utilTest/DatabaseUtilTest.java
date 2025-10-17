@@ -1,4 +1,4 @@
-package espe.lono.util;
+package espe.lono.utilTest;
 
 import espe.lono.db.LonoDatabaseConfigs;
 import espe.lono.db.connections.DbConnection;
