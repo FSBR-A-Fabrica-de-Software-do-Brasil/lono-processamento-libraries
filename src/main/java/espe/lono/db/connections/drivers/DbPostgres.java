@@ -25,7 +25,7 @@ public class DbPostgres extends DbConnection
     private static synchronized Connection GetConnectionFromPooling() throws SQLException {
         int loopCount = 0;
         while ( (loopCount++) <= 10 ) {
-            if (atomicBoolean.compareAndSet(false, true)) {
+//            if (atomicBoolean.compareAndSet(false, true)) {
                 try {
                     if (connectionPool == null || connectionPool.isClosed()) {
                         connectionPool = new BasicDataSource();
@@ -40,12 +40,12 @@ public class DbPostgres extends DbConnection
 
                     return connectionPool.getConnection();
                 } finally {
-                    atomicBoolean.set(false);
+//                    atomicBoolean.set(false);
                 }
-            } else {
-                try { Thread.sleep(1000); }
-                catch (InterruptedException ignore) {}
-            }
+//            } else {
+//                try { Thread.sleep(1000); }
+//                catch (InterruptedException ignore) {}
+//            }
         }
 
         throw new PSQLException("Can not obtain a connection from the pool after 10 attempts.", PSQLState.CONNECTION_UNABLE_TO_CONNECT);
@@ -446,8 +446,8 @@ public class DbPostgres extends DbConnection
 
                 // Tentando dar lock e entrando ni trecho
                 int loopCount = 0;
-                while ( (connectionPool != null) && (loopCount++ <= 10) ) {
-                    if (atomicBoolean.compareAndSet(false, true)) {
+                while ( loopCount++ <= 10 ) {
+//                    if (atomicBoolean.compareAndSet(false, true)) {
                         try {
                             if (connectionPool != null && !connectionPool.isClosed()) {
                                 connectionPool.close();
@@ -456,12 +456,12 @@ public class DbPostgres extends DbConnection
                             connectionPool = null;
                             break;
                         } finally {
-                            atomicBoolean.set(false);
+//                            atomicBoolean.set(false);
                         }
-                    } else {
-                        try { Thread.sleep(1000); }
-                        catch (InterruptedException ignore) {}
-                    }
+//                    } else {
+//                        try { Thread.sleep(1000); }
+//                        catch (InterruptedException ignore) {}
+//                    }
                 }
 
                 // Tentando se conectar ao banco
