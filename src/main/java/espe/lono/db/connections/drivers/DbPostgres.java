@@ -25,13 +25,17 @@ public class DbPostgres extends DbConnection
     private static synchronized Connection GetConnectionFromPooling() throws SQLException {
         int loopCount = 0;
         while ( (loopCount++) <= 10 ) {
-//            if (atomicBoolean.compareAndSet(false, true)) {
+            if (atomicBoolean.compareAndSet(false, true)) {
                 try {
                     if (connectionPool == null || connectionPool.isClosed()) {
                         connectionPool = new BasicDataSource();
                         connectionPool.setValidationQuery("SELECT id FROM usuario WHERE id=1");
                         connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
                         connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
+                        connectionPool.setRemoveAbandonedOnBorrow(true);
+                        connectionPool.setRemoveAbandonedTimeout(90);
+                        connectionPool.setLogAbandoned(true);
+                        connectionPool.setMaxWaitMillis(30000);
                         connectionPool.setMaxTotal(12);
                         connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s", LonoDatabaseConfigs.DBLONO_HOSTNAME, LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBLONO_DBNAME));
                         connectionPool.setDriverClassName("org.postgresql.Driver");
@@ -40,12 +44,12 @@ public class DbPostgres extends DbConnection
 
                     return connectionPool.getConnection();
                 } finally {
-//                    atomicBoolean.set(false);
+                    atomicBoolean.set(false);
                 }
-//            } else {
-//                try { Thread.sleep(1000); }
-//                catch (InterruptedException ignore) {}
-//            }
+            } else {
+                try { Thread.sleep(1000); }
+                catch (InterruptedException ignore) {}
+            }
         }
 
         throw new PSQLException("Can not obtain a connection from the pool after 10 attempts.", PSQLState.CONNECTION_UNABLE_TO_CONNECT);
@@ -57,6 +61,10 @@ public class DbPostgres extends DbConnection
         connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
         connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
         connectionPool.setMaxTotal(12);
+        connectionPool.setRemoveAbandonedOnBorrow(true);
+        connectionPool.setRemoveAbandonedTimeout(90);
+        connectionPool.setLogAbandoned(true);
+        connectionPool.setMaxWaitMillis(30000);
         connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s", LonoDatabaseConfigs.DBLONO_HOSTNAME, LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBLONO_DBNAME));
         connectionPool.setDriverClassName("org.postgresql.Driver");
         connectionPool.setInitialSize(1);
@@ -446,8 +454,8 @@ public class DbPostgres extends DbConnection
 
                 // Tentando dar lock e entrando ni trecho
                 int loopCount = 0;
-                while ( loopCount++ <= 10 ) {
-//                    if (atomicBoolean.compareAndSet(false, true)) {
+                while ( (connectionPool != null) && (loopCount++ <= 10) ) {
+                    if (atomicBoolean.compareAndSet(false, true)) {
                         try {
                             if (connectionPool != null && !connectionPool.isClosed()) {
                                 connectionPool.close();
@@ -456,12 +464,12 @@ public class DbPostgres extends DbConnection
                             connectionPool = null;
                             break;
                         } finally {
-//                            atomicBoolean.set(false);
+                            atomicBoolean.set(false);
                         }
-//                    } else {
-//                        try { Thread.sleep(1000); }
-//                        catch (InterruptedException ignore) {}
-//                    }
+                    } else {
+                        try { Thread.sleep(1000); }
+                        catch (InterruptedException ignore) {}
+                    }
                 }
 
                 // Tentando se conectar ao banco
