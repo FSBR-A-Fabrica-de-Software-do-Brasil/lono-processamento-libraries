@@ -88,4 +88,13 @@ public class EngineNotifyClientRequest {
         response.put("jobName", this.jobName);
         return new JSONObject(response);
     }
+
+    public String toStringData() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Action: ").append(this.action).append("\n");
+        sb.append("Payload: ").append(this.payyload != null ? this.payyload.toString() : "null").append("\n");
+        sb.append("DelayInSeconds: ").append(this.dalayInSeconds).append("\n");
+        sb.append("JobName: ").append(this.jobName != null ? this.jobName : "null").append("\n");
+        return sb.toString();
+    }
 }

@@ -32,8 +32,8 @@ public class DbPostgres extends DbConnection
                         connectionPool.setValidationQuery("SELECT id FROM usuario WHERE id=1");
                         connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
                         connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
-                        connectionPool.setRemoveAbandonedOnBorrow(true);
-                        connectionPool.setRemoveAbandonedTimeout(90);
+//                        connectionPool.setRemoveAbandonedOnBorrow(true);
+//                        connectionPool.setRemoveAbandonedTimeout(90);
                         connectionPool.setLogAbandoned(true);
                         connectionPool.setMaxWaitMillis(30000);
                         connectionPool.setMaxTotal(12);
@@ -61,8 +61,8 @@ public class DbPostgres extends DbConnection
         connectionPool.setUsername(LonoDatabaseConfigs.DBLONO_USERNAME);
         connectionPool.setPassword(LonoDatabaseConfigs.DBLONO_PASSWORD);
         connectionPool.setMaxTotal(12);
-        connectionPool.setRemoveAbandonedOnBorrow(true);
-        connectionPool.setRemoveAbandonedTimeout(90);
+//        connectionPool.setRemoveAbandonedOnBorrow(true);
+//        connectionPool.setRemoveAbandonedTimeout(90);
         connectionPool.setLogAbandoned(true);
         connectionPool.setMaxWaitMillis(30000);
         connectionPool.setUrl(String.format("jdbc:postgresql://%s:%d/%s", LonoDatabaseConfigs.DBLONO_HOSTNAME, LonoDatabaseConfigs.DBLONO_PORT, LonoDatabaseConfigs.DBLONO_DBNAME));
