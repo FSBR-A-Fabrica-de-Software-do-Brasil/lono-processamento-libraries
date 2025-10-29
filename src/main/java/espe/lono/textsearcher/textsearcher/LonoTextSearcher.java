@@ -258,7 +258,6 @@ public class LonoTextSearcher {
 
             EngineAction engineAction = new EngineAction();
             engineAction.notifyClient(request);
-
         }  catch (Exception ex) {
             logger.error("Erro notificando o cliente -> " + ex.getMessage());
         }

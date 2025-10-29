@@ -24,12 +24,16 @@ public class EngineAction {
 
     public boolean notifyClient(EngineNotifyClientRequest request) {
         final String finalURL = generateFinalUrl("/engine/notify-client");
-        HttpResponse<?> response = Unirest.post(finalURL)
+        HttpResponse<String> response = Unirest.post(finalURL)
                 .body(request.toJson())
                 .header("Content-Type", "application/json")
                 .header("X-Engine-Key", EngineAction.X_ENGINE_KEY)
                 .asString();
-        return response.isSuccess();
+        if ( response.isSuccess() ) {
+            return true;
+        } else {
+            throw new RuntimeException(response.getBody());
+        }
     }
 
     public boolean notifyClient(JSONObject jsonObject) {
