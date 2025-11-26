@@ -187,7 +187,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
-          <line>1048</line>
+          <line>1047</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -197,7 +197,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
-          <line>1043</line>
+          <line>1042</line>
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">

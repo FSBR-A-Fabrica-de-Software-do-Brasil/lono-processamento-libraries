@@ -503,7 +503,7 @@ public class LonoTextSearcher {
         if ( (linhaCliente - materiaPublicacao.getLinhaInicialMateria()) > limiteLinhaMateria )
         {
             corte_lono = false;
-            inicioMateria = linhaCliente - 15;
+            inicioMateria = linhaCliente - 5;
         }
         else
         {
@@ -516,7 +516,7 @@ public class LonoTextSearcher {
         if ( (materiaPublicacao.getLinhaFinalMateria() - linhaCliente) > limiteLinhaMateria )
         {
             corte_lono = false;
-            fimMateria = linhaCliente + 15;
+            fimMateria = linhaCliente + 5;
         }
         else
         {
