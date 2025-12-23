@@ -204,6 +204,7 @@ public class VeiculosDAO {
                 veiculo.setUrlVeiculo(resultSet.getString("url_veiculo"));
                 veiculo.setMaisRelevante(resultSet.getBoolean("mais_relevante"));
                 veiculo.setPaywall(resultSet.getBoolean("paywall"));
+                veiculo.setComplex(resultSet.getBoolean("complex"));
             }
         }
 
@@ -254,6 +255,7 @@ public class VeiculosDAO {
                 veiculo.setUrlVeiculo(resultSet.getString("url_veiculo"));
                 veiculo.setMaisRelevante(resultSet.getBoolean("mais_relevante"));
                 veiculo.setPaywall(resultSet.getBoolean("paywall"));
+                veiculo.setComplex(resultSet.getBoolean("complex"));
 
                 veiculosAtivos.add(veiculo);
             }
@@ -286,6 +288,7 @@ public class VeiculosDAO {
                 veiculo.setUrlVeiculo(resultSet.getString("url_veiculo"));
                 veiculo.setMaisRelevante(resultSet.getBoolean("mais_relevante"));
                 veiculo.setPaywall(resultSet.getBoolean("paywall"));
+                veiculo.setComplex(resultSet.getBoolean("complex"));
 
                 veiculosAtivos.add(veiculo);
             }

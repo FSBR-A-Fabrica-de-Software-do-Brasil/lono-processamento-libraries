@@ -17,6 +17,7 @@ public class Veiculo {
     private String urlVeiculo;
     private boolean maisRelevante;
     private boolean paywall;
+    private boolean complex;
 
     // Getters and Setters
     public long getId() {
@@ -129,5 +130,13 @@ public class Veiculo {
 
     public void setPaywall(boolean paywall) {
         this.paywall = paywall;
+    }
+
+    public boolean isComplex() {
+        return complex;
+    }
+
+    public void setComplex(boolean complex) {
+        this.complex = complex;
     }
 }
