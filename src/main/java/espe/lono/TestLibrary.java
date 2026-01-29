@@ -11,6 +11,8 @@ import espe.lono.db.dao.BackServiceDAO;
 import espe.lono.db.dao.ClienteDAO;
 import espe.lono.db.models.*;
 import espe.lono.engine.EngineAction;
+import espe.lono.ia.IAEngines;
+import espe.lono.ia.IARequests;
 import espe.lono.indexercore.LonoIndexerConfigs;
 import espe.lono.indexercore.LonoIndexerCore;
 import espe.lono.indexercore.data.LonoIndexData;
@@ -54,11 +56,11 @@ public class TestLibrary {
         LonoTextSearcherConfigs.SEARCHER_LOG4_LOGGER = logger;
 
         // Definindo conexao com o banco de dados de homo
-        LonoDatabaseConfigs.DBLONO_DBNAME = "lono";
+        LonoDatabaseConfigs.DBLONO_DBNAME = "lono_homo";
         LonoDatabaseConfigs.DBLONO_HOSTNAME = "52.67.3.92";
         LonoDatabaseConfigs.DBLONO_USERNAME = "postgres";
         LonoDatabaseConfigs.DBLONO_PASSWORD = "fsbr@postgres";
-        LonoDatabaseConfigs.DBLONO_PORT = 5431;
+        LonoDatabaseConfigs.DBLONO_PORT = 5432;
 
         String currentDir = System.getProperty("user.dir");
         System.out.println("Diretório atual: " + currentDir);
@@ -73,13 +75,29 @@ public class TestLibrary {
 //        DbConnectionMarcacao dbConnectionMarcacao = new DbPostgresMarcacao(0);
         final Fachada fachada = new Fachada();
 
-        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1033, dbConnection);
-//        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
-
-        TestarIndexacao(dbConnection, publicacaoJornal);
+//        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1033, dbConnection);
+////        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
+//
+//        TestarIndexacao(dbConnection, publicacaoJornal);
 //        String searchDir = publicacaoJornal.getCaminhoDirPublicacao(LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS);
 //        searchDir = "C:\\Projetos\\FSBR\\lono\\lono-processamento-libraries\\documentos\\djpe";
 //        TestarPesquisa(dbConnection, null, publicacaoJornal, "038.499.054-11",    "Antonio de Moraes Dourado Neto", searchDir);
+
+        // Testando classificaçã ode materia via I.A
+        final Long[] idsMateriasVerificar = new Long[] {798380L, 798401L };
+        System.out.println("Iniciando teste de classificação de matéria via I.A...");
+        TipoConteudoWeb[] tiposConteudoWeb = fachada.listarTiposConteudoWeb(dbConnection);
+        IARequests iaRequests = new IARequests();
+
+        for ( long idMateria: idsMateriasVerificar ) {
+            MateriasWeb materiasWeb = fachada.obterMateriaWebPorId(idMateria, dbConnection);
+            System.out.println("Classificando matéria ID: " + materiasWeb.getId() + " - " + materiasWeb.getTitulo());
+            TipoConteudoWeb tipoConteudoWeb = iaRequests.localizarTipoConteudoWebPorConteudo(IAEngines.OpenAI, materiasWeb.getIntegral(), tiposConteudoWeb, dbConnection);
+
+            System.out.println("\tTipo de Conteúdo Original: " + materiasWeb.getTipoConteudo().getDescricao() + " (ID: " + materiasWeb.getTipoConteudoId() + ")");
+            System.out.println("\tTipo de Conteúdo Identificado: " + tipoConteudoWeb.getDescricao() + " (ID: " + tipoConteudoWeb.getId() + ")");
+            System.out.println("---------------------------------------------------\n");
+        }
     }
 
     public static void FluxoCompletoIndexacaoPesquisa(DbConnection dbConnection, PublicacaoJornal publicacao, String textoPesquisa) throws Exception {

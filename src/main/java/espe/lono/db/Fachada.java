@@ -24,6 +24,7 @@ public class Fachada {
     private JornalNegocio negJornal = new JornalNegocio();
     private ClienteNegocio negCliente = new ClienteNegocio();
     private NotificacaoNegocio notificacaoNegocio = new NotificacaoNegocio();
+    private MateriaWebNegocio materiaWebNegocio = new MateriaWebNegocio();
 
     final public BlogNegocio blog = new BlogNegocio();
 
@@ -917,6 +918,23 @@ public class Fachada {
 
         return tipoPadraoJornalList.toArray(new TipoPadraoJornal[0]);
     }
+
+    public TipoConteudoWeb[] listarTiposConteudoWeb(DbConnection dbConnection) throws SQLException {
+        return materiaWebNegocio.listarTiposConteudoWeb(dbConnection);
+    }
+
+    public TipoConteudoWeb obterTipoConteudoWebPorId(long id, DbConnection dbConnection) throws SQLException {
+        return materiaWebNegocio.obterTipoConteudoWebPorId(id, dbConnection);
+    }
+
+    public MateriasWeb obterMateriaWebPorId(Long idMateria, DbConnection dbConnection) throws SQLException {
+        return materiaWebNegocio.obterMateriaWebPorId(idMateria, dbConnection);
+    }
+
+    public MateriasWeb obterMateriaWebPorUrlTituloVeiculo(String titulo, String url, Long idVeiculo, DbConnection dbConnection) {
+        return materiaWebNegocio.obterMateriaWebPorUrlTituloVeiculo(titulo, url, idVeiculo, dbConnection);
+    }
+
 
     /**
      * Método de cobertura, Usado para COPIAR um objeto
