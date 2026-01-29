@@ -11,6 +11,7 @@ import espe.lono.db.dao.BackServiceDAO;
 import espe.lono.db.dao.ClienteDAO;
 import espe.lono.db.models.*;
 import espe.lono.engine.EngineAction;
+import espe.lono.ia.IAConfigs;
 import espe.lono.ia.IAEngines;
 import espe.lono.ia.IARequests;
 import espe.lono.indexercore.LonoIndexerConfigs;
@@ -61,6 +62,7 @@ public class TestLibrary {
         LonoDatabaseConfigs.DBLONO_USERNAME = "postgres";
         LonoDatabaseConfigs.DBLONO_PASSWORD = "fsbr@postgres";
         LonoDatabaseConfigs.DBLONO_PORT = 5432;
+        IAConfigs.OPENAI_TOKEN = "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";
 
         String currentDir = System.getProperty("user.dir");
         System.out.println("Diretório atual: " + currentDir);
