@@ -10,14 +10,15 @@ import java.util.List;
 public class IARequests {
     private static List<IAEngineInterface> SUPPORTED_IA_ENGINES = null;
 
-    public void inicializar() {
+    public static void inicializar() {
+        SUPPORTED_IA_ENGINES = new ArrayList<>();
         SUPPORTED_IA_ENGINES.add( new OpenAIEngine() );
     }
 
     public TipoConteudoWeb localizarTipoConteudoWebPorConteudo(IAEngines engine, String conteudo, TipoConteudoWeb[] listaConteudoDesejados, DbConnection dbConnection) {
         if ( SUPPORTED_IA_ENGINES == null )
             throw new RuntimeException("Lista de motores de IA não inicializada. Chame o método inicializar() antes de usar os serviços de IA.");
-        
+
         // Localizando o motor de IA solicitado
         IAEngineInterface iaEngine = SUPPORTED_IA_ENGINES.stream()
                 .filter(item -> item.getEngine().equals(engine))
