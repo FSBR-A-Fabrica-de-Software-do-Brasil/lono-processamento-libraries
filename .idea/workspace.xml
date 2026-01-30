@@ -38,6 +38,12 @@
                 <item name="lono-proessamento-libraries" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="lono-proessamento-libraries" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -71,7 +77,8 @@
   "keyToString": {
     "Gradle.Download Sources.executor": "Run",
     "Gradle.lono-processamento-libraries [:espe.lono.TestLibrary.main()].executor": "Debug",
-    "Gradle.lono-processamento-libraries [build].executor": "Debug",
+    "Gradle.lono-processamento-libraries [build].executor": "Run",
+    "Gradle.lono-processamento-libraries [clean].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -94,7 +101,7 @@
       <recent name="espe.lono.db.models" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.TestLibrary">
+  <component name="RunManager" selected="Gradle.lono-processamento-libraries [build]">
     <configuration name="TestLibrary" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="espe.lono.TestLibrary" />
       <module name="lono-proessamento-libraries.main" />
@@ -133,13 +140,51 @@
       <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
+    <configuration name="lono-processamento-libraries [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="clean" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="lono-proessamento-libraries" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="lono-proessamento-libraries" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Application.TestLibrary" />
+      <item itemvalue="Gradle.lono-processamento-libraries [clean]" />
       <item itemvalue="Gradle.lono-processamento-libraries [build]" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.lono-processamento-libraries [build]" />
+        <item itemvalue="Gradle.lono-processamento-libraries [clean]" />
         <item itemvalue="Application.TestLibrary" />
       </list>
     </recent_temporary>
