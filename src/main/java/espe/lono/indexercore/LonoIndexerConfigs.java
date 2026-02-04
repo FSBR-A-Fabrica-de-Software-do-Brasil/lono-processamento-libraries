@@ -8,8 +8,8 @@ import com.sun.jna.Platform;
  */
 public class LonoIndexerConfigs {
     // Referente a versao do LonoIndexer
-    public static String INDEXER_VERSION = "1.3.3";
-    public static Integer INDEXER_VERSIONCODE = 133;
+    public static String INDEXER_VERSION = "1.4.0";
+    public static Integer INDEXER_VERSIONCODE = 140;
     
     // Configuracoes relacionados as pastas de publicacao/processamento
     public static String INDEXER_DIRETORIO_PUBLICACAO = "C:/Lono/publico/";

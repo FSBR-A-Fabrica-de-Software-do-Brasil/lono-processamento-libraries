@@ -705,6 +705,7 @@ public class LonoTextSearcher {
         if ( ocorrenciaLucene == null || ocorrenciaLucene.length < 2 ) // Estrutura de dados retornando é valido?
             return null;
 
+
         // Obtendo dados usados ao longo do loop
 //        logger.debug("Obtendo dados do documento");
         final int doc_id = (int) ocorrenciaLucene[0];
@@ -729,152 +730,200 @@ public class LonoTextSearcher {
         materiaPub.setIdCliente( nomePesquisaCliente.getIdCliente() );
         materiaPub.setIdPublicacao(idPublicacao);
         materiaPub.setHistorico(isHistorico);
-
-//        logger.debug("Iniciando sessão com varias consultas ao banco de dados da marcação...");
-//        logger.debug("Dados das linhas de inicio/fim da materia");
-        // temporario, p obtencao do titulo/subtitulo e texto
         materiaPub.setLinhaCliente( num_doc_lucene );
-        materiaPub = fachada.listarLinhasInicioFimMateria(materiaPub, sqlite);
-//        logger.debug("Dados das linhas do titulo/subitutlo");
-        materiaPub = fachada.listarTituloSubtituloMateria(materiaPub, sqlite);
-
-//        logger.debug("Dados da pauta");
-        PautaPublicacao pautaPub = fachada.listarPautaMateria(materiaPub, sqlite);
-        if( pautaPub == null )
-        {
-            pautaPub = new PautaPublicacao();
-            pautaPub.setIdPublicacao(idPublicacao);
-            pautaPub.setPauta("");
-            pautaPub.setPagina(0);
-        }
-
-        // Checando se esta publicacao ja esta na lista deste cliente,
-        // se ja foi lido/salvo esse documento p/ esse cliente...
-        if ( colisaoMateria != null && colisaoMateria.checarColisao(materiaPub) )
-        {
-            // Materia ja esta na lista deste cliente... ignorando-a
-            return null;
-        }
-
-        // Salvando dados do documento para a adicao no index de 'Colisao'
-        long[] materiaColisaoInfo = {
-                materiaPub.getLinhaInicialMateria(),
-                materiaPub.getLinhaFinalMateria()
-        };
-
-        // Obtendo texto/conteudo fixo inicial das materia (se exisitr)
-//        logger.debug("Dados de conteudo fixo da materia");
-        String inicioMateria = fachada.obterConteudoFixoInicioMateria(readerMarcacao, materiaPub, sqlite);
-        if ( inicioMateria == null ) inicioMateria = "";
-        else inicioMateria += " ";
-
-        // Obtendo texto/conteudo fixo FINAL das nateruas (se existir)
-        String fimMateria = fachada.obterConteudoFixoFimMateria(readerMarcacao, materiaPub, sqlite);
-        if ( fimMateria == null ) inicioMateria = "";
-        else fimMateria = " " + fimMateria;
-
-//        logger.debug("Seção ligado as consultas do BD foram, praticamente, completadas");
-
-        // Ontendo corte da materia e o status do corte (boolean)
-        // Obtendo o texto da materia, n. processo e o status do corte
-        // Nota: anexa o texto de Pauta no inicio do texto da materia
-        Object[] textoMateriaReturnArray;
-        try {
-//            logger.debug("Obtendo o corte da máteria");
-            textoMateriaReturnArray = LonoTextSearcher.textoMateria(materiaPub, readerMarcacao, limiteLinhaMateria, sqlite);
-        } catch ( Exception ex ) {
-            logger.error("Erro obtendo a materia:" + ex.getClass().getName() + " <> " + ex.getMessage());
-            return null;
-        }
-
-        if ( textoMateriaReturnArray == null || textoMateriaReturnArray.length < 3 )
-            return null;
-        if ( textoMateriaReturnArray[0] == null || textoMateriaReturnArray[1] == null )
-            return null;
-
-        // Salvando o numero do processo obtido na pesquisa anterior
-        final String processo_num = ((textoMateriaReturnArray[2] != null) ? (String) textoMateriaReturnArray[2]:"-");
-        String materia_texto = (String) textoMateriaReturnArray[1];
-
-        // Verificando sentenca
-        if (verificar_sentenca_texto) {
-            if ( nomePesquisaCliente.isNumProcesso() ) {
-                // Comparando os numeros de processo
-                final String numProcessoLimpo = processo_num.replaceAll("[^\\d+]","");
-                final String numProcessoLimpo_Srch = nomePesquisaCliente.getNomePesquisa().replaceAll("[^\\d+]","");
-                if ( numProcessoLimpo_Srch != numProcessoLimpo )
-                    return null;
-            } else {
-                // Verificando sentenca/ocorrencia do texto
-                final String materiaTextoParaRegex = LonoTextSearcher.NormalizarTextoPesquisa(materia_texto, dbconn);
-                matcher.reset(materiaTextoParaRegex);
-                if (!matcher.matches() && !matcher.find())
-                    return null;
-            }
-        }
-
-        // Checando jornal para açoes relacionados especificas
-        if ( publicacaoJornal.getJornalPublicacao().getSiglaJornal().contains("STF") )
-        {
-            // Checando se tem o termo 'Despacho; Identico ao de nº X' (STF)
-            final Matcher match = stfDepachoAttachPattern.matcher(materia_texto);
-            if ( match.find() || match.matches() )
-            {
-                // Psquisando anexo de despacho do STF
-                final String despachoAnexo = LonoTextSearcher.STFObterDespachoCitado(publicacaoJornal.getDtPublicacao(), publicacaoJornal.getIdJornal(), materia_texto, readerMarcacao, fachada, sqlite);
-                if ( despachoAnexo != null && despachoAnexo.length() > 0 )
-                {
-                    // Anexando despacha encontrado
-                    materia_texto = materia_texto.replaceAll("(?i)despacho.(\\s+|)id.ntico ao de.*\\d+", "");
-                    materia_texto += despachoAnexo;
-                }
-                else
-                {
-                    // Nao foi possivel encontrar o despacho...
-                    // Marcando o 'Corte Lono' como FALSO
-                    textoMateriaReturnArray[0] = (boolean) false;
-                }
-            }
-        }
-
-        // Definindo...
-        final String finalMateriaTexto = inicioMateria + materia_texto + fimMateria;
-        materiaPub.setMateria( finalMateriaTexto.trim() );
-        materiaPub.setCorteLono( (boolean) textoMateriaReturnArray[0] );
-        materiaPub.setProcesso( processo_num );
-
-        // Definindo outras opcoes..
-        materiaPub.setLinhaCliente(real_line);
-        materiaPub.setPagina(real_page);
-        materiaPub.setIdNomePesquisa( nomePesquisaCliente.getIdNomePesquisa() );
+        materiaPub.setIdNomePesquisa(nomePesquisaCliente.getIdNomePesquisa());
         materiaPub.setUsuCad(1);
         materiaPub.setSitCad("A");
 
-        // Checando se deve tratar as colisões
-        if ( colisaoMateria != null ) {
-            // Obtem o ID da materia existent
-            // Nota: retorna '0' se nao existir esta materia
-            int id_materia_existente = colisaoMateria.obterMateriaID(materiaPub, materiaColisaoInfo[0], materiaColisaoInfo[1], dbconn);
-            materiaPub.setIdMateria(id_materia_existente);
+        // Obtendo o texto/materia completa
+        // Nota: 2026-02-04: Modificação ´para suportar a indexção de dados oriundos do CNJ (contem a String mais de uma vez '|$|' no texto)
+        final String[] cuttedTextoLinhaLimpa = doc.getField("textoLinhaLimpa").stringValue().split("\\|\\$\\|");
+        if ( cuttedTextoLinhaLimpa.length >= 3 ) {
+            // Seguindo o fliuxo de dados CNJ, indexados por ZIP
+            materiaPub.setLinhaInicialMateria(real_line);
+            materiaPub.setLinhaFinalMateria(real_line);
+            materiaPub.setMateria(cuttedTextoLinhaLimpa[0]);
+            materiaPub.setTituloMateria(doc.getField("textoTitulo").stringValue());
+            materiaPub.setProcesso(doc.getField("textoProcesso").stringValue());
 
-            // Obtem o ID da pauta desta materia
-            // Nota: retorna '0' se nao existir esta pauta
-            int id_pauta_existente = colisaoMateria.obterPautaID(pautaPub, dbconn);
-            pautaPub.setIdPauta(id_pauta_existente);
-
-            // Adicionando info da materia na lista de colisao deste cliente
-            // Nota: faz isso apenas se o corte estiver marcado como correto
-            if ( materiaPub.getCorteLono() ) {
-                colisaoMateria.adicionaMateria(
-                    materiaPub.getIdCliente(), // ID do cliente
-                    materiaColisaoInfo[0],  // InicioDocumento
-                    materiaColisaoInfo[1] // FimDocumento
-                );
+            // Checando se esta publicacao ja esta na lista deste cliente,
+            // se ja foi lido/salvo esse documento p/ esse cliente...
+            if (colisaoMateria != null && colisaoMateria.checarColisao(materiaPub)) {
+                // Materia ja esta na lista deste cliente... ignorando-a
+                return null;
             }
-        }
 
-        // Retornando os dados
-        return new Object[] { materiaPub, pautaPub};
+            PautaPublicacao pautaPub = new PautaPublicacao();
+            pautaPub.setIdPublicacao(idPublicacao);
+            pautaPub.setPauta("");
+            pautaPub.setPagina(0);
+
+            long[] materiaColisaoInfo = {
+                    materiaPub.getLinhaInicialMateria(),
+                    materiaPub.getLinhaFinalMateria()
+            };
+
+            materiaPub.setCorteLono(true);
+            materiaPub.setLinhaCliente(real_line);
+            materiaPub.setPagina(real_page);
+
+            // Checando se deve tratar as colisões
+            if (colisaoMateria != null) {
+                // Obtem o ID da materia existent
+                // Nota: retorna '0' se nao existir esta materia
+                int id_materia_existente = colisaoMateria.obterMateriaID(materiaPub, materiaColisaoInfo[0], materiaColisaoInfo[1], dbconn);
+                materiaPub.setIdMateria(id_materia_existente);
+
+                // Obtem o ID da pauta desta materia
+                // Nota: retorna '0' se nao existir esta pauta
+                int id_pauta_existente = colisaoMateria.obterPautaID(pautaPub, dbconn);
+                pautaPub.setIdPauta(id_pauta_existente);
+
+                // Adicionando info da materia na lista de colisao deste cliente
+                // Nota: faz isso apenas se o corte estiver marcado como correto
+                if (materiaPub.getCorteLono()) {
+                    colisaoMateria.adicionaMateria(
+                            materiaPub.getIdCliente(), // ID do cliente
+                            materiaColisaoInfo[0],  // InicioDocumento
+                            materiaColisaoInfo[1] // FimDocumento
+                    );
+                }
+            }
+
+            // Retornando os dados
+            return new Object[]{materiaPub, pautaPub};
+        } else {
+            // Seguindo o fluxo normal, indexado por PDF
+            materiaPub = fachada.listarLinhasInicioFimMateria(materiaPub, sqlite);
+            materiaPub = fachada.listarTituloSubtituloMateria(materiaPub, sqlite);
+
+            PautaPublicacao pautaPub = fachada.listarPautaMateria(materiaPub, sqlite);
+            if (pautaPub == null) {
+                pautaPub = new PautaPublicacao();
+                pautaPub.setIdPublicacao(idPublicacao);
+                pautaPub.setPauta("");
+                pautaPub.setPagina(0);
+            }
+
+            // Checando se esta publicacao ja esta na lista deste cliente,
+            // se ja foi lido/salvo esse documento p/ esse cliente...
+            if (colisaoMateria != null && colisaoMateria.checarColisao(materiaPub)) {
+                // Materia ja esta na lista deste cliente... ignorando-a
+                return null;
+            }
+
+            // Salvando dados do documento para a adicao no index de 'Colisao'
+            long[] materiaColisaoInfo = {
+                    materiaPub.getLinhaInicialMateria(),
+                    materiaPub.getLinhaFinalMateria()
+            };
+
+            // Obtendo texto/conteudo fixo inicial das materia (se exisitr)
+//        logger.debug("Dados de conteudo fixo da materia");
+            String inicioMateria = fachada.obterConteudoFixoInicioMateria(readerMarcacao, materiaPub, sqlite);
+            if (inicioMateria == null) inicioMateria = "";
+            else inicioMateria += " ";
+
+            // Obtendo texto/conteudo fixo FINAL das nateruas (se existir)
+            String fimMateria = fachada.obterConteudoFixoFimMateria(readerMarcacao, materiaPub, sqlite);
+            if (fimMateria == null) inicioMateria = "";
+            else fimMateria = " " + fimMateria;
+
+//        logger.debug("Seção ligado as consultas do BD foram, praticamente, completadas");
+
+            // Ontendo corte da materia e o status do corte (boolean)
+            // Obtendo o texto da materia, n. processo e o status do corte
+            // Nota: anexa o texto de Pauta no inicio do texto da materia
+            Object[] textoMateriaReturnArray;
+            try {
+//            logger.debug("Obtendo o corte da máteria");
+                textoMateriaReturnArray = LonoTextSearcher.textoMateria(materiaPub, readerMarcacao, limiteLinhaMateria, sqlite);
+            } catch (Exception ex) {
+                logger.error("Erro obtendo a materia:" + ex.getClass().getName() + " <> " + ex.getMessage());
+                return null;
+            }
+
+            if (textoMateriaReturnArray == null || textoMateriaReturnArray.length < 3)
+                return null;
+            if (textoMateriaReturnArray[0] == null || textoMateriaReturnArray[1] == null)
+                return null;
+
+            // Salvando o numero do processo obtido na pesquisa anterior
+            final String processo_num = ((textoMateriaReturnArray[2] != null) ? (String) textoMateriaReturnArray[2] : "-");
+            String materia_texto = (String) textoMateriaReturnArray[1];
+
+            // Verificando sentenca
+            if (verificar_sentenca_texto) {
+                if (nomePesquisaCliente.isNumProcesso()) {
+                    // Comparando os numeros de processo
+                    final String numProcessoLimpo = processo_num.replaceAll("[^\\d+]", "");
+                    final String numProcessoLimpo_Srch = nomePesquisaCliente.getNomePesquisa().replaceAll("[^\\d+]", "");
+                    if (numProcessoLimpo_Srch != numProcessoLimpo)
+                        return null;
+                } else {
+                    // Verificando sentenca/ocorrencia do texto
+                    final String materiaTextoParaRegex = LonoTextSearcher.NormalizarTextoPesquisa(materia_texto, dbconn);
+                    matcher.reset(materiaTextoParaRegex);
+                    if (!matcher.matches() && !matcher.find())
+                        return null;
+                }
+            }
+
+            // Checando jornal para açoes relacionados especificas
+            if (publicacaoJornal.getJornalPublicacao().getSiglaJornal().contains("STF")) {
+                // Checando se tem o termo 'Despacho; Identico ao de nº X' (STF)
+                final Matcher match = stfDepachoAttachPattern.matcher(materia_texto);
+                if (match.find() || match.matches()) {
+                    // Psquisando anexo de despacho do STF
+                    final String despachoAnexo = LonoTextSearcher.STFObterDespachoCitado(publicacaoJornal.getDtPublicacao(), publicacaoJornal.getIdJornal(), materia_texto, readerMarcacao, fachada, sqlite);
+                    if (despachoAnexo != null && despachoAnexo.length() > 0) {
+                        // Anexando despacha encontrado
+                        materia_texto = materia_texto.replaceAll("(?i)despacho.(\\s+|)id.ntico ao de.*\\d+", "");
+                        materia_texto += despachoAnexo;
+                    } else {
+                        // Nao foi possivel encontrar o despacho...
+                        // Marcando o 'Corte Lono' como FALSO
+                        textoMateriaReturnArray[0] = (boolean) false;
+                    }
+                }
+            }
+
+            // Definindo...
+            final String finalMateriaTexto = inicioMateria + materia_texto + fimMateria;
+            materiaPub.setMateria(finalMateriaTexto.trim());
+            materiaPub.setCorteLono((boolean) textoMateriaReturnArray[0]);
+            materiaPub.setProcesso(processo_num);
+
+            // Definindo outras opcoes..
+            materiaPub.setLinhaCliente(real_line);
+            materiaPub.setPagina(real_page);
+
+            // Checando se deve tratar as colisões
+            if (colisaoMateria != null) {
+                // Obtem o ID da materia existent
+                // Nota: retorna '0' se nao existir esta materia
+                int id_materia_existente = colisaoMateria.obterMateriaID(materiaPub, materiaColisaoInfo[0], materiaColisaoInfo[1], dbconn);
+                materiaPub.setIdMateria(id_materia_existente);
+
+                // Obtem o ID da pauta desta materia
+                // Nota: retorna '0' se nao existir esta pauta
+                int id_pauta_existente = colisaoMateria.obterPautaID(pautaPub, dbconn);
+                pautaPub.setIdPauta(id_pauta_existente);
+
+                // Adicionando info da materia na lista de colisao deste cliente
+                // Nota: faz isso apenas se o corte estiver marcado como correto
+                if (materiaPub.getCorteLono()) {
+                    colisaoMateria.adicionaMateria(
+                            materiaPub.getIdCliente(), // ID do cliente
+                            materiaColisaoInfo[0],  // InicioDocumento
+                            materiaColisaoInfo[1] // FimDocumento
+                    );
+                }
+            }
+
+            // Retornando os dados
+            return new Object[]{materiaPub, pautaPub};
+        }
     }
 
     /**

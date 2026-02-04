@@ -5,8 +5,12 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+import com.google.gson.Gson;
 import espe.lono.db.models.PublicacaoJornal;
+import espe.lono.indexercore.data.CNJJson_Processo;
 import espe.lono.indexercore.util.Util;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -28,7 +32,7 @@ public class Indexacao
 {
     //final static private Logger logger = Logger.getLogger("mercurio3");
     final static private TipoIndexacao indexacaoTipo = TipoIndexacao.PESQUISA_100;
-    
+
     // Enumeracao informando o tipo de indexacao aplicada na pesquisa
     public static enum TipoIndexacao
     {
@@ -48,7 +52,60 @@ public class Indexacao
     {
         return Indexacao.indexacaoTipo;
     }
-    
+
+
+    public static void IndexarArquivosJson(Directory dirMaracaco, Directory dirPesquisa, String diretorioArquivos, PublicacaoJornal pubJornal, DbConnection dbConnection) throws Exception {
+        // Preparando Analyzers
+        final Analyzer analyzerMarc = new StandardAnalyzer();
+        final IndexWriterConfig iwcMarcacao = new IndexWriterConfig(analyzerMarc);
+        Analyzer analyzerPesq = Indexacao.obterAnalyzerPesquisa();
+        IndexWriterConfig iwcPesquisa = new IndexWriterConfig(analyzerPesq);
+
+        // Preparando Lucene...
+        iwcMarcacao.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        IndexWriter writerMarcacao = new IndexWriter(dirMaracaco, iwcMarcacao);
+        writerMarcacao.deleteAll(); // Garantindo que o index esta limpo
+
+        iwcPesquisa.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        IndexWriter writerPesquisa = new IndexWriter(dirPesquisa, iwcPesquisa);
+        writerPesquisa.deleteAll(); // Garantindo que o index esta limpo
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        final long baseNumDocID = Long.parseLong(String.format("%s%02d", sdf.format(pubJornal.getDtPublicacao()), pubJornal.getIdJornal()));
+
+        // Listando os arquivos JSON dentro do diretorio
+        final Gson gson = new Gson();
+        String[] arquivosJson = Util.listarArquivosDiretorioExtensao(diretorioArquivos, "json");
+
+        // Processando cada arquivo JSON
+        int currentPage = 1;
+        for ( String arquivoJson : arquivosJson )
+        {
+            // Lendo o conteúdo do arquivo JSON e criando um JSONObject
+            try (BufferedReader reader = new BufferedReader(new FileReader(arquivoJson))) {
+                StringBuilder sb = new StringBuilder();
+                String linha;
+                while ((linha = reader.readLine()) != null) {
+                    sb.append(linha);
+                }
+
+                // Indexando dados
+                CNJJson_Processo[] processo = gson.fromJson(sb.toString(), CNJJson_Processo[].class);
+                indexJson(writerMarcacao, writerPesquisa, processo, dbConnection, baseNumDocID, currentPage++);
+            } catch (Exception ex) {
+                Logger.debug("Erro ao processar/indexar o arquivo JSON: " + arquivoJson + " - " + ex.getMessage());
+                throw ex;
+            }
+        }
+
+        writerMarcacao.commit();
+        writerPesquisa.commit();
+
+        // Fecheando
+        writerMarcacao.close();
+        writerPesquisa.close();
+    }
+
     /**
      * Chamada principal p/ iniciar a indexação
      * @param dirMaracaco
@@ -138,7 +195,7 @@ public class Indexacao
         doc.add(new StringField("textoLinhaLimpa", linhaLimpa, Field.Store.YES));
         doc.add(new TextField("conteudo", linha, Field.Store.YES));
         doc.add(new TextField("contentline", linhaLimpa, Field.Store.YES));
-        doc.add(new StringField("contents", searchString, Field.Store.YES));
+//        doc.add(new StringField("contents", searchString, Field.Store.YES));
         doc.add(new StringField("line",  new DecimalFormat("00000").format(lineNum), Field.Store.YES));
         doc.add(new StringField("linha",  new DecimalFormat("00000").format(lineNum), Field.Store.YES));
         doc.add(new TextField("tamanho", new DecimalFormat("00000").format(linhaLimpa.length()), Field.Store.YES));
@@ -148,6 +205,29 @@ public class Indexacao
         doc.add(new StringField("pagina",  new DecimalFormat("00000").format(pageNum), Field.Store.YES));
         doc.add(new StringField("real_doc_id",  new DecimalFormat("00000000").format(docID), Field.Store.YES));
         
+        writerMarcacao.addDocument(doc);
+    }
+
+    public static void indexDocs_AddMarcacao(IndexWriter writerMarcacao, String linha, String linhaLimpa, String titulo, String processo, String link, String searchString, int lineNum, int pageNum, String[] DadosTopLeftLinha, String classeLinha, long docID) throws IOException
+    {
+        final Document doc = new Document();
+        doc.add(new TextField("textoLinha", linha, Field.Store.YES));
+        doc.add(new StringField("textoTitulo", titulo, Field.Store.YES));
+        doc.add(new StringField("textoProcesso", processo, Field.Store.YES));
+        doc.add(new StringField("link", link, Field.Store.YES));
+        doc.add(new TextField("textoLinhaLimpa", linhaLimpa, Field.Store.YES));
+        doc.add(new TextField("conteudo", linha, Field.Store.YES));
+        doc.add(new TextField("contentline", linhaLimpa, Field.Store.YES));
+        doc.add(new TextField("contents", searchString, Field.Store.YES));
+        doc.add(new StringField("line",  new DecimalFormat("00000").format(lineNum), Field.Store.YES));
+        doc.add(new StringField("linha",  new DecimalFormat("00000").format(lineNum), Field.Store.YES));
+        doc.add(new TextField("tamanho", new DecimalFormat("00000").format(linhaLimpa.length()), Field.Store.YES));
+        doc.add(new TextField("top",  DadosTopLeftLinha[0], Field.Store.YES));
+        doc.add(new TextField("left", DadosTopLeftLinha[1], Field.Store.YES));
+        doc.add(new TextField("classe", classeLinha, Field.Store.YES));
+        doc.add(new StringField("pagina",  new DecimalFormat("00000").format(pageNum), Field.Store.YES));
+        doc.add(new StringField("real_doc_id",  new DecimalFormat("00000000").format(docID), Field.Store.YES));
+
         writerMarcacao.addDocument(doc);
     }
     
@@ -183,7 +263,80 @@ public class Indexacao
         returnValues[1] = classeLinha;
         return returnValues;
     }
-    
+
+
+    private static void indexJson(IndexWriter writerMarcacao, IndexWriter writerPesquisa, CNJJson_Processo[] processosList, DbConnection dbConnection, long baseNumber, int current_page) throws Exception {
+        long docId = 1;
+        int current_line = 1;
+
+        for ( CNJJson_Processo processo: processosList ) {
+            final long finalDocID = Long.parseLong(String.format("%d%d", baseNumber, docId));
+            final String searchString = Util.normalizeText(UtilEngine.removeAccents(
+                    processo.texto + "|$|" + // 0 -> Texto
+                    processo.numero_processo + "|$|" + // 1 -> N. Processo
+                    processo.nomeClasse + "|$|" + // 2 -> Titulo
+                    processo.getNomeAdvogados() + "|$|" +
+                    processo.getNomePartes()
+            ), dbConnection);
+
+            final String linha = processo.texto + "|$|_|$|_|$|";
+            final String[] DadosTopLeftLinha = new String[]{"0", "0"};
+            final String classeLinha = "";
+
+            try {
+                Indexacao.indexDocs_AddMarcacao(
+                        writerMarcacao, // Writer da marcacacao
+                        linha, // Linha onde sera pesquisa as marcacacoes (obtem o texto)
+                        linha, // Linha limpa (sem HTML)
+                        processo.nomeClasse, // Titulo
+                        processo.numeroprocessocommascara, // Processo
+                        processo.link,
+                        searchString, // Linha para teste de ocorrencia...
+                        current_line, // Numero atual da linha
+                        current_page,  // Numero da pagina atual
+                        DadosTopLeftLinha, // Dados de posicionamento do HTML
+                        classeLinha, // Classe da linha
+                        finalDocID // ID do documento atual (garantindo que ambos sao iguais)
+                );
+            } catch (Exception exception) {
+                System.out.println("Marcacao -> " + exception.getMessage());
+                System.out.println(linha);
+                throw exception;
+            }
+
+            // Adicionando docmento de Pesquisa
+            try {
+                // Quabrando o texto em partes menores
+                // Visando não quebrar o lucene, mas mantendo o conteudo pesquisavel
+                String splittedText[] = searchString.split(" ");
+                for ( int i = 0; i < splittedText.length; i += 10 ) {
+                    StringBuilder search = new StringBuilder();
+                    if ( i > 0 ) search.append(" ").append(splittedText[i - 1]);
+                    for ( int j = i; j < i + 10 && j < splittedText.length; j++ ) {
+                        search.append(splittedText[j]).append(" ");
+                    }
+
+                    Indexacao.indexDocs_AddPesquisa(
+                            writerPesquisa, // Writer da pesquisa
+                            linha, // Linha com os dados HTML
+                            linha,  // Linha de onde sera obido os dados HTML
+                            search.toString().trim(), // Linha onde sera realizado as pesquisas
+                            current_line, // Numero da linha atual (usado apenas no corte)
+                            current_page, // Numero da pagina atual
+                            DadosTopLeftLinha, // Dadosde posicionamento HTML
+                            finalDocID // ID do documento atual (garantindo que ambas sao iguais)
+                    );
+                }
+            } catch (Exception exception) {
+                System.out.println("Pesquisa -> " + exception.getMessage());
+                System.out.println(linha);
+                throw exception;
+            }
+
+            current_line += 1;
+            docId += 1;
+        }
+    }
     /**
      * Algoritmo de indexacao, a partir deste, cada secao sera indexada.
      * @param writerMarcacao

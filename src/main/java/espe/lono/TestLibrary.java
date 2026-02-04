@@ -74,11 +74,10 @@ public class TestLibrary {
 //        TestarPesquisa("Nome", "Nome exttra", caminhoDirPublicacao);
 
         DbConnection dbConnection = new DbPostgres();
-//        DbConnectionMarcacao dbConnectionMarcacao = new DbPostgresMarcacao(0);
         final Fachada fachada = new Fachada();
 
-//        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(1033, dbConnection);
-////        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
+        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(78126, dbConnection);
+        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
 //
 //        TestarIndexacao(dbConnection, publicacaoJornal);
 //        String searchDir = publicacaoJornal.getCaminhoDirPublicacao(LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS);
@@ -104,13 +103,13 @@ public class TestLibrary {
 
     public static void FluxoCompletoIndexacaoPesquisa(DbConnection dbConnection, PublicacaoJornal publicacao, String textoPesquisa) throws Exception {
 //         Indexacao
-        LonoIndexData indexData;
-        try {
-            indexData = TestarIndexacao(dbConnection, publicacao);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+//        LonoIndexData indexData;
+//        try {
+//            indexData = TestarIndexacao(dbConnection, publicacao);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw e;
+//        }
 
         // Pesquisa
         DbConnectionMarcacao marcacao = new DbPostgresMarcacao(publicacao.getIdPublicacao());

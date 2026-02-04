@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="" />
+    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_DestinatarioAdvogado.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_Processo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_ProcessoAdvogado.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_ProcessoDestinatario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerConfigs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerConfigs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/engine/Indexacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/engine/Indexacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/util/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcherConfigs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcherConfigs.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,8 +68,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -73,24 +86,24 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Download Sources.executor": "Run",
-    "Gradle.lono-processamento-libraries [:espe.lono.TestLibrary.main()].executor": "Debug",
-    "Gradle.lono-processamento-libraries [build].executor": "Run",
-    "Gradle.lono-processamento-libraries [clean].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Projetos/FSBR/lono/lono-processamento-libraries",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.keymap"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.lono-processamento-libraries [:espe.lono.TestLibrary.main()].executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.lono-processamento-libraries [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.lono-processamento-libraries [clean].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Projetos/FSBR/lono/lono-processamento-libraries&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Projetos\FSBR\lono\lono-processamento-libraries" />
@@ -101,7 +114,7 @@
       <recent name="espe.lono.db.models" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.lono-processamento-libraries [build]">
+  <component name="RunManager" selected="Application.TestLibrary">
     <configuration name="TestLibrary" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="espe.lono.TestLibrary" />
       <module name="lono-proessamento-libraries.main" />
@@ -211,84 +224,79 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>121</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>224</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>143</line>
+          <line>142</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>252</line>
-          <option name="timeStamp" value="30" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>320</line>
+          <line>323</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>324</line>
+          <line>326</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>151</line>
+          <line>150</line>
           <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
-          <line>1047</line>
-          <option name="timeStamp" value="35" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>159</line>
+          <line>158</line>
           <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
-          <line>1042</line>
-          <option name="timeStamp" value="37" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>282</line>
+          <line>285</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>286</line>
+          <line>289</line>
           <option name="timeStamp" value="45" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
-          <line>176</line>
+          <line>175</line>
           <option name="timeStamp" value="46" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>280</line>
+          <line>283</line>
           <option name="timeStamp" value="47" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>283</line>
+          <line>286</line>
           <option name="timeStamp" value="48" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
-          <line>289</line>
+          <line>292</line>
           <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java</url>
+          <line>259</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/indexercore/engine/Indexacao.java</url>
+          <line>77</line>
+          <option name="timeStamp" value="68" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java</url>
+          <line>114</line>
+          <option name="timeStamp" value="69" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
+          <line>736</line>
+          <option name="timeStamp" value="71" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

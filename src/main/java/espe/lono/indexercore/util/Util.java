@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.lingala.zip4j.core.ZipFile;
@@ -390,5 +392,30 @@ public class Util
         // Retornando o documento encontrado!
         if ( marcacaoResults.totalHits <= 0 ) return null; // Not found
         else return reader.document( marcacaoResults.scoreDocs[0].doc );
+    }
+
+    public static String[] listarArquivosDiretorioExtensao(String diretorio, String extensao)
+    {
+        File dir_fd = new File(diretorio);
+        if (!dir_fd.isDirectory()) return new String[0];
+
+        File[] file_list = dir_fd.listFiles();
+        Pattern ext_pattern = Pattern.compile(".*[.]"+extensao+"$", Pattern.CASE_INSENSITIVE);
+
+        // Filtrando arquivos
+        java.util.List<String> arquivos = new java.util.ArrayList<>();
+        for ( File fd: file_list )
+        {
+            Matcher match = ext_pattern.matcher( fd.getName() );
+            if ( match.find() )
+            {
+                arquivos.add( fd.getAbsolutePath() );
+            }
+        }
+
+        arquivos.sort(Comparator.comparingInt(nome ->
+            Integer.parseInt(nome.replaceAll(".*_p(\\d+)\\.json", "$1"))
+        ));
+        return arquivos.toArray(new String[arquivos.size()]);
     }
 }

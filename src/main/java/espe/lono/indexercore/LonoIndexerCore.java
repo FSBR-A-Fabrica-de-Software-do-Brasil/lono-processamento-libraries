@@ -216,129 +216,147 @@ public class LonoIndexerCore
             // Loop de controle para o gerenciamento das marcacoes
             // Nota: NÃO PODE HAVER erro, se oorrer, ira disparar novamente mais uma vez
             for ( int i = 0; i <= 1; i++ ) {
-                /**
-                 * Nota: A conversão esta sendo feita nesse trecho logo abaixo...
-                 *        Isso é uma modificação feita no algoritmo original...
-                 *        Onde eu removi essa etapa do algoritmo q move o PDF
-                 *        e adicionei aqui, na seção de indexação/pesquisa (e conversão)
-                 */
-                Util.converterPDFparaHTML( pubPDFFname ); // Converte o PDF em HTML
-                Util.normalizeHTMLFile(pubPDFFname + ".html"); // Converte os HTMLEntity
+                // Novo recurso, verifica se o Arquivo é PDF ou Zip,
+                // Se for PDF, segue o fluxo atual de idnexação
+                if ( pubPDFFname.toLowerCase().endsWith(".pdf") ) {
+                    /**
+                     * Nota: A conversão esta sendo feita nesse trecho logo abaixo...
+                     *        Isso é uma modificação feita no algoritmo original...
+                     *        Onde eu removi essa etapa do algoritmo q move o PDF
+                     *        e adicionei aqui, na seção de indexação/pesquisa (e conversão)
+                     */
+                    Util.converterPDFparaHTML(pubPDFFname); // Converte o PDF em HTML
+                    Util.normalizeHTMLFile(pubPDFFname + ".html"); // Converte os HTMLEntity
 
-                // Thread da conv.PDF->HTML  por pag.
-                if ( i == 0 && indexationInfo.ProcessarArquivosCorte )
-                    conversorThread.start(); // executando thread
+                    // Thread da conv.PDF->HTML  por pag.
+                    if (i == 0 && indexationInfo.ProcessarArquivosCorte)
+                        conversorThread.start(); // executando thread
 
-                /**
-                 * Nota: A partir deste ponto, o código segue o mesmo do original, mas,
-                 *       com mais comentários...
-                 * Nota2: Houve algumas pequenas alterações, nada que descaracterize o
-                 *       código original
-                 */
+                    /**
+                     * Nota: A partir deste ponto, o código segue o mesmo do original, mas,
+                     *       com mais comentários...
+                     * Nota2: Houve algumas pequenas alterações, nada que descaracterize o
+                     *       código original
+                     */
 
-                // Caregando patterns de corte/replaces...
-                Logger.debug("Carregando marcacoes para a publicacao: " + pdfSingleName);
-                final TipoPadraoJornal[] tiposPadraoPublicacao = fachada.listarTiposPadraoPublicacao(publicacao, dbconn);
-                final PadraoJornal padraoJornal = new PadraoJornal();
-                padraoJornal.setTiposPadraoJornal(tiposPadraoPublicacao);
-                padraoJornal.carregarReplacesClassificacoes();
-                publicacao.setPadraoJornalPublicacao(padraoJornal);
+                    // Caregando patterns de corte/replaces...
+                    Logger.debug("Carregando marcacoes para a publicacao: " + pdfSingleName);
+                    final TipoPadraoJornal[] tiposPadraoPublicacao = fachada.listarTiposPadraoPublicacao(publicacao, dbconn);
+                    final PadraoJornal padraoJornal = new PadraoJornal();
+                    padraoJornal.setTiposPadraoJornal(tiposPadraoPublicacao);
+                    padraoJornal.carregarReplacesClassificacoes();
+                    publicacao.setPadraoJornalPublicacao(padraoJornal);
 
-                // Garantindo que as pastas estão limpas...
-                Util.limparDiretorio(caminhoDirPublicacaoIndiceMarcacao);
-                Util.limparDiretorio(caminhoDirPublicacaoIndicePesquisa);
+                    // Garantindo que as pastas estão limpas...
+                    Util.limparDiretorio(caminhoDirPublicacaoIndiceMarcacao);
+                    Util.limparDiretorio(caminhoDirPublicacaoIndicePesquisa);
 
-                // Inicializando Bando de Dados para as marcacoes
-                marcacaoDb = indexationInfo.getDbConnMarcacao();
-                if ( marcacaoDb  == null) marcacaoDb = DBUtils.startDbMarcacaoConnection(publicacao.getIdPublicacao());
+                    // Inicializando Bando de Dados para as marcacoes
+                    marcacaoDb = indexationInfo.getDbConnMarcacao();
+                    if (marcacaoDb == null)
+                        marcacaoDb = DBUtils.startDbMarcacaoConnection(publicacao.getIdPublicacao());
 
-                // Abrindo diretoriosp para o uso no Lucene
-                luceneDirMarcacao = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndiceMarcacao));
-                luceneDirPesquisa = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndicePesquisa));
+                    // Abrindo diretoriosp para o uso no Lucene
+                    luceneDirMarcacao = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndiceMarcacao));
+                    luceneDirPesquisa = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndicePesquisa));
 
-                // Indexando arquivo e definindo o status para 'Indexado'
-                Logger.debug("Indexando Publicacao: " + pdfSingleName);
-                final ClassificacaoReplaceTipo[] classificacaoReplaceTipo = padraoJornal.getClassificacaoReplaceTipo();
-                Indexacao.IndexarArquivosDiretorio(
-                        luceneDirMarcacao,
-                        luceneDirPesquisa,
-                        caminhoDirPublicacao,
-                        classificacaoReplaceTipo,
-                        publicacao,
-                        pdfSingleName,
-                        this.dbconn
-                );
+                    // Indexando arquivo e definindo o status para 'Indexado'
+                    Logger.debug("Indexando Publicacao: " + pdfSingleName);
+                    final ClassificacaoReplaceTipo[] classificacaoReplaceTipo = padraoJornal.getClassificacaoReplaceTipo();
+                    Indexacao.IndexarArquivosDiretorio(
+                            luceneDirMarcacao,
+                            luceneDirPesquisa,
+                            caminhoDirPublicacao,
+                            classificacaoReplaceTipo,
+                            publicacao,
+                            pdfSingleName,
+                            this.dbconn
+                    );
 
-                Util.removerArquivo(pubPDFFname + ".html"); // Nao e mais necessario
+                    Util.removerArquivo(pubPDFFname + ".html"); // Nao e mais necessario
 
-                // Seção de tratamento/processamento de marcações...
-                // Nota: caso ocorra algum erro, o processamento da publcação iria
-                //       continuar, mas com nenhum padrao definindo... todos os
-                //       cortes serão marcado como 'invalidos/errados' pelo engine.
-                try
-                {
-                    // Processando marcacoes do Jornal
-                    Logger.debug("Processando pre-marcacoes para a publicacao: " + pdfSingleName);
-                    marcacaoDb.iniciarTransaction();
-                    Marcacoes.processarPreMarcacoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
-                    marcacaoDb.finalizarTransaction_COMMIT();
+                    // Seção de tratamento/processamento de marcações...
+                    // Nota: caso ocorra algum erro, o processamento da publcação iria
+                    //       continuar, mas com nenhum padrao definindo... todos os
+                    //       cortes serão marcado como 'invalidos/errados' pelo engine.
+                    try {
+                        // Processando marcacoes do Jornal
+                        Logger.debug("Processando pre-marcacoes para a publicacao: " + pdfSingleName);
+                        marcacaoDb.iniciarTransaction();
+                        Marcacoes.processarPreMarcacoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
+                        marcacaoDb.finalizarTransaction_COMMIT();
 
-                    // Processando as marcacoes
-                    Logger.debug("Processando marcacoes para a publicacao: " + pdfSingleName);
-                    marcacaoDb.iniciarTransaction();
-                    Marcacoes.processarMarcacoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
-                    marcacaoDb.finalizarTransaction_COMMIT();
+                        // Processando as marcacoes
+                        Logger.debug("Processando marcacoes para a publicacao: " + pdfSingleName);
+                        marcacaoDb.iniciarTransaction();
+                        Marcacoes.processarMarcacoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
+                        marcacaoDb.finalizarTransaction_COMMIT();
 
-                    // Remover trechos indesejados. Ex: Cabecalho e Rodapé
-                    Logger.debug("Removendo trechos indesejados da publicação: " + pdfSingleName);
-                    Marcacoes.removerLinhasIndesejadas(luceneDirMarcacao, publicacao, marcacaoDb);
+                        // Remover trechos indesejados. Ex: Cabecalho e Rodapé
+                        Logger.debug("Removendo trechos indesejados da publicação: " + pdfSingleName);
+                        Marcacoes.removerLinhasIndesejadas(luceneDirMarcacao, publicacao, marcacaoDb);
 
-                    // Processando marcaoes pos-exclusão
-                    Logger.debug("Processando marcacoes pós-exclusão da publicação: " + pdfSingleName);
-                    Marcacoes.processarMarcacoesPosExclusoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
+                        // Processando marcaoes pos-exclusão
+                        Logger.debug("Processando marcacoes pós-exclusão da publicação: " + pdfSingleName);
+                        Marcacoes.processarMarcacoesPosExclusoes(luceneDirMarcacao, publicacao, marcacaoDb, dbconn);
 
-                    // Obtendo e definindo pautas...
-                    Logger.debug("Processando pautas da publicação: " + pdfSingleName);
-                    Marcacoes.processarPautas(luceneDirMarcacao, publicacao, marcacaoDb);
+                        // Obtendo e definindo pautas...
+                        Logger.debug("Processando pautas da publicação: " + pdfSingleName);
+                        Marcacoes.processarPautas(luceneDirMarcacao, publicacao, marcacaoDb);
 
-                    // Removendo grupos de linhas da publicação
-                    // Nota: As marcações para esse recurso DEVEM ser sempre em pares
-                    //       não sera tolerada divergencia de quantidades das marcações
-                    //       iniciais e finais...
-                    // Nota2: Este algoritimo se baseia apenas nas querys Lucene...
-                    //        não suporta o processamento de regex junto as querys...
-                    // Nota3: Desativado, o risco de gerar proplemas não compensa
-                    //            Marcacoes.processarRemocaoPaginas(luceneDirMarcacao, publicacao, marcacaoDb);
+                        // Removendo grupos de linhas da publicação
+                        // Nota: As marcações para esse recurso DEVEM ser sempre em pares
+                        //       não sera tolerada divergencia de quantidades das marcações
+                        //       iniciais e finais...
+                        // Nota2: Este algoritimo se baseia apenas nas querys Lucene...
+                        //        não suporta o processamento de regex junto as querys...
+                        // Nota3: Desativado, o risco de gerar proplemas não compensa
+                        //            Marcacoes.processarRemocaoPaginas(luceneDirMarcacao, publicacao, marcacaoDb);
 
-                    // Obtendo e definindo MATERIAS os quais, comecam/terminem no meio da linha
-                    // Nota: Algoritimo gerado com base nos problemas de corte do DJPB,
-                    //       existem matérias que começam no meio da linha e
-                    //       terminam também no meio da linha.
-                    // Nota2: Desativado pois ainda esta em implementação.
-                    //Marcacoes.processarMateriasComplexas(luceneDirPesquisa, publicacao, marcacaoDb);
+                        // Obtendo e definindo MATERIAS os quais, comecam/terminem no meio da linha
+                        // Nota: Algoritimo gerado com base nos problemas de corte do DJPB,
+                        //       existem matérias que começam no meio da linha e
+                        //       terminam também no meio da linha.
+                        // Nota2: Desativado pois ainda esta em implementação.
+                        //Marcacoes.processarMateriasComplexas(luceneDirPesquisa, publicacao, marcacaoDb);
 
-                    // Realizando commit (salvando efetivamente as marcações)
-                    marcacaoDb.finalizarTransaction_COMMIT();
-                }
-                catch ( MarcacoesException ex ) {
-                    // Rollback
-                    marcacaoDb.finalizarTransaction_ROLLBACK();
-                    if ( i == 0 ) {
-                        Logger.debug("Erro com alguma das marcacao principais... Reprocessando a publicacao de ID:" + publicacao.getIdPublicacao());
-                        continue;
+                        // Realizando commit (salvando efetivamente as marcações)
+                        marcacaoDb.finalizarTransaction_COMMIT();
+                    } catch (MarcacoesException ex) {
+                        // Rollback
+                        marcacaoDb.finalizarTransaction_ROLLBACK();
+                        if (i == 0) {
+                            Logger.debug("Erro com alguma das marcacao principais... Reprocessando a publicacao de ID:" + publicacao.getIdPublicacao());
+                            continue;
+                        } else {
+                            Logger.debug("Desativando padroes para a publicacao de ID:" + publicacao.getIdPublicacao());
+                            indexationInfo.MarcacoesProcessadas = false;
+                        }
+                    } catch (IOException ex) {
+                        marcacaoDb.finalizarTransaction_ROLLBACK();
+                        Logger.fatal("Erro processando as marcacoes da publicacao de ID:" + publicacao.getIdPublicacao());
+                        throw ex;
                     }
-                    else {
-                        Logger.debug("Desativando padroes para a publicacao de ID:" + publicacao.getIdPublicacao());
-                        indexationInfo.MarcacoesProcessadas = false;
-                    }
                 }
-                catch ( IOException ex )
-                {
-                    marcacaoDb.finalizarTransaction_ROLLBACK();
-                    Logger.fatal("Erro processando as marcacoes da publicacao de ID:" + publicacao.getIdPublicacao());
-                    throw ex;
-                }
+                else if ( pubPDFFname.toLowerCase().endsWith(".zip") ) {
+                    // ZIP,, mudando o conceito para:
+                    // 1 -> Descompactar o arquivo visando listar os arquivos .json
+                    // 2 -> Ler os arquivos e idexar diretamente os dados obtidos por ele,
+                    // sem a necessidade de processar marcações
+                    Logger.debug("Descompactando arquivo ZIP da publicação: " + pdfSingleName);
+                    Util.descompactarZIPFile(pubPDFFname, caminhoDirPublicacao + "/zip_extract/");
 
+                    // Abrindo diretoriosp para o uso no Lucene
+                    luceneDirMarcacao = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndiceMarcacao));
+                    luceneDirPesquisa = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndicePesquisa));
+
+                    // Listando os arquivos JSON em ordem para ler os dados e indexa-los
+                    Logger.debug("Iniciando indexação dos JSON dentro da pasta: " + caminhoDirPublicacao + "/zip_extract/");
+                    Indexacao.IndexarArquivosJson(luceneDirMarcacao, luceneDirPesquisa, caminhoDirPublicacao + "/zip_extract/", publicacao, dbconn);
+
+                    // Limpando pasta pois já foi indexado
+                    Util.limparDiretorio(caminhoDirPublicacao + "/zip_extract/");
+                }
                 // All OK, parando Loop e continuando a execucao
                 break;
             } // for
