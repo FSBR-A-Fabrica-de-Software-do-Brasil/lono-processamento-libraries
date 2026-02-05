@@ -253,8 +253,9 @@ public class LonoIndexerCore
 
                     // Inicializando Bando de Dados para as marcacoes
                     marcacaoDb = indexationInfo.getDbConnMarcacao();
-                    if (marcacaoDb == null)
+                    if (marcacaoDb == null) {
                         marcacaoDb = DBUtils.startDbMarcacaoConnection(publicacao.getIdPublicacao());
+                    }
 
                     // Abrindo diretoriosp para o uso no Lucene
                     luceneDirMarcacao = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndiceMarcacao));
@@ -350,9 +351,17 @@ public class LonoIndexerCore
                     luceneDirMarcacao = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndiceMarcacao));
                     luceneDirPesquisa = FSDirectory.open(Paths.get(caminhoDirPublicacaoIndicePesquisa));
 
+                    // Inicializando Bando de Dados para as marcacoes
+                    // Nota: Mesmo não tendo marcações de fato, é necessário para ter controle
+                    //       quais publicações foram processadas/indexadas
+                    marcacaoDb = indexationInfo.getDbConnMarcacao();
+                    if (marcacaoDb == null) {
+                        marcacaoDb = DBUtils.startDbMarcacaoConnection(publicacao.getIdPublicacao());
+                    }
+
                     // Listando os arquivos JSON em ordem para ler os dados e indexa-los
                     Logger.debug("Iniciando indexação dos JSON dentro da pasta: " + caminhoDirPublicacao + "/zip_extract/");
-                    Indexacao.IndexarArquivosJson(luceneDirMarcacao, luceneDirPesquisa, caminhoDirPublicacao + "/zip_extract/", publicacao, dbconn);
+                    Indexacao.IndexarArquivosJson(luceneDirMarcacao, luceneDirPesquisa, caminhoDirPublicacao + "/zip_extract/", publicacao, marcacaoDb, dbconn);
 
                     // Limpando pasta pois já foi indexado
                     Util.limparDiretorio(caminhoDirPublicacao + "/zip_extract/");

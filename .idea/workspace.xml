@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_DestinatarioAdvogado.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_Processo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_ProcessoAdvogado.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/data/CNJJson_ProcessoDestinatario.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/TestLibrary.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerConfigs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerConfigs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/LonoIndexerCore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/engine/Indexacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/engine/Indexacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/util/Util.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcherConfigs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcherConfigs.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,7 +284,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java</url>
-          <line>736</line>
+          <line>739</line>
           <option name="timeStamp" value="71" />
         </line-breakpoint>
       </breakpoints>

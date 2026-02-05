@@ -6,6 +6,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import com.google.gson.Gson;
+import espe.lono.db.Fachada;
+import espe.lono.db.models.MarcacaoPublicacao;
 import espe.lono.db.models.PublicacaoJornal;
 import espe.lono.indexercore.data.CNJJson_Processo;
 import espe.lono.indexercore.util.Util;
@@ -54,7 +56,7 @@ public class Indexacao
     }
 
 
-    public static void IndexarArquivosJson(Directory dirMaracaco, Directory dirPesquisa, String diretorioArquivos, PublicacaoJornal pubJornal, DbConnection dbConnection) throws Exception {
+    public static void IndexarArquivosJson(Directory dirMaracaco, Directory dirPesquisa, String diretorioArquivos, PublicacaoJornal pubJornal, DbConnectionMarcacao dbConnectionMarcacao, DbConnection dbConnection) throws Exception {
         // Preparando Analyzers
         final Analyzer analyzerMarc = new StandardAnalyzer();
         final IndexWriterConfig iwcMarcacao = new IndexWriterConfig(analyzerMarc);
@@ -91,7 +93,7 @@ public class Indexacao
 
                 // Indexando dados
                 CNJJson_Processo[] processo = gson.fromJson(sb.toString(), CNJJson_Processo[].class);
-                indexJson(writerMarcacao, writerPesquisa, processo, dbConnection, baseNumDocID, currentPage++);
+                indexJson(pubJornal, writerMarcacao, writerPesquisa, processo, dbConnection, dbConnectionMarcacao, baseNumDocID, currentPage++);
             } catch (Exception ex) {
                 Logger.debug("Erro ao processar/indexar o arquivo JSON: " + arquivoJson + " - " + ex.getMessage());
                 throw ex;
@@ -214,7 +216,7 @@ public class Indexacao
         doc.add(new TextField("textoLinha", linha, Field.Store.YES));
         doc.add(new StringField("textoTitulo", titulo, Field.Store.YES));
         doc.add(new StringField("textoProcesso", processo, Field.Store.YES));
-        doc.add(new StringField("link", link, Field.Store.YES));
+        doc.add(new StringField("link", (link == null ? "" : link), Field.Store.YES));
         doc.add(new TextField("textoLinhaLimpa", linhaLimpa, Field.Store.YES));
         doc.add(new TextField("conteudo", linha, Field.Store.YES));
         doc.add(new TextField("contentline", linhaLimpa, Field.Store.YES));
@@ -265,7 +267,7 @@ public class Indexacao
     }
 
 
-    private static void indexJson(IndexWriter writerMarcacao, IndexWriter writerPesquisa, CNJJson_Processo[] processosList, DbConnection dbConnection, long baseNumber, int current_page) throws Exception {
+    private static void indexJson(PublicacaoJornal publicacaoJornal, IndexWriter writerMarcacao, IndexWriter writerPesquisa, CNJJson_Processo[] processosList, DbConnection dbConnection, DbConnectionMarcacao dbConnectionMarcacao, long baseNumber, int current_page) throws Exception {
         long docId = 1;
         int current_line = 1;
 
@@ -336,6 +338,20 @@ public class Indexacao
             current_line += 1;
             docId += 1;
         }
+
+        // Adicionando a marcação que indica a existencia da indexação
+        MarcacaoPublicacao marcacaoPub = new MarcacaoPublicacao();
+        marcacaoPub.setIdPublicacao(publicacaoJornal.getIdPublicacao());
+        marcacaoPub.setIdTipoPadrao(12);
+        marcacaoPub.setNumDocLucene(Long.parseLong(String.format("%d%d", baseNumber, 1)));
+        marcacaoPub.setLinhaPublicacao(1);
+        marcacaoPub.setMarcacao( publicacaoJornal.getJornalPublicacao().getDescJornal() );
+        marcacaoPub.setMarcacaoOriginal( publicacaoJornal.getJornalPublicacao().getDescJornal() );
+        marcacaoPub.setPagina( 1 );
+        marcacaoPub.setLinhaPagina( 1 );
+        marcacaoPub.setIdTipoPadraoJornal( 999 );
+        marcacaoPub.setComplex(false);
+        new Fachada().incluirMarcacaoPublicacao(marcacaoPub, dbConnectionMarcacao);
     }
     /**
      * Algoritmo de indexacao, a partir deste, cada secao sera indexada.
