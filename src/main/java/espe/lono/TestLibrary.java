@@ -76,8 +76,8 @@ public class TestLibrary {
         DbConnection dbConnection = new DbPostgres();
         final Fachada fachada = new Fachada();
 
-        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(78126, dbConnection);
-        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
+//        PublicacaoJornal publicacaoJornal = fachada.listarPublicacoesPorID(78126, dbConnection);
+//        FluxoCompletoIndexacaoPesquisa(dbConnection, publicacaoJornal, "Maria Jose");
 //
 //        TestarIndexacao(dbConnection, publicacaoJornal);
 //        String searchDir = publicacaoJornal.getCaminhoDirPublicacao(LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS);
@@ -88,6 +88,7 @@ public class TestLibrary {
         final Long[] idsMateriasVerificar = new Long[] {798380L, 798401L };
         System.out.println("Iniciando teste de classificação de matéria via I.A...");
         TipoConteudoWeb[] tiposConteudoWeb = fachada.listarTiposConteudoWeb(dbConnection);
+        IARequests.inicializar();
         IARequests iaRequests = new IARequests();
 
         for ( long idMateria: idsMateriasVerificar ) {

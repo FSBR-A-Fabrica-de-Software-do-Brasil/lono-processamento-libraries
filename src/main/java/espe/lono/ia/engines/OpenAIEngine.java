@@ -25,26 +25,26 @@ public class OpenAIEngine implements IAEngineInterface {
 
     @Override
     public TipoConteudoWeb localizarTipoConteudoWebPorConteudo(String conteudo, TipoConteudoWeb[] listaTiposDesjados) {
-        final String prompt = getPrompt__classificMateria(listaTiposDesjados, conteudo);
+        final String prompt = getPrompt__classificMateria(listaTiposDesjados, this.reduzirTexto(conteudo));
         final ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model("gpt-5-nano")
+                .addSystemMessage("""
+                        Você classifica textos jornalísticos.
+                       Responda apenas com o nome exato de UMA das categorias listadas.
+                       Não explique.
+                       Não escreva nada além da categoria.""")
                 .addUserMessage(prompt)
                 .build();
 
         // Realizando a requisição ao ChatGPT
         final ChatCompletion response = client.chat().completions().create(params);
-        String json = response.choices().get(0).message().content().orElse(null);
-        if ( json == null ) return null;
-
+        String categoria = response.choices().get(0).message().content().orElse("").trim();
+        if ( categoria == null ) return null;
         // Convertando em JSON e obtendo o retorno
         try {
-            JSONObject obj = new JSONObject(json);
-            if ( obj == null ) return null;
-
             // Procurando a categoria na lista
-            final String categoriaSujerida = obj.getString("categoria");
             final TipoConteudoWeb tipoConteudoWeb = Arrays.stream(listaTiposDesjados)
-                    .filter(item -> item.getDescricao().equalsIgnoreCase(categoriaSujerida))
+                    .filter(item -> item.getDescricao().equalsIgnoreCase(categoria))
                     .findFirst().orElse(null);
 
             return tipoConteudoWeb;
@@ -54,30 +54,22 @@ public class OpenAIEngine implements IAEngineInterface {
     }
 
 
+    private String reduzirTexto(String texto) {
+        int limite = 1200; // ajuste conforme necessário
+        return texto.length() > limite ? texto.substring(0, limite) : texto;
+    }
+
 
     //region ---- Schemas and Prompts
     private String getPrompt__classificMateria(TipoConteudoWeb[] listaTiposDesejados, String conteudo) {
-        StringJoiner joiner = new StringJoiner(", ", "", "");
-        for ( TipoConteudoWeb tipoConteudoWeb: listaTiposDesejados )
-            joiner.add(tipoConteudoWeb.getDescricao());
+        StringJoiner joiner = new StringJoiner("|");
+        for (TipoConteudoWeb tipo : listaTiposDesejados) {
+            joiner.add(tipo.getDescricao());
+        }
 
         return """
-            Você é um classificador de texto.        
-            Regras:
-            - Retorne APENAS um JSON válido
-            - Não escreva nenhum texto fora do JSON
-            - A categoria DEVE ser uma das opções abaixo
-            Categorias permitidas:
-            %s
-                
-            Formato EXATO de saída:
-            {
-                "categoria": "UMA_DAS_CATEGORIAS",
-                "confianca": 0.0
-            }
-        
-            Texto da matéria:
-            %s
+            Categorias: %s
+            Texto: %s
             """.formatted(joiner.toString(), conteudo);
     }
     //endregion
