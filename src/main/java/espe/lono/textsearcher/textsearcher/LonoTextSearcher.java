@@ -8,6 +8,9 @@ import espe.lono.db.models.*;
 import espe.lono.engine.EngineAction;
 import espe.lono.engine.enums.EngineActionEnum;
 import espe.lono.engine.models.EngineNotifyClientRequest;
+import espe.lono.ia.IAEngines;
+import espe.lono.ia.IARequests;
+import espe.lono.ia.data.CorteJuridico;
 import espe.lono.indexercore.engine.Indexacao;
 import espe.lono.indexercore.engine.UtilEngine;
 import espe.lono.indexercore.util.Util;
@@ -277,7 +280,7 @@ public class LonoTextSearcher {
         final String pubPDFfname = publicacaoJornal.getArqPublicacao();
         NomePesquisaCliente[] listaNomes = null;
         final Fachada fachada = new Fachada();
-        final EngineAction engineAction = new EngineAction();
+        final IARequests iaRequests = new IARequests();
 
         // Obtendo a lista de nomes/termos a serem pesquisadas na publicacao
         // Nota: se necessario
@@ -311,7 +314,7 @@ public class LonoTextSearcher {
             logger.debug("Pesquisando '" + listaNomes.length + "' termos na publicacao:" + pubPDFfname);
 
             // Inicializando 'TRANSACTION'
-            dbconn.iniciarTransaction();
+//            dbconn.iniciarTransaction();
 
             // Classe onde sera armazenado e gerenciads os dados de ocorrencias dos
             // clientes (evita colisao/exibicao do msm resultado p o mesmo cliente)
@@ -363,21 +366,21 @@ public class LonoTextSearcher {
                 }
 
                 // Checando se houve resultados
-                if ( results == null || results.length <= 0 ) {
-                    // Escrevendo dados sobre métrica (apenas se não for OAB)
-                    if ( cliente.getUfOAB() == null || cliente.getUfOAB().length() <= 0 ) {
-                        fachada.inserirDadosPesquisa(
-                                cliente.getIdCliente(),
-                                cliente.getIdNomePesquisa(),
-                                publicacaoJornal.getIdJornal(),
-                                publicacaoJornal.getIdPublicacao(),
-                                0,
-                                dbconn);
-                    }
-
-                    // Termo não encontrado,, passando p/ o próximo
-                    continue;
-                }
+//                if ( results == null || results.length <= 0 ) {
+//                    // Escrevendo dados sobre métrica (apenas se não for OAB)
+//                    if ( cliente.getUfOAB() == null || cliente.getUfOAB().length() <= 0 ) {
+//                        fachada.inserirDadosPesquisa(
+//                                cliente.getIdCliente(),
+//                                cliente.getIdNomePesquisa(),
+//                                publicacaoJornal.getIdJornal(),
+//                                publicacaoJornal.getIdPublicacao(),
+//                                0,
+//                                dbconn);
+//                    }
+//
+//                    // Termo não encontrado,, passando p/ o próximo
+//                    continue;
+//                }
 
                 int num_efetivas = 0;
                 final Pattern namePattern = Pattern.compile("(" + name2srch.replaceAll(" ", ".").toLowerCase().trim() + ")");
@@ -399,6 +402,12 @@ public class LonoTextSearcher {
                     // Checando se o termo encontrado está ignotado
                     if ( fachada.numProcessoIgnorado(materiaPub, dbconn) )
                         continue; // Ignorando a matéria, o num do processo está ignorado.
+
+                    // Checando se deve obter o corte por IA
+                    if ( !materiaPub.isCorte_lono() ) {
+                        materiaPub = iaRequests.realizarCorteJuridico(IAEngines.OpenAI, materiaPub);
+                        materiaPub.setCorte_lono(true);
+                    }
 
                     // Adicionando dados (materia e pauta) no banco de dados
                     // Nota: se o ID da materia/pauta for diferente de zero, é pq já
