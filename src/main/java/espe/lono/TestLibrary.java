@@ -9,11 +9,13 @@ import espe.lono.db.connections.drivers.DbPostgres;
 import espe.lono.db.connections.drivers.DbPostgresMarcacao;
 import espe.lono.db.dao.BackServiceDAO;
 import espe.lono.db.dao.ClienteDAO;
+import espe.lono.db.dao.PublicacaoDAO;
 import espe.lono.db.models.*;
 import espe.lono.engine.EngineAction;
 import espe.lono.ia.IAConfigs;
 import espe.lono.ia.IAEngines;
 import espe.lono.ia.IARequests;
+import espe.lono.ia.data.CorteJuridico;
 import espe.lono.indexercore.LonoIndexerConfigs;
 import espe.lono.indexercore.LonoIndexerCore;
 import espe.lono.indexercore.data.LonoIndexData;
@@ -84,22 +86,15 @@ public class TestLibrary {
 //        searchDir = "C:\\Projetos\\FSBR\\lono\\lono-processamento-libraries\\documentos\\djpe";
 //        TestarPesquisa(dbConnection, null, publicacaoJornal, "038.499.054-11",    "Antonio de Moraes Dourado Neto", searchDir);
 
-        // Testando classificaçã ode materia via I.A
-        final Long[] idsMateriasVerificar = new Long[] {798380L, 798401L };
-        System.out.println("Iniciando teste de classificação de matéria via I.A...");
-        TipoConteudoWeb[] tiposConteudoWeb = fachada.listarTiposConteudoWeb(dbConnection);
         IARequests.inicializar();
         IARequests iaRequests = new IARequests();
 
-        for ( long idMateria: idsMateriasVerificar ) {
-            MateriasWeb materiasWeb = fachada.obterMateriaWebPorId(idMateria, dbConnection);
-            System.out.println("Classificando matéria ID: " + materiasWeb.getId() + " - " + materiasWeb.getTitulo());
-            TipoConteudoWeb tipoConteudoWeb = iaRequests.localizarTipoConteudoWebPorConteudo(IAEngines.OpenAI, materiasWeb.getIntegral(), tiposConteudoWeb, dbConnection);
+        // Testando corte juridico da materia
+        String materiaTexto = "1. Agravo em Recurso Especial interposto contra decisão que inadmitiu recurso especial fundado no  III, \"a\" e \"c\", da Constituição Federal, em que se  art. 105, discute  a  fixação  e  majoração  de  honorários  sucumbenciais  em  ação  ordinária cumulada com obrigação de fazer e não fazer. 2. A majoração dos honorários em grau recursal, nos termos do  § 11, do  art. 85,   foi  realizada  de  forma  fundamentada,  considerando  o  trabalho CPC/2015, adicional  realizado  em  segunda  instância,  não  havendo  irregularidade  na aplicação do dispositivo. 3.  Não  se  vislumbra  violação  ao   §  1º,  do   pois  a  decisão   art.  489,   CPC/2015, recorrida enfrentou os argumentos essenciais ao deslinde da controvérsia, sendo inadmissível a alegação de ausência de fundamentação apenas por não acolher a tese da parte recorrente. 4.  A  revisão  do  montante  dos  honorários  fixados  pelas  instâncias  ordinárias encontra  impedimento  na   salvo  em  hipóteses  excepcionais  de   Súmula  7/STJ, valores  manifestamente  irrisórios  ou  exorbitantes,  o  que  não  se  configura  no caso. 5. Recurso desprovido. ACÓRDÃO Vistos  e  relatados  estes  autos  em  que  são  partes  as  acima  indicadas,  acordam  os Ministros da QUARTA TURMA do Superior Tribunal de Justiça, em Sessão Virtual de 28/10/2025 a   por  unanimidade,  conhecer  do  recurso  mas  lhe  negar  provimento,  nos  termos  do   03/11/2025, voto do Sr. Ministro Relator. Os Srs. Ministros Maria Isabel Gallotti, Antonio Carlos Ferreira, Marco Buzzi e João Otávio de Noronha votaram com o Sr. Ministro Relator. Presidiu o julgamento o Sr. Ministro João Otávio de Noronha.   Brasília,  . 06 de novembro de 2025   Ministro RAUL ARAÚJO Relator AGRAVO EM RECURSO ESPECIAL Nº 2464928 - SP (2023/0346348-7) RELATOR : MINISTRO RAUL ARAÚJO AGRAVANTE : BRADESCO SAUDE S/A ADVOGADA : ALESSANDRA MARQUES MARTINI - SP270825 AGRAVADO : MARIA ROSARIA MARTINI TONETTI ADVOGADOS : RENATA VILHENA SILVA - SP147954 ISAURA MARIA MOREIRA SARTO TAGLIALEGNA - DF028195 EMENTA DIREITO  DO  CONSUMIDOR.  AGRAVO  EM  RECURSO  ESPECIAL. PLANO  DE  SAÚDE.  MANUTENÇÃO  DE  CONTRATO  APÓS  DIVÓRCIO. APLICAÇÃO  ANALÓGICA  DA  LEGISLAÇÃO  E  NORMAS  DA  ANS. RECURSO DESPROVIDO.";
+        System.out.println("Texto original:\n" + materiaTexto);
 
-            System.out.println("\tTipo de Conteúdo Original: " + materiasWeb.getTipoConteudo().getDescricao() + " (ID: " + materiasWeb.getTipoConteudoId() + ")");
-            System.out.println("\tTipo de Conteúdo Identificado: " + tipoConteudoWeb.getDescricao() + " (ID: " + tipoConteudoWeb.getId() + ")");
-            System.out.println("---------------------------------------------------\n");
-        }
+        CorteJuridico corteJuridico = iaRequests.realizarCorteJuridico(IAEngines.OpenAI, materiaTexto, "BRADESCO");
+        System.out.println("\nTexto após corte jurídico:\n" + corteJuridico.getMateria() + "\n\nTítulo: " + corteJuridico.getTitulo());
     }
 
     public static void FluxoCompletoIndexacaoPesquisa(DbConnection dbConnection, PublicacaoJornal publicacao, String textoPesquisa) throws Exception {
