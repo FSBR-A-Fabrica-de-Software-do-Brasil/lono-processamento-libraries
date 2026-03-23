@@ -198,6 +198,8 @@ public class BackServiceDAO {
         backserviceActions.setIdBackserviceReq(resultado.getInt("id_backservice_req"));
         backserviceActions.setTermo(resultado.getString("termo"));
         backserviceActions.setSitCad(resultado.getString("sit_cad"));
+        backserviceActions.setIdTipoConteudo(resultado.getInt("id_tipo_conteudo"));
+
 
         // Atualizando o status para 'W' (Working)
         AtualizarRequisicaoProcessamentoStatus(backserviceActions, "W", dbConnection);

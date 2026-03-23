@@ -15,6 +15,7 @@ public class BackserviceActions {
     private int idCliente;
     private int idJornal;
     private long idVeiculo;
+    private long idTipoConteudo;
     private String sitCad;
     private Date datCad;
     private int usuCad;
@@ -23,6 +24,8 @@ public class BackserviceActions {
     private NomePesquisaCliente nomePesquisa = null;
     private Jornal jornal = null;
     private Veiculo veiculo = null;
+    private TipoConteudoWeb tipoConteudo = null;
+
 
     public int getIdBackserviceReq() {
         return idBackserviceReq;
@@ -146,5 +149,21 @@ public class BackserviceActions {
 
     public void setFachada(Fachada fachada) {
         this.fachada = fachada;
+    }
+
+    public long getIdTipoConteudo() {
+        return idTipoConteudo;
+    }
+
+    public void setIdTipoConteudo(long idTipoConteudo) {
+        this.idTipoConteudo = idTipoConteudo;
+    }
+
+    public TipoConteudoWeb getTipoConteudo() {
+        return tipoConteudo;
+    }
+
+    public void setTipoConteudo(TipoConteudoWeb tipoConteudo) {
+        this.tipoConteudo = tipoConteudo;
     }
 }
