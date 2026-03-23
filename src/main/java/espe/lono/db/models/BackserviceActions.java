@@ -2,6 +2,7 @@ package espe.lono.db.models;
 
 import espe.lono.db.Fachada;
 import espe.lono.db.connections.DbConnection;
+import espe.lono.db.dao.MateriaWebDAO;
 import espe.lono.db.dao.VeiculosDAO;
 
 import java.sql.SQLException;
@@ -127,6 +128,15 @@ public class BackserviceActions {
         }
     }
 
+    public TipoConteudoWeb getTipoConteudo(DbConnection dbConnection) throws SQLException {
+        if ( this.idTipoConteudo != 0 ) {
+            if ( tipoConteudo == null ) tipoConteudo = new MateriaWebDAO().localizarTipoConteudoWebPorId(this.idTipoConteudo, dbConnection);
+            return tipoConteudo;
+        } else {
+            return null;
+        }
+    }
+
     public String getTermo() {
         return termo;
     }
@@ -157,13 +167,5 @@ public class BackserviceActions {
 
     public void setIdTipoConteudo(long idTipoConteudo) {
         this.idTipoConteudo = idTipoConteudo;
-    }
-
-    public TipoConteudoWeb getTipoConteudo() {
-        return tipoConteudo;
-    }
-
-    public void setTipoConteudo(TipoConteudoWeb tipoConteudo) {
-        this.tipoConteudo = tipoConteudo;
     }
 }
