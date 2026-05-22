@@ -1331,10 +1331,13 @@ public class LonoTextSearcher {
         textMateria = textMateria.replaceAll("<email_comercial>", comercialEmail);
 
         // Retornando os dados
-        return GerarMateriaNotificacaoLono(jornal, nomePesquisaCliente, "Alerta Lono: Termo na Blacklist", textMateria);
+        return GerarMateriaNotificacaoLono(jornal, nomePesquisaCliente, "Alerta Lono: Termo na Blacklist", textMateria, false);
     }
 
-    static public MateriaPublicacao GerarMateriaNotificacaoLono(Jornal jornal, NomePesquisaCliente nomePesquisaCliente, String titulo, String textMateria) {
+    static public MateriaPublicacao GerarMateriaNotificacaoLono(Jornal jornal, NomePesquisaCliente nomePesquisaCliente, String titulo, String textMateria, boolean oldDate) {
+        // Cria um objeto Date com a data 1/1/1900 (a mais antiga possível)
+        Date dataMateria = (oldDate) ? new GregorianCalendar(1900, Calendar.JANUARY, 1).getTime() : new Date();
+
         // Criando a MateriaPublicacao
         MateriaPublicacao materiaPublicacao = new MateriaPublicacao();
         materiaPublicacao.setIdMateria(0);
@@ -1349,7 +1352,7 @@ public class LonoTextSearcher {
         materiaPublicacao.setSubtituloMateria("");
         materiaPublicacao.setLinhaCliente(1);
         materiaPublicacao.setCorteLono(true);
-        materiaPublicacao.setDatCad(new Date());
+        materiaPublicacao.setDatCad(dataMateria);
         materiaPublicacao.setUsuCad(99);
         materiaPublicacao.setPreMateria("");
         materiaPublicacao.setIdCliente(nomePesquisaCliente.getIdCliente());
