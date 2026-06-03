@@ -415,6 +415,7 @@ public class PublicacaoDAO
     {
         boolean ignorarMateria = this.ignorarNumeroProcesso(materiaPub.getIdCliente(),materiaPub.getProcesso(), dbconn);
         final String tabela_destino = (ignorarMateria) ? "materia_ignorada_cliente" : "materia_cliente";
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         boolean materiaJaAdicionada = (materiaPub.getIdMateria() != null && materiaPub.getIdMateria() != 0);
         String sql;
@@ -443,7 +444,7 @@ public class PublicacaoDAO
                     + "'" + materiaPub.getPreMateria() + "', "
                     + "'" + materiaPub.getProcesso() + "', "
                     + "'" + materiaPub.getMateria().replaceAll("'", "''") + "', "
-                    + " now(), "
+                    + " '" + sdf.format(materiaPub.getDatCad()) + "', "
                     + "'" + materiaPub.getSitCad() + "', "
                     + materiaPub.getUsuCad() + ", "
                     + (materiaPub.getCorteLono() ? "'t'":"'f'") + ", 'f', "
