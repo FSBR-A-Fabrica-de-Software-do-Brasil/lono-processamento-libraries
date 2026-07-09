@@ -413,9 +413,10 @@ public class Util
             }
         }
 
-        arquivos.sort(Comparator.comparingInt(nome ->
-            Integer.parseInt(nome.replaceAll(".*_p(\\d+)\\.json", "$1"))
-        ));
+        arquivos.sort(Comparator.comparingInt(nome -> {
+            Matcher m = Pattern.compile("p(?:age)?[_]?(\\d+)\\.json$", Pattern.CASE_INSENSITIVE).matcher(nome);
+            return m.find() ? Integer.parseInt(m.group(1)) : Integer.MAX_VALUE;
+        }));
         return arquivos.toArray(new String[arquivos.size()]);
     }
 }
