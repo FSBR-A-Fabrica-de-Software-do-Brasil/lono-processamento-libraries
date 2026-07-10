@@ -448,7 +448,7 @@ public class LonoIndexerCore
      * @param dbconn Conexão com o banco principal do Lono
      * @throws SQLException Excessões relacionadas ao SQL
      */
-    private static String CompactarArquivosPublicacao(Fachada facahada, int idJornal, int idPublicacaoToCompact, String outputFolderName, boolean deleteOldFiles, DbConnection dbconn) throws SQLException, LonoIndexerException {
+    public static String CompactarArquivosPublicacao(Fachada facahada, int idJornal, int idPublicacaoToCompact, String outputFolderName, boolean deleteOldFiles, DbConnection dbconn) throws SQLException, LonoIndexerException {
         String outputCompressFName = null;
         final String sqlcmd = "SELECT id_publicacao, dt_publicacao, id_jornal, arq_publicacao, sit_cad " +
                 "FROM publicacao_jornal " +
@@ -463,15 +463,8 @@ public class LonoIndexerCore
         {
             final int idPublicacao = resultado.getInt("id_publicacao");
             final String arqPublicacao = resultado.getString("arq_publicacao");
-
-            // Gerando o nome da pasta BASE da publicacao
-            String[] splitted_dtPublicacao = resultado.getString("dt_publicacao").split("-");
-            String diretorioBaseArquivo = LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS + "/";
-            diretorioBaseArquivo += splitted_dtPublicacao[0] + "/"; // ano
-            diretorioBaseArquivo += splitted_dtPublicacao[1] + "/"; // mes
-            diretorioBaseArquivo += splitted_dtPublicacao[2] + "/"; // dia
-            diretorioBaseArquivo += resultado.getString("id_jornal") + "/"; // Jornal
-            diretorioBaseArquivo += Integer.toString( idPublicacao ) + "/"; // Pub
+            final String[] pastasProcEdicao = GerarNomePastasDestinoPublicacao(idPublicacaoToCompact, resultado.getInt("id_jornal"),resultado.getString("dt_publicacao"));
+            final String diretorioBaseArquivo = pastasProcEdicao[0];
 
             // Checando se deve ignorar o arquivo
             final File pdfFilename = new File(diretorioBaseArquivo + arqPublicacao);
@@ -488,15 +481,11 @@ public class LonoIndexerCore
             catch (ClassNotFoundException e) { marcacaoDb = null; }
 
             // Definindo a lista de diretorios de processamento
-            final String[] pastasProcEdicao = new String[]{
-                (diretorioBaseArquivo + "indice"),
-                (diretorioBaseArquivo + "indice_pesquisa"),
-                (diretorioBaseArquivo + "marcacao.csv")
-            };
+
 
             // Gerando (Exportando) banco de marcações
             if ( marcacaoDb != null ) {
-                try { marcacaoDb.exportTable(pastasProcEdicao[2], deleteOldFiles); }
+                try { marcacaoDb.exportTable(pastasProcEdicao[3], deleteOldFiles); }
                 catch (Exception ignore ) {}
             }
 
@@ -508,15 +497,15 @@ public class LonoIndexerCore
             outputCompressFName = outputFolderName + (outputFolderName.endsWith("/") ? "" : "/");
             outputCompressFName += jornal.getSiglaJornal().toLowerCase() + "_" + resultado.getString("id_publicacao") + "_";
             outputCompressFName += pdfHashValue + ".zip";
-            System.out.println("Output Zip Folder -> " + outputCompressFName);
             Util.compactarDiretorios(pastasProcEdicao, outputCompressFName);
             
             // Removendo dados desta ANTIGA edicao
             if ( deleteOldFiles ) {
-                Util.limparDiretorio(pastasProcEdicao[0]);
-                Util.limparDiretorio(pastasProcEdicao[1]);
-                Util.limparDiretorio(pastasProcEdicao[2]);
-                Util.limparDiretorio(diretorioBaseArquivo + "html");
+                DeletarPastaPublicacao(pastasProcEdicao);
+//                Util.limparDiretorio(pastasProcEdicao[0]);
+//                Util.limparDiretorio(pastasProcEdicao[1]);
+//                Util.limparDiretorio(pastasProcEdicao[2]);
+//                Util.limparDiretorio(diretorioBaseArquivo + "html");
 
                 // Apagado arquivo PDF (sse existir)
                 final File pdfFile = new File(pdfFilename.getAbsolutePath());
@@ -551,5 +540,47 @@ public class LonoIndexerCore
         stm.close();
 
         return outputCompressFName;
+    }
+
+    public static String[] GerarNomePastasDestinoPublicacao(int idPublicacao, int idJornal, String dtPublicacao) throws SQLException {
+        String[] splitted_dtPublicacao = dtPublicacao.split("-");
+        String diretorioBaseArquivo = LonoIndexerConfigs.INDEXER_DIRETORIO_DOCUMENTOS + "/";
+        diretorioBaseArquivo += splitted_dtPublicacao[0] + "/"; // ano
+        diretorioBaseArquivo += splitted_dtPublicacao[1] + "/"; // mes
+        diretorioBaseArquivo += splitted_dtPublicacao[2] + "/"; // dia
+        diretorioBaseArquivo += idJornal + "/"; // Jornal
+        diretorioBaseArquivo += Integer.toString(idPublicacao) + "/"; // Pub
+
+        return new String[]{
+                diretorioBaseArquivo,
+                (diretorioBaseArquivo + "indice"),
+                (diretorioBaseArquivo + "indice_pesquisa"),
+                (diretorioBaseArquivo + "marcacao.csv")
+        };
+    }
+    public static String[] GerarNomePastasDestinoPublicacao(int idPublicacao, DbConnection dbconn) throws SQLException {
+        final String sqlcmd = "SELECT id_publicacao, dt_publicacao, id_jornal, arq_publicacao, sit_cad " +
+                "FROM publicacao_jornal " +
+                "WHERE id_publicacao = '" + idPublicacao + "' ";
+
+        final Statement stm = dbconn.obterStatement();
+        ResultSet resultado = dbconn.abrirConsultaSql(stm, sqlcmd);
+        DbConnectionMarcacao marcacaoDb = null;
+        if (resultado.next()) {
+            // Gerando o nome da pasta BASE da publicacao
+            return GerarNomePastasDestinoPublicacao(idPublicacao,resultado.getInt("id_jornal"), resultado.getString("dt_publicacao"));
+        } else {
+            return null;
+        }
+    }
+
+    public static void DeletarPastaPublicacao(String[] pastasProcEdicao) {
+        if ( pastasProcEdicao == null || pastasProcEdicao.length < 4 )
+            return;
+
+        Util.limparDiretorio(pastasProcEdicao[1]);
+        Util.limparDiretorio(pastasProcEdicao[2]);
+        Util.limparDiretorio(pastasProcEdicao[3]);
+        Util.limparDiretorio(pastasProcEdicao[0] + "html");
     }
 }
