@@ -21,7 +21,8 @@ public class PublicacaoDAO
                 "WHERE id_jornal = " + idJornal + " AND " +
                 "id_publicacao != " + idPublicacaoToIgnore + " AND " +
                 "sit_cad IN ('F','X') AND " +
-                "arq_publicacao != 'histpub.pdf' " +
+                "(arq_publicacao != 'histpub.pdf' and arq_publicacao != 'nofile.pdf') AND " +
+                "total_pagina > 0 " +
                 "ORDER BY id_publicacao ASC";
         ResultSet resultado = dbconn.abrirConsultaSql(sql);
         while (resultado.next()) {
