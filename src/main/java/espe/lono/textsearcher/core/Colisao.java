@@ -91,6 +91,10 @@ public class Colisao
     
     public int obterMateriaID(MateriaPublicacao materiaPub, long docInicio, long docFim, DbConnection dbconn) throws SQLException
     {
+        if ( dbconn == null ) {
+            return 0;
+        }
+
         // Gerando hash...
         final String hash = DigestUtils.sha1Hex( "" + docInicio + ":" + materiaPub.getMateria() + ":" + docFim);
         materiaPub.setMateriaHash(hash);
