@@ -777,7 +777,7 @@ public class LonoTextSearcher {
             materiaPub.setPagina(real_page);
 
             // Checando se deve tratar as colisões
-            if (colisaoMateria != null) {
+            if (dbconn != null && colisaoMateria != null) {
                 // Obtem o ID da materia existent
                 // Nota: retorna '0' se nao existir esta materia
                 int id_materia_existente = colisaoMateria.obterMateriaID(materiaPub, materiaColisaoInfo[0], materiaColisaoInfo[1], dbconn);

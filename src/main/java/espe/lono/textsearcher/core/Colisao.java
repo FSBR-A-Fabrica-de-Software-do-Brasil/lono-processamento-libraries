@@ -58,6 +58,8 @@ public class Colisao
     
     public int obterPautaID(PautaPublicacao pautaPub, DbConnection dbconn) throws SQLException
     {
+        if ( dbconn == null ) return 0;
+
         final Statement stm = dbconn.obterStatement();
         
         // Checando se existe texto de pauta

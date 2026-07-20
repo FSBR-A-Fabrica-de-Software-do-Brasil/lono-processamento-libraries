@@ -275,18 +275,19 @@ public class Util
         //str = str.replaceAll("[^\\p{InCombiningDiacriticalMarks}]", "");
         
         // Checando se a lista de palavras ja foi inicializada
-        if ( Util.lista_palavras_substituicao == null )
+        if ( Util.lista_palavras_substituicao == null && dbconn != null )
         {
             PalavrasDAO palavrasDao = new PalavrasDAO();
             Util.lista_palavras_substituicao = palavrasDao.listarPalavrasSubstituicao(dbconn);
         }
         
         // Substituindo palavras definidas na lista...
-        for ( PalavrasSubstituicao palavraSub: Util.lista_palavras_substituicao )
-        {
-            final String iniRgx = " " + palavraSub.getPalavraOriginal().trim() + " ";
-            final String fimRgx = " " + palavraSub.getPalavraNova().trim() + " ";
-            str = str.replaceAll(iniRgx, fimRgx);
+        if ( Util.lista_palavras_substituicao != null ) {
+            for (PalavrasSubstituicao palavraSub : Util.lista_palavras_substituicao) {
+                final String iniRgx = " " + palavraSub.getPalavraOriginal().trim() + " ";
+                final String fimRgx = " " + palavraSub.getPalavraNova().trim() + " ";
+                str = str.replaceAll(iniRgx, fimRgx);
+            }
         }
         
         // Completando normalizacao

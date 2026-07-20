@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="" />
+    <list default="true" id="81a4af3d-a5b4-4dda-8eeb-7f359fe695e6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/indexercore/util/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/core/Colisao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/core/Colisao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/espe/lono/textsearcher/textsearcher/LonoTextSearcher.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -124,6 +130,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Projetos/FSBR/lono/lono-processamento-libraries",
@@ -144,7 +151,7 @@
       <recent name="espe.lono.db.models" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.TestLibrary">
+  <component name="RunManager" selected="Gradle.lono-processamento-libraries [build]">
     <configuration name="TestLibrary" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="espe.lono.TestLibrary" />
       <module name="lono-proessamento-libraries.main" />
@@ -224,8 +231,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+        <option value="bundled-jdk-30f59d01ecdd-63390994e64e-intellij.indexing.shared.core-IU-262.8665.258" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.8665.258" />
       </set>
     </attachedChunks>
   </component>
